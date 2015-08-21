@@ -44,6 +44,7 @@ def customizeHLTforMC(process,_fastSim=False):
       "HLT_PixelTracks_Multiplicity90_v*",
       "HLT_Beam*_v*",
       #"HLT_L1Tech_*_v*",
+      "HLT_HI*",
       "HLT_GlobalRunHPDNoise_v*",
       "HLT_L1TrackerCosmics_v*",
       "HLT_HcalUTCA_v*",
@@ -81,6 +82,8 @@ def customizeHLTforMC(process,_fastSim=False):
       "HLT_Mu23NoFiltersNoVtx_Photon23_CaloIdL_v*",
       "HLT_DoubleMu18NoFiltersNoVtx_v*",
       "HLT_DoubleMuNoFiltersNoVtx_SaveObjects_v*",
+      "MC_DoubleMuNoFiltersNoVtx_v*",
+      "HLT_MET60_IsoTrk*",
       )
 
     ESModulesToRemove = (
@@ -464,6 +467,10 @@ def customizeHLTforMC(process,_fastSim=False):
       if hasattr(process,label):
         getattr(process,label).SeedConfiguration.initialSeeds = cms.InputTag('globalPixelSeeds')
         getattr(process,label).SeedConfiguration.preFilteredSeeds = cms.bool(False)
+        if hasattr(fastsim,'globalPixelSeeds'): 
+          if hasattr(fastsim.globalPixelSeeds,'outputSeedCollectionName'):
+            getattr(process,label).SeedConfiguration.initialSeeds = cms.InputTag('globalPixelSeeds',fastsim.globalPixelSeeds.outputSeedCollectionName.value())
+
 
 # Extending fastsim import
     fastsim.extend(process)

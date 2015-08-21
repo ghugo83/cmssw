@@ -50,23 +50,45 @@ L1TCSCTF::L1TCSCTF(const ParameterSet& ps)
 
   gangedME11a_ = ps.getUntrackedParameter<bool>("gangedME11a", false);
 
-  // instantiate standard on-fly SR LUTs from CSC TF emulator package
-  bzero(srLUTs_,sizeof(srLUTs_));
-  int endcap=1, sector=1; // assume SR LUTs are all same for every sector in either of endcaps
-  bool TMB07=true; // specific TMB firmware
-  // Create a dummy pset for SR LUTs
-  edm::ParameterSet srLUTset;
-  srLUTset.addUntrackedParameter<bool>("ReadLUTs", false);
-  srLUTset.addUntrackedParameter<bool>("Binary",   false);
-  srLUTset.addUntrackedParameter<std::string>("LUTPath", "./");
-  for(int station=1,fpga=0; station<=4 && fpga<5; station++)
-    {
-      if(station==1)
-	for(int subSector=0; subSector<2 && fpga<5; subSector++)
-	  srLUTs_[fpga++] = new CSCSectorReceiverLUT(endcap, sector, subSector+1, station, srLUTset, TMB07);
-      else
-	srLUTs_[fpga++] = new CSCSectorReceiverLUT(endcap, sector, 0, station, srLUTset, TMB07);
+    // instantiate standard on-fly SR LUTs from CSC TF emulator package
+    bzero(srLUTs_ , sizeof(srLUTs_));
+    //int sector=1;    // assume SR LUTs are all same for every sector
+    bool TMB07=true; // specific TMB firmware
+    // Create a pset for SR/PT LUTs: if you do not change the value in the
+    // configuration file, it will load the default minitLUTs
+    edm::ParameterSet srLUTset;
+    srLUTset.addUntrackedParameter<bool>("ReadLUTs", false);
+    srLUTset.addUntrackedParameter<bool>("Binary",   false);
+    srLUTset.addUntrackedParameter<std::string>("LUTPath", "./");
+
+    // positive endcap
+    int endcap = 1;
+    for(int sector=0; sector<6; sector++) {
+      for(int station=1,fpga=0; station<=4 && fpga<5; station++) {
+        if(station==1)
+            for(int subSector=0; subSector<2 && fpga<5; subSector++)
+                srLUTs_[fpga++][1][sector] = new CSCSectorReceiverLUT(endcap,sector+1,subSector+1,
+                        station, srLUTset, TMB07);
+        else
+            srLUTs_[fpga++][1][sector]   = new CSCSectorReceiverLUT(endcap,  sector+1,   0,
+                    station, srLUTset, TMB07);
+      }
     }
+
+    // negative endcap
+    endcap = 2;
+    for(int sector=0; sector<6; sector++) {
+      for(int station=1,fpga=0; station<=4 && fpga<5; station++) {
+        if(station==1)
+            for(int subSector=0; subSector<2 && fpga<5; subSector++)
+                srLUTs_[fpga++][0][sector] = new CSCSectorReceiverLUT(endcap,sector+1,subSector+1,
+                        station, srLUTset, TMB07);
+        else
+            srLUTs_[fpga++][0][sector]   = new CSCSectorReceiverLUT(endcap,  sector+1,   0,
+                    station, srLUTset, TMB07);
+      }
+    }
+
 
   //set Token(-s)
   edm::InputTag statusTag_(statusProducer.label(),statusProducer.instance());
@@ -86,8 +108,11 @@ L1TCSCTF::L1TCSCTF(const ParameterSet& ps)
 L1TCSCTF::~L1TCSCTF()
 {
 
-  for(int i=0; i<5; i++)
-    delete srLUTs_[i]; //free the array of pointers
+  for(unsigned int j=0; j<2; j++)
+    for(unsigned int i=0; i<5; i++)
+      for(unsigned int s=0; s<6; s++)
+        delete srLUTs_[i][j][s]; //free the array of pointers
+
 }
 
 void L1TCSCTF::dqmBeginRun(const edm::Run& r, const edm::EventSetup& c){
@@ -806,23 +831,28 @@ void L1TCSCTF::analyze(const Event& e, const EventSetup& c)
                   edm::LogError("L1CSCTF: CSC TP are out of range: ")<<"  endcap: "<<(endcap+1)<<"  station: "<<(station+1) <<"  sector: "<<(sector+1)<<"  subSector: "<<subSector<<"  fpga: "<<fpga<<"  cscId: "<<(cscId+1);
                   continue;
                 }
+
+              int EndCapLUT=1;
+              //if(endcap==0) EndCapLUT=1; // ME+
+              if(endcap==1) EndCapLUT=0; // ME-
+
               lclphidat lclPhi;
               try {
-                lclPhi = srLUTs_[fpga]->localPhi(lct->getStrip(), lct->getPattern(), lct->getQuality(), lct->getBend(), gangedME11a_);
+                lclPhi = srLUTs_[fpga][EndCapLUT][sector]->localPhi(lct->getStrip(), lct->getPattern(), lct->getQuality(), lct->getBend(), gangedME11a_);
               } catch(cms::Exception &) {
                 bzero(&lclPhi,sizeof(lclPhi));
               }
 
               gblphidat gblPhi;
               try {
-                gblPhi = srLUTs_[fpga]->globalPhiME(lclPhi.phi_local, lct->getKeyWG(), cscId+1, gangedME11a_);
+                gblPhi = srLUTs_[fpga][EndCapLUT][sector]->globalPhiME(lclPhi.phi_local, lct->getKeyWG(), cscId+1, gangedME11a_);
               } catch(cms::Exception &) {
                 bzero(&gblPhi,sizeof(gblPhi));
               }
 
               gbletadat gblEta;
               try {
-                gblEta = srLUTs_[fpga]->globalEtaME(lclPhi.phi_bend_local, lclPhi.phi_local, lct->getKeyWG(), cscId+1, gangedME11a_);
+                gblEta = srLUTs_[fpga][EndCapLUT][sector]->globalEtaME(lclPhi.phi_bend_local, lclPhi.phi_local, lct->getKeyWG(), cscId+1, gangedME11a_);
               } catch(cms::Exception &) {
                 bzero(&gblEta,sizeof(gblEta));
               }
@@ -927,6 +957,15 @@ void L1TCSCTF::analyze(const Event& e, const EventSetup& c)
                 if(endcap == 0) { csc_strip_MEplus22  -> Fill(realID,strip); csc_wire_MEplus22  -> Fill(realID,keyWire); }
                 if(endcap == 1) { csc_strip_MEminus22 -> Fill(realID,strip); csc_wire_MEminus22 -> Fill(realID,keyWire); }
               }
+
+                //ME3/1
+              if (station == 2 && ring == 1){
+                int realID = cscId+3*sector+2;
+                if(realID>18) realID -= 18;
+                if(endcap == 0) { csc_strip_MEplus31  -> Fill(realID,strip); csc_wire_MEplus31  -> Fill(realID,keyWire); }
+                if(endcap == 1) { csc_strip_MEminus31 -> Fill(realID,strip); csc_wire_MEminus31 -> Fill(realID,keyWire); }
+              }
+
                 //ME3/2
               if (station == 2 && ring == 2){
                 int realID = (cscId-3)+6*sector+3;

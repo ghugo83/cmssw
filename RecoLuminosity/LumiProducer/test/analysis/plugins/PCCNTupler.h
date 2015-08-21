@@ -33,6 +33,7 @@
 #include "TObject.h"
 #include "TH1F.h"
 
+
 using namespace reco;
 
 class TObject;
@@ -55,95 +56,78 @@ class PCCNTupler : public edm::one::EDAnalyzer<edm::one::SharedResources, edm::o
 
 
   protected:
-    void init();
-    void fillEvent();
-    void fillTracks();
-    void fillRecHits();
-    void fillVertex();
-    void fillDigis();
-    
-    void bpixNames(const DetId &pID, int &DBlayer, int &DBladder, int &DBmodule);
-    void fpixNames(const DetId &pID, int &DBdisk, int &DBblade, int &DBpanel, int &DBplaquette);
-    
-    void onlineRocColRow(const DetId &pID, int offlineRow, int offlineCol, int &roc, int &col, int &row);
-    void isPixelTrack(const edm::Ref<std::vector<Trajectory> > &refTraj, bool &isBpixtrack, bool &isFpixtrack);
-
+    void Reset();
+    void SaveAndReset();
+    void ComputeMeanAndMeanError();
 
   private:
     edm::EDGetTokenT<edmNew::DetSetVector<SiPixelCluster> >  pixelToken;
     edm::EDGetTokenT<reco::VertexCollection> recoVtxToken;
     edm::EDGetTokenT<std::vector< PileupSummaryInfo> > pileUpToken;
     
-    int             fVerbose; 
-    std::string     fRootFileName; 
-    std::string     fGlobalTag, fType;
-    int             fDumpAllEvents;
     edm::InputTag   fPrimaryVertexCollectionLabel;
     edm::InputTag   fPixelClusterLabel;
     edm::InputTag   fPileUpInfoLabel;
-
-    bool fAccessSimHitInfo;
-
-    TFile *fFile; 
-    TTree *fTree;
-
-    std::map<int, int>     fFEDID; 
-
-    // -- general stuff
-    unsigned int fRun, fEvent, fLumiBlock; 
-    int          fBX, fOrbit; 
-    unsigned int fTimeLo, fTimeHi; 
- 
-    float fBz;
-    int fFED1, fFED2; 
-
-    // -- clusters
-    static const int CLUSTERMAX = 100000; 
-    static const int DGPERCLMAX = 100;  
-    static const int TKPERCLMAX = 100;  
-
-    // module information
-    int nDeadModules;
-    uint32_t  deadModules[6]; 
-    int nDeadPrint; 
+  
+    static const int MAX_VERTICES=200;
 
     // saving events per LS, LN or event
     std::string saveType = "LumiSect"; // LumiSect or LumiNib or Event
+    std::string sampleType="MC"; // MC or DATA
     bool saveAndReset;
     bool sameEvent;
     bool sameLumiNib;
     bool sameLumiSect;
     bool firstEvent;
-    std::string sampleType="MC"; // MC or DATA
 
      // Lumi stuff
     TTree * tree;
-    int runNo;
-    int LSNo=-99;    // set to indicate first pass of analyze method
-    int LNNo=-99;    // set to indicate first pass of analyze method
-    int eventNo=-99; // set to indicate first pass of analyze method
-    int bxNo=-99;    // local variable only
+    int run;
+    int LS=-99;    // set to indicate first pass of analyze method
+    int LN=-99;    // set to indicate first pass of analyze method
+    int event=-99; // set to indicate first pass of analyze method
+    int bunchCrossing=-99;    // local variable only
+    int orbit=-99;
     
     std::pair<int,int> bxModKey;    // local variable only
    
     int eventCounter=0;
     int totalEvents;
     
-    bool includeVertexInformation, includePixels;
-    int nVtx, nTrk, ndof;
+    bool includeVertexInformation;
+    bool includePixels;
+
+    int nPU;
+    int nVtx;
+    int vtx_nTrk[MAX_VERTICES];
+    int vtx_ndof[MAX_VERTICES];
+    float vtx_x[MAX_VERTICES];
+    float vtx_y[MAX_VERTICES];
+    float vtx_z[MAX_VERTICES];
+    float vtx_xError[MAX_VERTICES];
+    float vtx_yError[MAX_VERTICES];
+    float vtx_zError[MAX_VERTICES];
+    float vtx_chi2[MAX_VERTICES];
+    float vtx_normchi2[MAX_VERTICES];
+    bool vtx_isValid[MAX_VERTICES];
+    bool vtx_isFake[MAX_VERTICES];
+    bool vtx_isGood[MAX_VERTICES];
+
     std::map<int,int> nGoodVtx;
+    std::map<int,int> nValidVtx;
     std::map<std::pair<int,int>,int> nPixelClusters;
     std::map<std::pair<int,int>,int> nClusters;
     std::map<int,int> layers;
 
+    std::map<std::pair<int,int>,float> meanPixelClusters;
+    std::map<std::pair<int,int>,float> meanPixelClustersError;
+    
     TH1F* pileup;
 
-    float xV, yV, zV, chi2;
-    UInt_t timeStamp;
-    int nPrint;
+    UInt_t timeStamp_begin;
+    UInt_t timeStamp_local;
+    UInt_t timeStamp_end;
     std::map<int,int> BXNo;
-    edm::InputTag vertexTags_; //used to select what vertices to read from configuration file 
-    edm::InputTag vertexBSTags_; //used to select what vertices with BS correction 
 
 };
 

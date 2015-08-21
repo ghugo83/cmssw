@@ -6,7 +6,7 @@
 #include "FWCore/Utilities/interface/EDGetToken.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "RecoMET/METAlgorithms/interface/PFSpecificAlgo.h"
-#include "DQM/PhysicsHWW/interface/PileupJetIdAlgo.h"
+#include "RecoJets/JetProducers/interface/PileupJetIdAlgo.h"
 #include "DQM/PhysicsHWW/interface/HWW.h"
 
 namespace reco {
@@ -24,6 +24,7 @@ class MVAJetIdMaker {
 
     edm::EDGetTokenT<reco::PFJetCollection>       PFJetCollection_;
     edm::EDGetTokenT<reco::VertexCollection>      thePVCollection_;
+    edm::EDGetTokenT<double> theRhoCollection_;
     edm::EDGetTokenT<reco::JetCorrector> jetCorrectorToken_;
     PileupJetIdAlgo  *fPUJetIdAlgo;
 

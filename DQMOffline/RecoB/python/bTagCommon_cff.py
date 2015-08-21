@@ -37,7 +37,8 @@ bTagCommonBlock = cms.PSet(
     #Jet ID and EnergyCorr.
     doJetID = cms.bool(False),
     doJEC = cms.bool(False),
-    JECsource = cms.string("ak5PFCHSL1FastL2L3"),
+    JECsourceMC = cms.InputTag("ak4PFCHSL1FastL2L3Corrector"),
+    JECsourceData = cms.InputTag("ak4PFCHSL1FastL2L3ResidualCorrector"),
     #tagger configuration
     tagConfig = cms.VPSet(
         cms.PSet(
@@ -99,6 +100,11 @@ bTagCommonBlock = cms.PSet(
             bTagGenericAnalysisBlock,
             label = cms.InputTag("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
             folder = cms.string("CSVv2")
+        ),
+        cms.PSet(
+            bTagGenericAnalysisBlock,
+            label = cms.InputTag("pfCombinedMVABJetTags"),
+            folder = cms.string("combMVA")
         ),
         cms.PSet(
             bTagSoftLeptonAnalysisBlock,

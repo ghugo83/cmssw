@@ -8,6 +8,7 @@ from FWCore.ParameterSet.Modules import _Module
 import sys
 import re
 import collections
+from subprocess import Popen,PIPE
 import FWCore.ParameterSet.DictTypes as DictTypes
 class Options:
         pass
@@ -22,7 +23,7 @@ defaultOptions.pileup='NoPileUp'
 defaultOptions.pileup_input = None
 defaultOptions.geometry = 'SimDB'
 defaultOptions.geometryExtendedOptions = ['ExtendedGFlash','Extended','NoCastor']
-defaultOptions.magField = '38T'
+defaultOptions.magField = ''
 defaultOptions.conditions = None
 defaultOptions.useCondDBv1 = False
 defaultOptions.scenarioOptions=['pp','cosmics','nocoll','HeavyIons']
@@ -122,12 +123,27 @@ def filesFromList(fileName,s=None):
 	return (prim,sec)
 	
 def filesFromDASQuery(query,s=None):
-	import os
+	import os,time
 	import FWCore.ParameterSet.Config as cms
 	prim=[]
 	sec=[]
 	print "the query is",query
-	for line in os.popen('das_client.py --query "%s"'%(query)):
+	eC=5
+	count=0
+	while eC!=0 and count<3:
+		if count!=0:
+			print 'Sleeping, then retrying DAS'
+			time.sleep(100)
+		p = Popen('das_client.py --query "%s"'%(query), stdout=PIPE,shell=True)
+		tupleP = os.waitpid(p.pid, 0)
+		eC=tupleP[1]
+		count=count+1
+		pipe=p.stdout.read()
+	if eC==0:
+		print "DAS succeeded after",count,"attempts",eC
+	else:
+		print "DAS failed 3 times- I give up"
+	for line in pipe.split('\n'):
 		if line.count(".root")>=2:
 			#two files solution...
 			entries=line.replace("\n","").split()
@@ -525,9 +541,12 @@ class ConfigBuilder(object):
 				theEventContent = cms.PSet(outputCommands = cms.untracked.vstring('keep *'))
 			else:
 				theEventContent = getattr(self.process, theStreamType+"EventContent")
-				
+
+
+			addAlCaSelects=False
 			if theStreamType=='ALCARECO' and not theFilterName:
 				theFilterName='StreamALCACombined'
+				addAlCaSelects=True
 
 			CppType='PoolOutputModule'
 			if self._options.timeoutOutput:
@@ -546,6 +565,13 @@ class ConfigBuilder(object):
 				output.SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('filtering_step'))				
 			if theSelectEvent:
 				output.SelectEvents =cms.untracked.PSet(SelectEvents = cms.vstring(theSelectEvent))
+
+			if addAlCaSelects:
+				if not hasattr(output,'SelectEvents'):
+					output.SelectEvents=cms.untracked.PSet(SelectEvents=cms.vstring())
+				for alca in self.AlCaPaths:
+					output.SelectEvents.SelectEvents.extend(getattr(self.process,'OutALCARECO'+alca).SelectEvents.SelectEvents)
+
 			
 			if hasattr(self.process,theModuleLabel):
 				raise Exception("the current process already has a module "+theModuleLabel+" defined")
@@ -645,18 +671,10 @@ class ConfigBuilder(object):
 	if self._options.pileup:
 		pileupSpec=self._options.pileup.split(',')[0]
 
-		# FastSim: GEN-mixing or DIGI-RECO mixing?
-		GEN_mixing = False
-		if self._options.fast and pileupSpec.find("GEN_") == 0:
-                        GEN_mixing = True
-                        pileupSpec = pileupSpec[4:]
-
 		# Does the requested pile-up scenario exist?
 		from Configuration.StandardSequences.Mixing import Mixing,defineMixing
 		if not pileupSpec in Mixing and '.' not in pileupSpec and 'file:' not in pileupSpec:
 			message = pileupSpec+' is not a know mixing scenario:\n available are: '+'\n'.join(Mixing.keys())
-			if self._options.fast:
-				message += "\n-"*20+"\n additional options for FastSim (gen-mixing):\n" + "-"*20 + "\n" + '\n'.join(["GEN_" + x for x in Mixing.keys()]) + "\n"
 			raise Exception(message)
 
 		# Put mixing parameters in a dictionary
@@ -681,10 +699,7 @@ class ConfigBuilder(object):
 
 		# FastSim: transform cfg of MixingModule from FullSim to FastSim 
 		if self._options.fast:
-			if GEN_mixing:
-				self._options.customisation_file.insert(0,"FastSimulation/Configuration/MixingModule_Full2Fast.prepareGenMixing")
-			else:   
-				self._options.customisation_file.insert(0,"FastSimulation/Configuration/MixingModule_Full2Fast.prepareDigiRecoMixing")
+			self._options.customisation_file.insert(0,"FastSimulation/Configuration/MixingModule_Full2Fast.prepareDigiRecoMixing")
 
 		mixingDict.pop('file')
 		if not "DATAMIX" in self.stepMap.keys(): # when DATAMIX is present, pileup_input refers to pre-mixed GEN-RAW
@@ -1001,6 +1016,7 @@ class ConfigBuilder(object):
             self.RECODefaultCFF="Configuration/StandardSequences/ReconstructionCosmics_cff"
 	    self.SKIMDefaultCFF="Configuration/StandardSequences/SkimsCosmics_cff"
             self.EVTCONTDefaultCFF="Configuration/EventContent/EventContentCosmics_cff"
+            self.VALIDATIONDefaultCFF="Configuration/StandardSequences/ValidationCosmics_cff"
             self.DQMOFFLINEDefaultCFF="DQMOffline/Configuration/DQMOfflineCosmics_cff"
             if self._options.isMC==True:
                 self.DQMOFFLINEDefaultCFF="DQMOffline/Configuration/DQMOfflineCosmicsMC_cff"
@@ -1119,9 +1135,6 @@ class ConfigBuilder(object):
 	if self._options.pileup=='default':
 		from Configuration.StandardSequences.Mixing import MixingDefaultKey
 		self._options.pileup=MixingDefaultKey
-		# temporary, until digi-reco mixing becomes standard in RelVals
-		if self._options.fast:
-			self._options.pileup="GEN_" + MixingDefaultKey
 		
 
 	#not driven by a default cff anymore
@@ -1253,6 +1266,7 @@ class ConfigBuilder(object):
 
     def prepare_ALCA(self, sequence = None, workflow = 'full'):
         """ Enrich the process with alca streams """
+	print 'DL enriching',workflow,sequence
         alcaConfig=self.loadDefaultOrSpecifiedCFF(sequence,self.ALCADefaultCFF)
         sequence = sequence.split('.')[-1]
 
@@ -1262,12 +1276,14 @@ class ConfigBuilder(object):
 	from Configuration.AlCa.autoAlca import autoAlca
 	# support @X from autoAlca.py, and recursion support: i.e T0:@Mu+@EG+...
 	self.expandMapping(alcaList,autoAlca)
-	
+	self.AlCaPaths=[]
         for name in alcaConfig.__dict__:
             alcastream = getattr(alcaConfig,name)
             shortName = name.replace('ALCARECOStream','')
             if shortName in alcaList and isinstance(alcastream,cms.FilteredStream):
 	        output = self.addExtraStream(name,alcastream, workflow = workflow)
+		self.executeAndRemember('process.ALCARECOEventContent.outputCommands.extend(process.OutALCARECO'+shortName+'_noDrop.outputCommands)')
+		self.AlCaPaths.append(shortName)
 		if 'DQM' in alcaList:
 			if not self._options.inlineEventContent and hasattr(self.process,name):
 				self.executeAndRemember('process.' + name + '.outputCommands.append("keep *_MEtoEDMConverter_*_*")')
@@ -1447,7 +1463,11 @@ class ConfigBuilder(object):
         self.loadDefaultOrSpecifiedCFF(sequence,self.DIGIDefaultCFF)
 
 	self.loadAndRemember("SimGeneral/MixingModule/digi_noNoise_cfi")
-	self.executeAndRemember("process.mix.digitizers = cms.PSet(process.theDigitizersNoNoise)")
+
+        if sequence == 'pdigi_valid':
+		self.executeAndRemember("process.mix.digitizers = cms.PSet(process.theDigitizersNoNoiseValid)")
+	else:
+		self.executeAndRemember("process.mix.digitizers = cms.PSet(process.theDigitizersNoNoise)")
 
 	self.scheduleSequence(sequence.split('.')[-1],'digitisation_step')
         return
@@ -1601,6 +1621,12 @@ class ConfigBuilder(object):
 	    #self.renameInputTagsInSequence(sequence)
             return
 
+    def prepare_PATFILTER(self, sequence=None):
+            self.loadAndRemember("PhysicsTools/PatAlgos/slimming/metFilterPaths_cff")
+	    from PhysicsTools.PatAlgos.slimming.metFilterPaths_cff import allMetFilterPaths
+	    for filt in allMetFilterPaths:
+		    self.schedule.append(getattr(self.process,'Flag_'+filt))
+
     def prepare_L1HwVal(self, sequence = 'L1HwVal'):
         ''' Enrich the schedule with L1 HW validation '''
         self.loadDefaultOrSpecifiedCFF(sequence,self.L1HwValDefaultCFF)
@@ -1669,6 +1695,7 @@ class ConfigBuilder(object):
 
     def prepare_PAT(self, sequence = "miniAOD"):
         ''' Enrich the schedule with PAT '''
+	self.prepare_PATFILTER(self)
         self.loadDefaultOrSpecifiedCFF(sequence,self.PATDefaultCFF,1) #this is unscheduled
 	if not self._options.runUnscheduled:	
 		raise Exception("MiniAOD production can only run in unscheduled mode, please run cmsDriver with --runUnscheduled")
@@ -1949,9 +1976,8 @@ class ConfigBuilder(object):
 
     def prepare_HARVESTING(self, sequence = None):
         """ Enrich the process with harvesting step """
-        self.EDMtoMECFF='Configuration/StandardSequences/EDMtoME'+self._options.harvesting+'_cff'
-        self.loadAndRemember(self.EDMtoMECFF)
-	self.scheduleSequence('EDMtoME','edmtome_step')
+        self.DQMSaverCFF='Configuration/StandardSequences/DQMSaver'+self._options.harvesting+'_cff'
+        self.loadAndRemember(self.DQMSaverCFF)
 
         harvestingConfig = self.loadDefaultOrSpecifiedCFF(sequence,self.HARVESTINGDefaultCFF)
         sequence = sequence.split('.')[-1]
@@ -2049,7 +2075,7 @@ class ConfigBuilder(object):
 
 
         outputModuleCfgCode=""
-        if not 'HARVESTING' in self.stepMap.keys() and not 'SKIM' in self.stepMap.keys() and not 'ALCAHARVEST' in self.stepMap.keys() and not 'ALCAOUTPUT' in self.stepMap.keys() and self.with_output:
+        if not 'HARVESTING' in self.stepMap.keys() and not 'ALCAHARVEST' in self.stepMap.keys() and not 'ALCAOUTPUT' in self.stepMap.keys() and self.with_output:
                 outputModuleCfgCode=self.addOutput()
 
         self.addCommon()
@@ -2127,31 +2153,30 @@ class ConfigBuilder(object):
                 self.pythonCfgCode += dumpPython(self.process,endpath)
 
         # dump the schedule
-	if not self._options.runUnscheduled:	
-		self.pythonCfgCode += "\n# Schedule definition\n"
-		result = "process.schedule = cms.Schedule("
+	self.pythonCfgCode += "\n# Schedule definition\n"
+	result = "process.schedule = cms.Schedule("
 
-                # handling of the schedule
-		self.process.schedule = cms.Schedule()
-		for item in self.schedule:
-			if not isinstance(item, cms.Schedule):
-				self.process.schedule.append(item)
-			else:
-				self.process.schedule.extend(item)
-
-		if hasattr(self.process,"HLTSchedule"):
-			beforeHLT = self.schedule[:self.schedule.index(self.process.HLTSchedule)]
-			afterHLT = self.schedule[self.schedule.index(self.process.HLTSchedule)+1:]
-			pathNames = ['process.'+p.label_() for p in beforeHLT]
-			result += ','.join(pathNames)+')\n'
-			result += 'process.schedule.extend(process.HLTSchedule)\n'
-			pathNames = ['process.'+p.label_() for p in afterHLT]
-			result += 'process.schedule.extend(['+','.join(pathNames)+'])\n'
+        # handling of the schedule
+	self.process.schedule = cms.Schedule()
+	for item in self.schedule:
+		if not isinstance(item, cms.Schedule):
+			self.process.schedule.append(item)
 		else:
-			pathNames = ['process.'+p.label_() for p in self.schedule]
-			result ='process.schedule = cms.Schedule('+','.join(pathNames)+')\n'
+			self.process.schedule.extend(item)
 
-	        self.pythonCfgCode += result
+	if hasattr(self.process,"HLTSchedule"):
+		beforeHLT = self.schedule[:self.schedule.index(self.process.HLTSchedule)]
+		afterHLT = self.schedule[self.schedule.index(self.process.HLTSchedule)+1:]
+		pathNames = ['process.'+p.label_() for p in beforeHLT]
+		result += ','.join(pathNames)+')\n'
+		result += 'process.schedule.extend(process.HLTSchedule)\n'
+		pathNames = ['process.'+p.label_() for p in afterHLT]
+		result += 'process.schedule.extend(['+','.join(pathNames)+'])\n'
+	else:
+		pathNames = ['process.'+p.label_() for p in self.schedule]
+		result ='process.schedule = cms.Schedule('+','.join(pathNames)+')\n'
+
+	self.pythonCfgCode += result
 
 	if self._options.nThreads is not "1":
 		self.pythonCfgCode +="\n"
@@ -2189,13 +2214,23 @@ class ConfigBuilder(object):
 		#this is not supporting the blacklist at this point since I do not understand it
 		self.pythonCfgCode+="#do not add changes to your config after this point (unless you know what you are doing)\n"
 		self.pythonCfgCode+="from FWCore.ParameterSet.Utilities import convertToUnscheduled\n"
-
 		self.pythonCfgCode+="process=convertToUnscheduled(process)\n"
+
+		from FWCore.ParameterSet.Utilities import convertToUnscheduled
+		self.process=convertToUnscheduled(self.process)
 
 		#now add the unscheduled stuff
 		for module in self.importsUnsch:
 			self.process.load(module)
 			self.pythonCfgCode += ("process.load('"+module+"')\n")
+
+		#and clean the unscheduled stuff	
+		self.pythonCfgCode+="from FWCore.ParameterSet.Utilities import cleanUnscheduled\n"
+		self.pythonCfgCode+="process=cleanUnscheduled(process)\n"
+
+		from FWCore.ParameterSet.Utilities import cleanUnscheduled
+		self.process=cleanUnscheduled(self.process)
+
 
 	self.pythonCfgCode += self.addCustomise(1)
 

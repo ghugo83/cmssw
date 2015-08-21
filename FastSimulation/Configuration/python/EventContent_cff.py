@@ -110,7 +110,8 @@ FastSimRecoTrackerRECO = cms.PSet(
 #AOD content
 FastSimRecoTrackerAOD = cms.PSet(
     outputCommands = cms.untracked.vstring('keep recoTracks_iterativeGSWithMaterialTracks_*_*',
-                                           'keep *_generalTracksBeforeMixing_*_*')
+                                           #'keep *_generalTracksBeforeMixing_*_*'
+                                           )
 )
 
 
@@ -277,12 +278,11 @@ FASTPUEventContent = cms.PSet(
                                            'keep *_MuonSimHits_*_*',
                                            'drop *_famosSimHits_VertexTypes_*',    
                                            'keep *_generalTracksBeforeMixing_*_*',
+                                           'drop *_generalTracksBeforeMixing_MVAValues_*',
+                                           'drop *_generalTracksBeforeMixing_QualityMasks_*',
                                            'keep edmHepMCProduct_generator_*_*',
                                            )
     )
 
 
-PREMIXEventContent.outputCommands.extend(
-    ['keep *_mix_generalTracks_*',
-     'keep *_mix_generalTracksMVAVals_*']
-    )
+PREMIXEventContent.outputCommands.extend(['keep *_mix_generalTracks_*'])

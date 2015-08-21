@@ -9,9 +9,10 @@ HiTrackingRegionFactoryFromSTAMuonsBlock.MuonSrc= cms.InputTag("standAloneMuons"
 
 HiTrackingRegionFactoryFromSTAMuonsBlock.MuonTrackingRegionBuilder.UseVertex      = True
 
-HiTrackingRegionFactoryFromSTAMuonsBlock.MuonTrackingRegionBuilder.UseFixedRegion = True
-HiTrackingRegionFactoryFromSTAMuonsBlock.MuonTrackingRegionBuilder.Phi_fixed      = 0.2
-HiTrackingRegionFactoryFromSTAMuonsBlock.MuonTrackingRegionBuilder.Eta_fixed      = 0.1
+HiTrackingRegionFactoryFromSTAMuonsBlock.MuonTrackingRegionBuilder.Phi_fixed     = True
+HiTrackingRegionFactoryFromSTAMuonsBlock.MuonTrackingRegionBuilder.Eta_fixed     = True
+HiTrackingRegionFactoryFromSTAMuonsBlock.MuonTrackingRegionBuilder.DeltaPhi      = 0.2
+HiTrackingRegionFactoryFromSTAMuonsBlock.MuonTrackingRegionBuilder.DeltaEta      = 0.1
 
 ###################################
 from RecoTracker.IterativeTracking.PixelLessStep_cff import *
@@ -21,6 +22,7 @@ hiRegitMuPixelLessStepClusters = RecoTracker.IterativeTracking.PixelLessStep_cff
     oldClusterRemovalInfo = cms.InputTag("hiRegitMuMixedTripletStepClusters"),
     trajectories     = cms.InputTag("hiRegitMuMixedTripletStepTracks"),
     overrideTrkQuals = cms.InputTag('hiRegitMuMixedTripletStepSelector','hiRegitMuMixedTripletStep'),
+    trackClassifier       = cms.InputTag(''),
     TrackQuality          = cms.string('tight')
 )
 
@@ -38,9 +40,9 @@ hiRegitMuPixelLessStepSeedLayers.MTEC.skipClusters = cms.InputTag('hiRegitMuPixe
 hiRegitMuPixelLessStepSeeds     = RecoTracker.IterativeTracking.PixelLessStep_cff.pixelLessStepSeeds.clone()
 hiRegitMuPixelLessStepSeeds.RegionFactoryPSet                                           = HiTrackingRegionFactoryFromSTAMuonsBlock.clone()
 hiRegitMuPixelLessStepSeeds.ClusterCheckPSet.doClusterCheck                             = False # do not check for max number of clusters pixel or strips
-hiRegitMuPixelLessStepSeeds.RegionFactoryPSet.MuonTrackingRegionBuilder.EscapePt        = 2.0
+hiRegitMuPixelLessStepSeeds.RegionFactoryPSet.MuonTrackingRegionBuilder.Pt_min          = 2.0
 hiRegitMuPixelLessStepSeeds.RegionFactoryPSet.MuonTrackingRegionBuilder.DeltaR          = 0.2 # default = 0.2
-hiRegitMuPixelLessStepSeeds.RegionFactoryPSet.MuonTrackingRegionBuilder.DeltaZ_Region   = 0.2 # this give you the length 
+hiRegitMuPixelLessStepSeeds.RegionFactoryPSet.MuonTrackingRegionBuilder.DeltaZ          = 0.2 # this give you the length 
 hiRegitMuPixelLessStepSeeds.RegionFactoryPSet.MuonTrackingRegionBuilder.Rescale_Dz      = 4. # max(DeltaZ_Region,Rescale_Dz*vtx->zError())
 hiRegitMuPixelLessStepSeeds.OrderedHitsFactoryPSet.SeedingLayers                        = 'hiRegitMuPixelLessStepSeedLayers'
 
@@ -69,12 +71,12 @@ hiRegitMuPixelLessStepTrackCandidates        =  RecoTracker.IterativeTracking.Pi
 
 # fitting: feed new-names
 hiRegitMuPixelLessStepTracks                 = RecoTracker.IterativeTracking.PixelLessStep_cff.pixelLessStepTracks.clone(
-    AlgorithmName = cms.string('iter8'),
+    AlgorithmName = cms.string('undefAlgorithm'),
     src                 = 'hiRegitMuPixelLessStepTrackCandidates'
 )
 
 import RecoTracker.FinalTrackSelectors.multiTrackSelector_cfi
-hiRegitMuPixelLessStepSelector               = RecoTracker.IterativeTracking.PixelLessStep_cff.pixelLessStepSelector.clone( 
+hiRegitMuPixelLessStepSelector               = RecoTracker.FinalTrackSelectors.multiTrackSelector_cfi.multiTrackSelector.clone( 
     src                 ='hiRegitMuPixelLessStepTracks',
     vertices            = cms.InputTag("hiSelectedVertex"),
     trackSelectors = cms.VPSet(  

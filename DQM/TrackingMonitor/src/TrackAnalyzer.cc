@@ -344,6 +344,17 @@ void TrackAnalyzer::bookHistosForHitProperties(DQMStore::IBooker & ibooker) {
           NhitVsPhi_HighPurity = ibooker.bookProfile(histname+CategoryName,histname+CategoryName,PhiBin,PhiMin,PhiMax,-0.5,39.5,"");
           NhitVsPhi_HighPurity->setAxisTitle("Track #phi",1);
           NhitVsPhi_HighPurity->setAxisTitle("Number of Valid RecHits in each Track",2);
+
+	  histname = "Ptdist_HighPurity_";
+          Ptdist_HighPurity = ibooker.book1D(histname+CategoryName,histname+CategoryName,150,0,50.);
+          Ptdist_HighPurity->setAxisTitle("p_{T} (GeV/c)",1);
+          Ptdist_HighPurity->setAxisTitle("Number of Tracks",2);
+
+          histname = "dNhitdPt_HighPurity_";
+          dNhitdPt_HighPurity = ibooker.bookProfile(histname+CategoryName,histname+CategoryName,150,0,25.,-0.5,39.5,"");
+          dNhitdPt_HighPurity->setAxisTitle("p_{T} (GeV/c)",1);
+          dNhitdPt_HighPurity->setAxisTitle("N_{hit}",2);
+	  
         }
 
 
@@ -479,7 +490,7 @@ void TrackAnalyzer::bookHistosForBeamSpot(DQMStore::IBooker & ibooker) {
       
       histname = "DistanceOfClosestApproachToBSVsPhi_";
       DistanceOfClosestApproachToBSVsPhi = ibooker.bookProfile(histname+CategoryName,histname+CategoryName, PhiBin, PhiMin, PhiMax, DxyBin, DxyMin, DxyMax,"");
-      DistanceOfClosestApproachToBSVsPhi->getTH1()->SetBit(TH1::kCanRebin);
+      DistanceOfClosestApproachToBSVsPhi->getTH1()->SetCanExtend(TH1::kAllAxes);
       DistanceOfClosestApproachToBSVsPhi->setAxisTitle("Track #phi",1);
       DistanceOfClosestApproachToBSVsPhi->setAxisTitle("Track d_{xy} wrt beam spot (cm)",2);
       
@@ -540,7 +551,7 @@ void TrackAnalyzer::bookHistosForBeamSpot(DQMStore::IBooker & ibooker) {
       
       histname = "DistanceOfClosestApproachToPVVsPhi_";
       DistanceOfClosestApproachToPVVsPhi = ibooker.bookProfile(histname+CategoryName,histname+CategoryName, PhiBin, PhiMin, PhiMax, DxyBin, DxyMin, DxyMax,"");
-      DistanceOfClosestApproachToPVVsPhi->getTH1()->SetBit(TH1::kCanRebin);
+      DistanceOfClosestApproachToPVVsPhi->getTH1()->SetCanExtend(TH1::kAllAxes);
       DistanceOfClosestApproachToPVVsPhi->setAxisTitle("Track #phi",1);
       DistanceOfClosestApproachToPVVsPhi->setAxisTitle("Track d_{xy} wrt beam spot (cm)",2);
       
@@ -574,7 +585,7 @@ void TrackAnalyzer::bookHistosForBeamSpot(DQMStore::IBooker & ibooker) {
 	
 	histname = "TESTDistanceOfClosestApproachToBSVsPhi_";
 	TESTDistanceOfClosestApproachToBSVsPhi = ibooker.bookProfile(histname+CategoryName,histname+CategoryName, PhiBin, PhiMin, PhiMax, DxyBin, DxyMin, DxyMax,"");
-	TESTDistanceOfClosestApproachToBSVsPhi->getTH1()->SetBit(TH1::kCanRebin);
+	TESTDistanceOfClosestApproachToBSVsPhi->getTH1()->SetCanExtend(TH1::kAllAxes);
 	TESTDistanceOfClosestApproachToBSVsPhi->setAxisTitle("Track #phi",1);
 	TESTDistanceOfClosestApproachToBSVsPhi->setAxisTitle("Track d_{xy} wrt beam spot (cm)",2);
 	
@@ -625,7 +636,7 @@ void TrackAnalyzer::bookHistosForBeamSpot(DQMStore::IBooker & ibooker) {
 	
 	histname = "DistanceOfClosestApproachVsPhi_";
 	DistanceOfClosestApproachVsPhi = ibooker.bookProfile(histname+CategoryName,histname+CategoryName, PhiBin, PhiMin, PhiMax, DxyMin,DxyMax,"");
-	DistanceOfClosestApproachVsPhi->getTH1()->SetBit(TH1::kCanRebin);
+	DistanceOfClosestApproachVsPhi->getTH1()->SetCanExtend(TH1::kAllAxes);
 	DistanceOfClosestApproachVsPhi->setAxisTitle("Track #phi",1);
 	DistanceOfClosestApproachVsPhi->setAxisTitle("Track d_{xy} wrt (0,0,0) (cm)",2);
       }
@@ -780,6 +791,10 @@ void TrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
            if(xyerr2 > 0) transDCAsig = track.dxy(pv.position())/xyerr2;	   
 	   LongDCASig->Fill(longDCAsig);
 	   TransDCASig->Fill(transDCAsig);
+
+
+	   
+
 	   if(track.quality(reco::TrackBase::qualityByName(qualityString_)) ==1)
 	     {
 	       dNdEta_HighPurity->Fill(track.eta());
@@ -787,6 +802,8 @@ void TrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	       dNdPt_HighPurity->Fill(track.ptError()/track.pt());
 	       NhitVsEta_HighPurity->Fill(track.eta(),track.numberOfValidHits());
 	       NhitVsPhi_HighPurity->Fill(track.phi(),track.numberOfValidHits());
+	       dNhitdPt_HighPurity->Fill(track.pt(),track.numberOfValidHits());
+	       Ptdist_HighPurity->Fill(track.pt());
 	     }//end of high quality tracks requirement
         }
 
@@ -806,8 +823,8 @@ void TrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
         GlobalVector dir(track.px(), track.py(), track.pz());
         std::pair<bool, Measurement1D> ip3d = IPTools::signedImpactParameter3D(transTrack, dir, pv);
         std::pair<bool, Measurement1D> ip2d = IPTools::signedTransverseImpactParameter(transTrack, dir, pv);
-        sip3dToPV->Fill(ip3d.second.value() / ip3d.second.error());
-        sip2dToPV->Fill(ip2d.second.value() / ip2d.second.error());
+        if(ip3d.first) sip3dToPV->Fill(ip3d.second.value() / ip3d.second.error());
+        if(ip2d.first) sip2dToPV->Fill(ip2d.second.value() / ip2d.second.error());
         sipDxyToPV->Fill(track.dxy(pv.position())/track.dxyError());
         sipDzToPV->Fill(track.dz(pv.position())/track.dzError());
       }
@@ -1265,7 +1282,7 @@ void TrackAnalyzer::fillHistosForState(const edm::EventSetup& iSetup, const reco
       tkmes.NumberOfValidRecHitsPerTrackVsPhi->Fill(phi,    nValidRecHits);
       tkmes.NumberOfValidRecHitsPerTrackVsEta->Fill(eta,    nValidRecHits);
 
-      int nLayers = track.hitPattern().stripLayersWithMeasurement();
+      int nLayers = track.hitPattern().trackerLayersWithMeasurement();
       // rec layers 
       tkmes.NumberOfLayersPerTrackVsPhi->Fill(phi,     nLayers);
       if (doThetaPlots_) {

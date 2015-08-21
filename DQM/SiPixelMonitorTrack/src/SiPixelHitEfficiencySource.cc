@@ -24,7 +24,7 @@
 #include "DataFormats/TrackCandidate/interface/TrackCandidateCollection.h"
 
 #include "DataFormats/TrackerCommon/interface/TrackerTopology.h"
-#include "Geometry/Records/interface/IdealGeometryRecord.h"
+#include "Geometry/Records/interface/TrackerTopologyRcd.h"
 #include "DataFormats/SiPixelDetId/interface/PixelSubdetector.h"
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/SiPixelDetId/interface/PixelBarrelName.h"
@@ -190,7 +190,7 @@ void SiPixelHitEfficiencySource::bookHistograms(DQMStore::IBooker & iBooker, edm
 void SiPixelHitEfficiencySource::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   edm::ESHandle<TrackerTopology> tTopoHandle;
-  iSetup.get<IdealGeometryRecord>().get(tTopoHandle);
+  iSetup.get<TrackerTopologyRcd>().get(tTopoHandle);
   const TrackerTopology *pTT = tTopoHandle.product();
 
   edm::Handle<reco::VertexCollection> vertexCollectionHandle;
@@ -641,7 +641,7 @@ float y=predTrajState.globalPosition().y();
 	    ++nmissing;
 		
 	  if (pxd!=theSiPixelStructure.end() && passedFiducial && (isHitValid || isHitMissing))
-	    (*pxd).second->fill(ltp, isHitValid, modOn, ladOn, layOn, phiOn, bladeOn, diskOn, ringOn); 	
+	    (*pxd).second->fill(pTT,ltp, isHitValid, modOn, ladOn, layOn, phiOn, bladeOn, diskOn, ringOn); 	
 
 	  //}//end if (persistent hit exists and is pixel hit)
 	  

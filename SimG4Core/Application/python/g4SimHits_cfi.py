@@ -38,7 +38,7 @@ common_UseLuminosity = cms.PSet(
     DelivLuminosity = cms.double(5000.)
 )
 
-g4SimHits = cms.EDProducer("OscarProducer",
+g4SimHits = cms.EDProducer("OscarMTProducer",
     NonBeamEvent = cms.bool(False),
     G4EventManagerVerbosity = cms.untracked.int32(0),
     G4StackManagerVerbosity = cms.untracked.int32(0),
@@ -50,7 +50,12 @@ g4SimHits = cms.EDProducer("OscarProducer",
     StorePhysicsTables = cms.bool(False),
     RestorePhysicsTables = cms.bool(False),
     CheckOverlap = cms.untracked.bool(False),
-    G4Commands = cms.vstring(''),
+    G4CheckOverlap = cms.PSet(
+        Tolerance = cms.untracked.double(0.0),
+        Resolution = cms.untracked.int32(10000),
+        NodeNames = cms.vstring('World')
+    ),
+    G4Commands = cms.vstring(),
     FileNameField = cms.untracked.string(''),
     FileNameGDML = cms.untracked.string(''),
     FileNameRegions = cms.untracked.string(''),
@@ -358,7 +363,7 @@ g4SimHits = cms.EDProducer("OscarProducer",
     CastorSD = cms.PSet(
         useShowerLibrary               = cms.bool(True),
         minEnergyInGeVforUsingSLibrary = cms.double(1.0),
-        nonCompensationFactor          = cms.double(0.85),
+        nonCompensationFactor          = cms.double(0.817),
         Verbosity                      = cms.untracked.int32(0)
     ),
     CastorShowerLibrary =  cms.PSet(

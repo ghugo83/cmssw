@@ -27,13 +27,14 @@ from HLTriggerOffline.Exotica.analyses.hltExoticaHT_cff                import HT
 from HLTriggerOffline.Exotica.analyses.hltExoticaJetNoBptx_cff         import JetNoBptxPSet
 from HLTriggerOffline.Exotica.analyses.hltExoticaMuonNoBptx_cff        import MuonNoBptxPSet
 from HLTriggerOffline.Exotica.analyses.hltExoticaDisplacedMuEG_cff     import DisplacedMuEGPSet
+from HLTriggerOffline.Exotica.analyses.hltExoticaDisplacedMuJet_cff    import DisplacedMuJetPSet
 from HLTriggerOffline.Exotica.analyses.hltExoticaDisplacedDimuon_cff   import DisplacedDimuonPSet
 from HLTriggerOffline.Exotica.analyses.hltExoticaDisplacedL2Dimuon_cff import DisplacedL2DimuonPSet
 from HLTriggerOffline.Exotica.analyses.hltExoticaPureMET_cff           import PureMETPSet
 from HLTriggerOffline.Exotica.analyses.hltExoticaMETplusTrack_cff      import METplusTrackPSet
 from HLTriggerOffline.Exotica.analyses.hltExoticaMonojet_cff           import MonojetPSet
 from HLTriggerOffline.Exotica.analyses.hltExoticaMonojetBackup_cff     import MonojetBackupPSet
-from HLTriggerOffline.Exotica.analyses.hltExoticaDisplacedDimuonDijet_cff import DisplacedDimuonDijetPSet
+#from HLTriggerOffline.Exotica.analyses.hltExoticaDisplacedDimuonDijet_cff import DisplacedDimuonDijetPSet
 from HLTriggerOffline.Exotica.analyses.hltExoticaEleMu_cff             import EleMuPSet
 from HLTriggerOffline.Exotica.analyses.hltExoticaHTDisplacedJets_cff   import HTDisplacedJetsPSet
 from HLTriggerOffline.Exotica.analyses.hltExoticaPhotonMET_cff         import PhotonMETPSet
@@ -63,13 +64,14 @@ hltExoticaValidator = cms.EDAnalyzer(
         "MuonNoBptx",
         "HT",
         "DisplacedMuEG",
+        "DisplacedMuJet",
         "DisplacedDimuon",
         "DisplacedL2Dimuon",
         "PureMET",
         "METplusTrack",
         "Monojet",
         "MonojetBackup",
-        "DisplacedDimuonDijet",
+        #"DisplacedDimuonDijet",
         "EleMu",
         "PhotonMET",
         "HTDisplacedJets"
@@ -113,7 +115,7 @@ hltExoticaValidator = cms.EDAnalyzer(
     # Syntax in the strings: valid syntax of the StringCutObjectSelector class
 
     # --- Muons
-    Mu_genCut     = cms.string("pt > 10 && abs(eta) < 2.4 && abs(pdgId) == 13 && isPromptFinalState"),
+    Mu_genCut     = cms.string("pt > 10 && abs(eta) < 2.4 && abs(pdgId) == 13 && (isPromptFinalState || isDirectPromptTauDecayProductFinalState)"),
     Mu_recCut     = cms.string("pt > 10 && abs(eta) < 2.4 && isPFMuon && (isTrackerMuon || isGlobalMuon)"), # Loose Muon
     
     # --- MuonTracks
@@ -123,7 +125,7 @@ hltExoticaValidator = cms.EDAnalyzer(
     refittedStandAloneMuons_recCut  = cms.string("pt > 10 && abs(eta) < 2.4"), 
 
     # --- Electrons
-    Ele_genCut      = cms.string("pt > 10 && (abs(eta)<1.444 || abs(eta)>1.566) && abs(eta)<2.5 && abs(pdgId) == 11 && isPromptFinalState"),
+    Ele_genCut      = cms.string("pt > 10 && (abs(eta)<1.444 || abs(eta)>1.566) && abs(eta)<2.5 && abs(pdgId) == 11 && (isPromptFinalState||isDirectPromptTauDecayProductFinalState)"),
     Ele_recCut      = cms.string(
         "pt > 10 && (abs(eta)<1.444 || abs(eta)>1.566) && abs(eta)< 2.5 "+
         " && hadronicOverEm < 0.05 "+ #&& eSuperClusterOverP > 0.5 && eSuperClusterOverP < 1.5 "+
@@ -210,6 +212,7 @@ hltExoticaValidator = cms.EDAnalyzer(
     JetNoBptx        = JetNoBptxPSet,
     MuonNoBptx       = MuonNoBptxPSet,
     DisplacedMuEG    = DisplacedMuEGPSet,
+    DisplacedMuJet   = DisplacedMuJetPSet,
     DisplacedDimuon  = DisplacedDimuonPSet,
     DisplacedL2Dimuon = DisplacedL2DimuonPSet,
     PureMET          = PureMETPSet,                                 
@@ -217,7 +220,7 @@ hltExoticaValidator = cms.EDAnalyzer(
     Monojet          = MonojetPSet,
     MonojetBackup    = MonojetBackupPSet,
     HT               = HTPSet,
-    DisplacedDimuonDijet = DisplacedDimuonDijetPSet,
+    #DisplacedDimuonDijet = DisplacedDimuonDijetPSet,
     EleMu            = EleMuPSet,
     PhotonMET        = PhotonMETPSet,
     HTDisplacedJets  = HTDisplacedJetsPSet 

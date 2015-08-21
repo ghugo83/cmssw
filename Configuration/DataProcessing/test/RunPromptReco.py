@@ -20,12 +20,15 @@ class RunPromptReco:
         self.scenario = None
         self.writeRECO = False
         self.writeAOD = False
+        self.writeMINIAOD = False
 	self.writeDQM = False
 	self.writeDQMIO = False
         self.noOutput = False
         self.globalTag = None
         self.inputLFN = None
         self.alcaRecos = None
+        self.PhysicsSkims = None
+        self.dqmSeq = None
 
     def __call__(self):
         if self.scenario == None:
@@ -56,6 +59,9 @@ class RunPromptReco:
         if self.writeAOD:
             dataTiers.append("AOD")
             print "Configuring to Write out AOD"
+        if self.writeMINIAOD:
+            dataTiers.append("MINIAOD")
+            print "Configuring to Write out MiniAOD"
 	if self.writeDQM:
             dataTiers.append("DQM")
             print "Configuring to Write out DQM"
@@ -81,6 +87,11 @@ class RunPromptReco:
 
                 if self.alcaRecos:
                     kwds['skims'] = self.alcaRecos
+                if self.PhysicsSkims:
+                    kwds['PhysicsSkims'] = self.PhysicsSkims
+
+                if self.dqmSeq:
+                    kwds['dqmSeq'] = self.dqmSeq
 
             process = scenario.promptReco(self.globalTag, **kwds)
 
@@ -107,8 +118,8 @@ class RunPromptReco:
 
 
 if __name__ == '__main__':
-    valid = ["scenario=", "reco", "aod", "dqm", "dqmio", "no-output",
-             "global-tag=", "lfn=", "alcarecos=" ]
+    valid = ["scenario=", "reco", "aod", "miniaod","dqm", "dqmio", "no-output",
+             "global-tag=", "lfn=", "alcarecos=", "PhysicsSkims=", "dqmSeq=" ]
     usage = \
 """
 RunPromptReco.py <options>
@@ -117,18 +128,23 @@ Where options are:
  --scenario=ScenarioName
  --reco (to enable RECO output)
  --aod (to enable AOD output)
+ --miniaod (to enable MiniAOD output)
  --dqm (to enable DQM output)
  --dqmio (to enable DQMIO output)
  --no-output (create config with no output, overrides other settings)
  --global-tag=GlobalTag
  --lfn=/store/input/lfn
- --alcarecos=plus_seprated_list
+ --alcarecos=alcareco_plus_seprated_list
+ --PhysicsSkims=skim_plus_seprated_list
+ --dqmSeq=dqmSeq_plus_separated_list
 
 Example:
 
 python RunPromptReco.py --scenario=cosmics --reco --aod --dqmio --global-tag GLOBALTAG --lfn=/store/whatever --alcarecos=TkAlCosmics0T+MuAlGlobalCosmics
 
 python RunPromptReco.py --scenario=pp --reco --aod --dqmio --global-tag GLOBALTAG --lfn=/store/whatever --alcarecos=TkAlMinBias+SiStripCalMinBias
+
+python RunPromptReco.py --scenario=ppRun2 --reco --aod --dqmio --global-tag GLOBALTAG --lfn=/store/whatever --alcarecos=TkAlMinBias+SiStripCalMinBias --PhysicsSkims=@SingleMuon
 
 """
     try:
@@ -145,13 +161,15 @@ python RunPromptReco.py --scenario=pp --reco --aod --dqmio --global-tag GLOBALTA
         if opt == "--scenario":
             recoinator.scenario = arg
         if opt == "--reco":
-            recoinator.writeReco = True
+            recoinator.writeRECO = True
         if opt == "--aod":
-            recoinator.writeAod = True
+            recoinator.writeAOD = True
+        if opt == "--miniaod":
+            recoinator.writeMINIAOD = True
         if opt == "--dqm":
-            recoinator.writeDqm = True
+            recoinator.writeDQM = True
         if opt == "--dqmio":
-            recoinator.writeDqmio = True
+            recoinator.writeDQMIO = True
         if opt == "--no-output":
             recoinator.noOutput = True
         if opt == "--global-tag":
@@ -160,5 +178,9 @@ python RunPromptReco.py --scenario=pp --reco --aod --dqmio --global-tag GLOBALTA
             recoinator.inputLFN = arg
         if opt == "--alcarecos":
             recoinator.alcaRecos = [ x for x in arg.split('+') if len(x) > 0 ]
+        if opt == "--PhysicsSkims":
+            recoinator.PhysicsSkims = [ x for x in arg.split('+') if len(x) > 0 ]
+        if opt == "--dqmSeq":
+            recoinator.dqmSeq = [ x for x in arg.split('+') if len(x) > 0 ]
 
     recoinator()
