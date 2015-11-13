@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("ICALIB")
 process.load("Configuration.StandardSequences.Services_cff")
-process.load('Configuration.Geometry.GeometryExtendedPhase2TkBE5D_cff')
+process.load('Configuration.Geometry.GeometryExtended2023Muon_cff')  
 
 process.load('Geometry.TrackerGeometryBuilder.trackerSLHCGeometry_cfi')
 process.trackerSLHCGeometry.applyAlignment = cms.bool(False)

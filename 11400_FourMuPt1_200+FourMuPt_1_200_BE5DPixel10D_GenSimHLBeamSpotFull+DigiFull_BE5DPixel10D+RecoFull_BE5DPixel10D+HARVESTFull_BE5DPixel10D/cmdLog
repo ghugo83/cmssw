@@ -1,0 +1,16 @@
+
+# in: /afs/cern.ch/user/g/ghugo/CMSSW_6_2_SLHCDEV_X_2015-11-08-2300/src going to execute cd 11400_FourMuPt1_200+FourMuPt_1_200_BE5DPixel10D_GenSimHLBeamSpotFull+DigiFull_BE5DPixel10D+RecoFull_BE5DPixel10D+HARVESTFull_BE5DPixel10D
+ cmsDriver.py FourMuPt_1_200_cfi  --conditions auto:upgradePLS3 -n 10 --eventcontent FEVTDEBUG --relval 10000,100 -s GEN,SIM --datatier GEN-SIM --beamspot HLLHC --customise SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_phase2_BE5DPixel10D --geometry ExtendedPhase2TkBE5DPixel10D --magField 38T_PostLS1 --fileout file:step1.root  > step1_FourMuPt1_200+FourMuPt_1_200_BE5DPixel10D_GenSimHLBeamSpotFull+DigiFull_BE5DPixel10D+RecoFull_BE5DPixel10D+HARVESTFull_BE5DPixel10D.log  2>&1
+ 
+
+# in: /afs/cern.ch/user/g/ghugo/CMSSW_6_2_SLHCDEV_X_2015-11-08-2300/src going to execute cd 11400_FourMuPt1_200+FourMuPt_1_200_BE5DPixel10D_GenSimHLBeamSpotFull+DigiFull_BE5DPixel10D+RecoFull_BE5DPixel10D+HARVESTFull_BE5DPixel10D
+ cmsDriver.py step2  --conditions auto:upgradePLS3 -n 10 --eventcontent FEVTDEBUGHLT -s DIGI:pdigi_valid,L1,DIGI2RAW --datatier GEN-SIM-DIGI-RAW --customise SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_phase2_BE5DPixel10D --geometry ExtendedPhase2TkBE5DPixel10D --magField 38T_PostLS1 --filein file:step1.root  --fileout file:step2.root  > step2_FourMuPt1_200+FourMuPt_1_200_BE5DPixel10D_GenSimHLBeamSpotFull+DigiFull_BE5DPixel10D+RecoFull_BE5DPixel10D+HARVESTFull_BE5DPixel10D.log  2>&1
+ 
+
+# in: /afs/cern.ch/user/g/ghugo/CMSSW_6_2_SLHCDEV_X_2015-11-08-2300/src going to execute cd 11400_FourMuPt1_200+FourMuPt_1_200_BE5DPixel10D_GenSimHLBeamSpotFull+DigiFull_BE5DPixel10D+RecoFull_BE5DPixel10D+HARVESTFull_BE5DPixel10D
+ cmsDriver.py step3  --conditions auto:upgradePLS3 -n 10 --eventcontent FEVTDEBUGHLT,DQM -s RAW2DIGI,L1Reco,RECO,VALIDATION,DQM --datatier GEN-SIM-RECO,DQMIO --customise SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_phase2_BE5DPixel10D --geometry ExtendedPhase2TkBE5DPixel10D --magField 38T_PostLS1 --filein file:step2.root  --fileout file:step3.root  > step3_FourMuPt1_200+FourMuPt_1_200_BE5DPixel10D_GenSimHLBeamSpotFull+DigiFull_BE5DPixel10D+RecoFull_BE5DPixel10D+HARVESTFull_BE5DPixel10D.log  2>&1
+ 
+
+# in: /afs/cern.ch/user/g/ghugo/CMSSW_6_2_SLHCDEV_X_2015-11-08-2300/src going to execute cd 11400_FourMuPt1_200+FourMuPt_1_200_BE5DPixel10D_GenSimHLBeamSpotFull+DigiFull_BE5DPixel10D+RecoFull_BE5DPixel10D+HARVESTFull_BE5DPixel10D
+ cmsDriver.py step4  --conditions auto:upgradePLS3 --scenario pp -s HARVESTING:validationHarvesting+dqmHarvesting --filetype DQM --customise SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_phase2_BE5DPixel10D --geometry ExtendedPhase2TkBE5DPixel10D --mc  --magField 38T_PostLS1 -n 100  --filein file:step3_inDQM.root --fileout file:step4.root  > step4_FourMuPt1_200+FourMuPt_1_200_BE5DPixel10D_GenSimHLBeamSpotFull+DigiFull_BE5DPixel10D+RecoFull_BE5DPixel10D+HARVESTFull_BE5DPixel10D.log  2>&1
+ 
