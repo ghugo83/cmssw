@@ -173,28 +173,32 @@ void MaterialBudgetData::dataEndTrack( const G4Track* aTrack )
   // rr
 
 
+  // Now that the track is computed, let's add up the relevant information for this track.
+  // Of course, for sustainability, this should not be done that way ;p This is just very quick coding to get the plots I wanted :)
 
 
-  auto lastActiveHitTV = std::find_if(materialAlongTrackRad.rbegin(), materialAlongTrackRad.rend(), [&](std::pair<G4String, float> hit) { return (hit.first == "SenSi"); } );
-  if (lastActiveHitTV != materialAlongTrackRad.rend()) {
-    for (auto& it = lastActiveHitTV; lastActiveHitTV != materialAlongTrackRad.rend(); it++) {
+  // Find the last active hit along the track.
+  auto lastActiveHitRad = std::find_if(materialAlongTrackRad.rbegin(), materialAlongTrackRad.rend(), [&](std::pair<G4String, float> hit) { return (hit.first == "SenSi"); } );
+  // Calculate the track material budget.
+  if (lastActiveHitRad != materialAlongTrackRad.rend()) { // Add up all the material budget which is within tracking volume only
+    for (auto& it = lastActiveHitRad; lastActiveHitRad != materialAlongTrackRad.rend(); it++) {
       if ((*it).first != "Air") {
 	theTotalMB += (*it).second;
 	theOtherMB += (*it).second;
       }
     }
   }
-  else {
+  else { // Case where the track has no active hit, or no hit at all ! This should be unnecessary (values should still be 0. since construction), but better safe than sorry.
     theTotalMB = 0.;
     theOtherMB = 0.;
   }
-  theAirMB = 0.;
+  theAirMB = 0.; // I do not want the Air material budget.
 
 
-
-  auto lastActiveHitTVIntera = std::find_if(materialAlongTrackIntera.rbegin(), materialAlongTrackIntera.rend(), [&](std::pair<G4String, float> hit) { return (hit.first == "SenSi"); } );
-  if (lastActiveHitTVIntera != materialAlongTrackIntera.rend()) {
-    for (auto& it = lastActiveHitTVIntera; lastActiveHitTVIntera != materialAlongTrackIntera.rend(); it++) {
+  // Same, but for hadronic interaction length.
+  auto lastActiveHitIntera = std::find_if(materialAlongTrackIntera.rbegin(), materialAlongTrackIntera.rend(), [&](std::pair<G4String, float> hit) { return (hit.first == "SenSi"); } );
+  if (lastActiveHitIntera != materialAlongTrackIntera.rend()) {
+    for (auto& it = lastActiveHitIntera; lastActiveHitIntera != materialAlongTrackIntera.rend(); it++) {
       if ((*it).first != "Air") {
 	theTotalIL += (*it).second;
 	theOtherIL += (*it).second;
@@ -206,14 +210,6 @@ void MaterialBudgetData::dataEndTrack( const G4Track* aTrack )
     theOtherIL = 0.;
   }
   theAirIL = 0.;
-
-
-
-
-
-
-
-
 }
 
 void MaterialBudgetData::dataPerStep( const G4Step* aStep )
@@ -298,7 +294,7 @@ void MaterialBudgetData::dataPerStep( const G4Step* aStep )
 			    << std::endl;
   
   //fill data per step
-  if( allStepsToTree ){
+  if( allStepsToTree ){  // Ideally this should be modified as well, but I do not care because this is totally independent.
     if( stepN > MAXNUMBERSTEPS ) stepN = MAXNUMBERSTEPS - 1;
     theDmb[theStepN] = dmb; 
     theDil[theStepN] = dil; 
@@ -480,7 +476,7 @@ void MaterialBudgetData::dataPerStep( const G4Step* aStep )
   thePVcopyNo = pv->GetCopyNo();
   theRadLen = radlen;
   theIntLen = intlen;
-  //theTotalMB += dmb;
+  //theTotalMB += dmb;  // The material budget is not computed on the fly anymore, since I cannot know yet whether the hit is within the tracking volume or not ! I need all hits of the track.
   //theTotalIL += dil;
   materialAlongTrackRad.push_back(std::make_pair( materialName , dmb));
   materialAlongTrackIntera.push_back(std::make_pair( materialName , dil));
