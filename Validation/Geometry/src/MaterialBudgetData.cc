@@ -103,6 +103,9 @@ void MaterialBudgetData::dataStartTrack( const G4Track* aTrack )
   
   if( myMaterialBudgetCategorizer == 0) myMaterialBudgetCategorizer = new MaterialBudgetCategorizer;
   
+  materialAlongTrackRad.clear();
+  materialAlongTrackIntera.clear();
+
   theStepN=0;
   theTotalMB=0;
   theTotalIL=0;
@@ -168,6 +171,49 @@ void MaterialBudgetData::dataEndTrack( const G4Track* aTrack )
   std::cout << " Material Budget: Radiation Length   " << "G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()" << " eta " << theEta << " phi " << thePhi << " total X " << theTotalMB << " SUP " << theSupportMB << " SEN " << theSensitiveMB << " CAB " << theCablesMB << " COL " << theCoolingMB << " ELE " << theElectronicsMB << " other " << theOtherMB << " Air " << theAirMB << std::endl;
   std::cout << " Material Budget: Interaction Length " << "G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()" << " eta " << theEta << " phi " << thePhi << " total L " << theTotalIL << " SUP " << theSupportIL << " SEN " << theSensitiveIL << " CAB " << theCablesIL << " COL " << theCoolingIL << " ELE " << theElectronicsIL << " other " << theOtherIL << " Air " << theAirIL << std::endl;
   // rr
+
+
+
+
+  auto lastActiveHitTV = std::find_if(materialAlongTrackRad.rbegin(), materialAlongTrackRad.rend(), [&](std::pair<G4String, float> hit) { return (hit.first == "SenSi"); } );
+  if (lastActiveHitTV != materialAlongTrackRad.rend()) {
+    for (auto& it = lastActiveHitTV; lastActiveHitTV != materialAlongTrackRad.rend(); it++) {
+      if ((*it).first != "Air") {
+	theTotalMB += (*it).second;
+	theOtherMB += (*it).second;
+      }
+    }
+  }
+  else {
+    theTotalMB = 0.;
+    theOtherMB = 0.;
+  }
+  theAirMB = 0.;
+
+
+
+  auto lastActiveHitTVIntera = std::find_if(materialAlongTrackIntera.rbegin(), materialAlongTrackIntera.rend(), [&](std::pair<G4String, float> hit) { return (hit.first == "SenSi"); } );
+  if (lastActiveHitTVIntera != materialAlongTrackIntera.rend()) {
+    for (auto& it = lastActiveHitTVIntera; lastActiveHitTVIntera != materialAlongTrackIntera.rend(); it++) {
+      if ((*it).first != "Air") {
+	theTotalIL += (*it).second;
+	theOtherIL += (*it).second;
+      }
+    }
+  }
+  else {
+    theTotalIL = 0.;
+    theOtherIL = 0.;
+  }
+  theAirIL = 0.;
+
+
+
+
+
+
+
+
 }
 
 void MaterialBudgetData::dataPerStep( const G4Step* aStep )
@@ -178,6 +224,7 @@ void MaterialBudgetData::dataPerStep( const G4Step* aStep )
   assert(prePoint);
   assert(postPoint);
   G4Material * theMaterialPre = prePoint->GetMaterial();
+  G4Material * theMaterialPost = postPoint->GetMaterial();
   assert(theMaterialPre);
   
   CLHEP::Hep3Vector prePos  = prePoint->GetPosition();
@@ -190,17 +237,19 @@ void MaterialBudgetData::dataPerStep( const G4Step* aStep )
   G4double density = theMaterialPre->GetDensity() / densityConvertionFactor; // always g/cm3
   
   G4String materialName = theMaterialPre->GetName();
-  std::cout << " steplen " << steplen << " radlen " << radlen << " mb " << steplen/radlen << " mate " << theMaterialPre->GetName() << std::endl;
+  G4String materialNamePost = theMaterialPost->GetName();
+  // std::cout << " steplen " << steplen << " radlen " << radlen << " mb " << steplen/radlen << " mate " << theMaterialPre->GetName() << std::endl;
 
   G4String volumeName = aStep->GetPreStepPoint()->GetTouchable()->GetVolume(0)->GetLogicalVolume()->GetName();
-  std::cout << " Volume "   << volumeName << "\n";
-  std::cout << " Material " << materialName << "\n";
+  std::cout << " VOLUME = "   << volumeName << std::endl;
+  std::cout << " MATERIAL = " << materialName << std::endl;
+  std::cout << " MATERIAL POST = " << materialNamePost << std::endl;
   
   // instantiate the categorizer
   assert(myMaterialBudgetCategorizer);
   int volumeID   = myMaterialBudgetCategorizer->volume( volumeName );
   int materialID = myMaterialBudgetCategorizer->material( materialName );
-  std::cout << "Volume ID " << volumeID << " and material ID " << materialID << "\n";
+  //std::cout << "Volume ID " << volumeID << " and material ID " << materialID << "\n";
 
   // FIXME: Both volume ID and material ID are zeros, so this part is not executed leaving all
   // values as zeros. 
@@ -214,8 +263,8 @@ void MaterialBudgetData::dataPerStep( const G4Step* aStep )
       theOtherFractionMB       = myMaterialBudgetCategorizer->x0fraction(materialName).at(5);
       theAirFractionMB         = myMaterialBudgetCategorizer->x0fraction(materialName).at(6);
     
-      if(theOtherFractionMB!=0) std::cout << " material found with no category " << materialName 
-					  << " in volume " << volumeName << std::endl;
+      //if(theOtherFractionMB!=0) std::cout << " material found with no category " << materialName 
+      //<< " in volume " << volumeName << std::endl;
       theSupportFractionIL     = myMaterialBudgetCategorizer->l0fraction(materialName).at(0);
       theSensitiveFractionIL   = myMaterialBudgetCategorizer->l0fraction(materialName).at(1);
       theCablesFractionIL      = myMaterialBudgetCategorizer->l0fraction(materialName).at(2);
@@ -223,8 +272,8 @@ void MaterialBudgetData::dataPerStep( const G4Step* aStep )
       theElectronicsFractionIL = myMaterialBudgetCategorizer->l0fraction(materialName).at(4);
       theOtherFractionIL       = myMaterialBudgetCategorizer->l0fraction(materialName).at(5);
       theAirFractionIL         = myMaterialBudgetCategorizer->l0fraction(materialName).at(6);
-      if(theOtherFractionIL!=0) std::cout << " material found with no category " << materialName 
-					  << " in volume " << volumeName << std::endl;
+      //if(theOtherFractionIL!=0) std::cout << " material found with no category " << materialName 
+      //<< " in volume " << volumeName << std::endl;
     }
   //  if(theOtherFractionMB!=0) LogDebug("MaterialBudgetData") << " material found with no category " << name 
   //				 << " in volume " << lv->GetName();
@@ -431,8 +480,10 @@ void MaterialBudgetData::dataPerStep( const G4Step* aStep )
   thePVcopyNo = pv->GetCopyNo();
   theRadLen = radlen;
   theIntLen = intlen;
-  theTotalMB += dmb;
-  theTotalIL += dil;
+  //theTotalMB += dmb;
+  //theTotalIL += dil;
+  materialAlongTrackRad.push_back(std::make_pair( materialName , dmb));
+  materialAlongTrackIntera.push_back(std::make_pair( materialName , dil));
   
   // rr
   theSupportMB     += (dmb * theSupportFractionMB);
@@ -440,15 +491,15 @@ void MaterialBudgetData::dataPerStep( const G4Step* aStep )
   theCablesMB      += (dmb * theCablesFractionMB);
   theCoolingMB     += (dmb * theCoolingFractionMB);
   theElectronicsMB += (dmb * theElectronicsFractionMB);
-  theOtherMB       += (dmb * theOtherFractionMB);
-  theAirMB         += (dmb * theAirFractionMB);
+  //theOtherMB       += (dmb * theOtherFractionMB);
+  //theAirMB         += (dmb * theAirFractionMB);
   theSupportIL     += (dil * theSupportFractionIL);
   theSensitiveIL   += (dil * theSensitiveFractionIL);
   theCablesIL      += (dil * theCablesFractionIL);
   theCoolingIL     += (dil * theCoolingFractionIL);
   theElectronicsIL += (dil * theElectronicsFractionIL);
-  theOtherIL       += (dil * theOtherFractionIL);
-  theAirIL         += (dil * theAirFractionIL);
+  //theOtherIL       += (dil * theOtherFractionIL);
+  //theAirIL         += (dil * theAirFractionIL);
   // rr
   
   theStepN++;

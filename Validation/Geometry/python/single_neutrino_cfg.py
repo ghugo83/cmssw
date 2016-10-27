@@ -13,6 +13,7 @@ process.load("Configuration.EventContent.EventContent_cff")
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(10000)
+    #input = cms.untracked.int32(50000)
 )
 
 process.load("IOMC.RandomEngine.IOMC_cff")
@@ -28,8 +29,8 @@ process.source = cms.Source("EmptySource",
 process.generator = cms.EDProducer("FlatRandomEGunProducer",
     PGunParameters = cms.PSet(
         PartID = cms.vint32(14),
-        MinEta = cms.double(-5.5),
-        MaxEta = cms.double(5.5),
+        MinEta = cms.double(0.0),
+        MaxEta = cms.double(4.0),
         MinPhi = cms.double(-3.14159265359),
         MaxPhi = cms.double(3.14159265359),
         MinE   = cms.double(10.0),

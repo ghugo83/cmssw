@@ -291,6 +291,8 @@ public:
   }
 
  private:
+  std::vector<std::pair<G4String, float> > materialAlongTrackRad;
+  std::vector<std::pair<G4String, float> > materialAlongTrackIntera;
   float theTotalMB, theEta, thePhi;
   // rr
   float thePt;

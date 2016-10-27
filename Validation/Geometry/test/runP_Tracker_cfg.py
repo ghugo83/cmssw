@@ -21,15 +21,15 @@ process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 
 _LABELS2COMPS = {'BeamPipe': 'BEAM',
                  'Tracker': 'Tracker',
-                 'PixBar':  'PixelBarrel',
-                 'PixFwd':  ['PixelForwardZplus', 'PixelForwardZminus', 'PixelForward'],
+                 'PixBar':  'Phase1PixelBarrel',
+                 'PixFwd':  'Phase2PixelEndcap',
                  'PixFwdMinus': 'PixelForwardZminus',
                  'PixFwdPlus':  'PixelForwardZplus',
                  'TIB':         'TIB',
-                 'TOB':         'TOB',
+                 'TOB':         'Phase2OTBarrel',
                  'TIDB':        'TIDB',
                  'TIDF':        'TIDF',
-                 'TEC':         'TEC',
+                 'TEC':         'Phase2OTForward',
                  'InnerServices': ['TIBTIDServicesF', 'TIBTIDServicesB'],
                  'TkStrct': ['TrackerOuterCylinder', 'TrackerBulkhead']}
 
@@ -71,6 +71,9 @@ _components = _LABELS2COMPS[options.label]
 #
 if options.geom == 'phaseI':
   process.load("Configuration.Geometry.GeometryExtended2017_cff")
+elif options.geom == 'phaseII':
+  #process.load('Configuration.Geometry.GeometryExtended2023D1Reco_cff')
+  process.load("Configuration.Geometry.GeometryExtended2023D4_cff")
 elif options.geom == '2017NewFPix':
   process.load("Configuration.Geometry.GeometryExtended2017NewFPix_cff")
 elif options.geom == 'run2':
@@ -118,7 +121,7 @@ process.g4SimHits.Watchers = cms.VPSet(cms.PSet(
         TreeFile = cms.string('None'), ## is NOT requested
 
         StopAfterProcess = cms.string('None'),
-#        TextFile = cms.string("matbdg_Tracker.txt")
-        TextFile = cms.string('None')
+       #TextFile = cms.string("matbdg_Tracker.txt")
+       TextFile = cms.string('None')
     )
 ))
