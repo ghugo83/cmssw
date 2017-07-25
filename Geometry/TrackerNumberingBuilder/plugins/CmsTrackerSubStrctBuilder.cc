@@ -5,6 +5,7 @@
 #include "DataFormats/DetId/interface/DetId.h"
 #include "Geometry/TrackerNumberingBuilder/plugins/CmsTrackerLayerBuilder.h"
 #include "Geometry/TrackerNumberingBuilder/plugins/CmsTrackerOTLayerBuilder.h"
+#include "Geometry/TrackerNumberingBuilder/plugins/CmsTrackerITLayerBuilder.h"
 #include "Geometry/TrackerNumberingBuilder/plugins/CmsTrackerWheelBuilder.h"
 #include "Geometry/TrackerNumberingBuilder/plugins/CmsTrackerDiskBuilder.h"  
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -20,21 +21,24 @@ CmsTrackerSubStrctBuilder::buildComponent( DDFilteredView& fv, GeometricDet* g, 
 {
   CmsTrackerLayerBuilder theCmsTrackerLayerBuilder;
   CmsTrackerOTLayerBuilder theCmsTrackerOTLayerBuilder;
+  CmsTrackerITLayerBuilder theCmsTrackerITLayerBuilder;
   CmsTrackerWheelBuilder theCmsTrackerWheelBuilder;
   CmsTrackerDiskBuilder  theCmsTrackerDiskBuilder;  
 
   GeometricDet * subdet = new GeometricDet( &fv, theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( s, &fv )));
   switch( theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( s, &fv )))
     {
+      // BARREL
     case GeometricDet::layer:
       theCmsTrackerLayerBuilder.build(fv,subdet,s);      
       break;
-      //case GeometricDet::Phase2ITBarrelLayer:
-      //theCmsTrackerOTLayerBuilder.build(fv,subdet,s);      
-      //break;
+    case GeometricDet::Phase2ITBarrelLayer:
+      theCmsTrackerITLayerBuilder.build(fv,subdet,s);      
+      break;
     case GeometricDet::OTPhase2Layer:
       theCmsTrackerOTLayerBuilder.build(fv,subdet,s);      
       break;
+      // ENDCAPS
     case GeometricDet::wheel:
       theCmsTrackerWheelBuilder.build(fv,subdet,s);      
       break;
@@ -60,6 +64,9 @@ CmsTrackerSubStrctBuilder::sortNS( DDFilteredView& fv, GeometricDet* det )
   case GeometricDet::layer:
     std::sort( comp.begin(), comp.end(), LessR());
     break;	
+  case GeometricDet::Phase2ITBarrelLayer:
+    std::sort( comp.begin(), comp.end(), LessR());
+    break; 
   case GeometricDet::OTPhase2Layer:
     std::sort( comp.begin(), comp.end(), LessR());
     break;  

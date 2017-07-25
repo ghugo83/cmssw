@@ -23,7 +23,6 @@ note: see OT613_200_IT501_2017_07_20.cfg for full config files
 <PartSelector path="//pixel:Layer3"/>
 <PartSelector path="//pixel:Layer4"/>
 <Parameter name="TkDDDStructure" value="Phase2ITBarrelLayer"/>
-<!--<Parameter name="TkDDDStructure" value="OTPhase2Layer"/>-->
 </SpecPar>
 <SpecPar name="Phase2PixelBarrelRodPar">
 <PartSelector path="//pixel:RodUnflipped1"/>
