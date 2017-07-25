@@ -25,23 +25,26 @@ CmsTrackerSubStrctBuilder::buildComponent( DDFilteredView& fv, GeometricDet* g, 
 
   GeometricDet * subdet = new GeometricDet( &fv, theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( s, &fv )));
   switch( theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( s, &fv )))
-  {
-  case GeometricDet::layer:
-    theCmsTrackerLayerBuilder.build(fv,subdet,s);      
-    break;
-  case GeometricDet::OTPhase2Layer:
-    theCmsTrackerOTLayerBuilder.build(fv,subdet,s);      
-    break;
-  case GeometricDet::wheel:
-    theCmsTrackerWheelBuilder.build(fv,subdet,s);      
-    break;
-  case GeometricDet::disk:    
-    theCmsTrackerDiskBuilder.build(fv,subdet,s);
-    break;
+    {
+    case GeometricDet::layer:
+      theCmsTrackerLayerBuilder.build(fv,subdet,s);      
+      break;
+      //case GeometricDet::Phase2ITBarrelLayer:
+      //theCmsTrackerOTLayerBuilder.build(fv,subdet,s);      
+      //break;
+    case GeometricDet::OTPhase2Layer:
+      theCmsTrackerOTLayerBuilder.build(fv,subdet,s);      
+      break;
+    case GeometricDet::wheel:
+      theCmsTrackerWheelBuilder.build(fv,subdet,s);      
+      break;
+    case GeometricDet::disk:    
+      theCmsTrackerDiskBuilder.build(fv,subdet,s);
+      break;
 
-  default:
-    edm::LogError("CmsTrackerSubStrctBuilder")<<" ERROR - I was expecting a Layer ,Wheel or Disk... I got a "<<ExtractStringFromDDD::getString(s,&fv);
-  }  
+    default:
+      edm::LogError("CmsTrackerSubStrctBuilder")<<" ERROR - I was expecting a Layer ,Wheel or Disk... I got a "<<ExtractStringFromDDD::getString(s,&fv);
+    }  
   
   g->addComponent(subdet);
 

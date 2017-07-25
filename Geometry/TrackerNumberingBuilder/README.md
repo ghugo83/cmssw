@@ -135,8 +135,9 @@ With this subdetector, the flat geometry is compatible using just the central ba
 |------|-----------|-----------|-----|----|-----|
 | _not used_ | 24 | 0x1 | 1 | | |
 | Layer | 20 | 0xF | 4 | pxbLayer(id) or layer(id) | increasing r |
-| Ladder | 12 | 0xFF | 8 | pxbLadder(id) | increasing phi |
-| Module | 2 | 0x3FF | 10 | pxbModule(id) | increasing z |
+| _subdetector part_ | 18| 0x3 | 2 | pxbSide(id) | 1=rings- 2=rings+ 3=barrel0|
+| Ladder | 10 | 0xFF | 8 | pxbRod(id) | increasing abs(z) (rings) or phi(barrel) |
+| Module | 2 | 0xFF | 8 | pxbModule(id) | increasing phi (rings) or z(barrel) |
 | _not used_ | 0 | 0x3 | 2 | | |
 
 * Subdetector 2: (`DetId::subDetId() == PixelSubdetector::PixelEndcap`): Phase2 Pixel Forward
