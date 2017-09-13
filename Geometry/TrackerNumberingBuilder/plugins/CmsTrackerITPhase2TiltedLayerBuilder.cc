@@ -1,4 +1,4 @@
-#include "Geometry/TrackerNumberingBuilder/plugins/CmsTrackerPixelPhase2LayerBuilder.h"
+#include "Geometry/TrackerNumberingBuilder/plugins/CmsTrackerITPhase2TiltedLayerBuilder.h"
 #include "DetectorDescription/Core/interface/DDFilteredView.h"
 #include "Geometry/TrackerNumberingBuilder/interface/GeometricDet.h"
 #include "Geometry/TrackerNumberingBuilder/plugins/ExtractStringFromDDD.h"
@@ -11,9 +11,9 @@
 
 #include <bitset>
 
-void CmsTrackerPixelPhase2LayerBuilder::buildComponent(DDFilteredView& fv, GeometricDet* g, std::string s){
+void CmsTrackerITPhase2TiltedLayerBuilder::buildComponent(DDFilteredView& fv, GeometricDet* g, std::string s){
 
-  LogTrace("DetConstruction") << " CmsTrackerPixelPhase2LayerBuilder::buildComponent ";
+  LogTrace("DetConstruction") << " CmsTrackerITPhase2TiltedLayerBuilder::buildComponent ";
   CmsTrackerLadderBuilder theCmsTrackerLadderBuilder;
   CmsTrackerPixelPhase2RingBuilder theCmsTrackerPixelPhase2RingBuilder;
 
@@ -26,13 +26,13 @@ void CmsTrackerPixelPhase2LayerBuilder::buildComponent(DDFilteredView& fv, Geome
     theCmsTrackerPixelPhase2RingBuilder.build( fv, subdet, s );
     break;
   default:
-    edm::LogError("CmsTrackerPixelPhase2LayerBuilder")<<" ERROR - I was expecting a ladder or a tilted ring, I got a "<<ExtractStringFromDDD::getString(s,&fv);
+    edm::LogError("CmsTrackerITPhase2TiltedLayerBuilder")<<" ERROR - I was expecting a ladder or a tilted ring, I got a "<<ExtractStringFromDDD::getString(s,&fv);
   }  
   g->addComponent(subdet);
 
 }
 
-void CmsTrackerPixelPhase2LayerBuilder::sortNS(DDFilteredView& fv, GeometricDet* det){
+void CmsTrackerITPhase2TiltedLayerBuilder::sortNS(DDFilteredView& fv, GeometricDet* det){
 
   GeometricDet::ConstGeometricDetContainer comp = det->components();
 
@@ -55,7 +55,7 @@ void CmsTrackerPixelPhase2LayerBuilder::sortNS(DDFilteredView& fv, GeometricDet*
         ringsPos.push_back(component);
       }
     } else {
-      edm::LogError("CmsTrackerPixelPhase2LayerBuilder")<<"ERROR - wrong SubDet to sort..... "<<det->components().front()->type();
+      edm::LogError("CmsTrackerITPhase2TiltedLayerBuilder")<<"ERROR - wrong SubDet to sort..... "<<det->components().front()->type();
     }
   }
       

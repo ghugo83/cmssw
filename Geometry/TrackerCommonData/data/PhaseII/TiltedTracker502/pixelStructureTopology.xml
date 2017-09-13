@@ -22,7 +22,7 @@ note: see OT613_200_IT502_2017_07_25.cfg for full config files
 <PartSelector path="//pixel:Layer2"/>
 <PartSelector path="//pixel:Layer3"/>
 <PartSelector path="//pixel:Layer4"/>
-<Parameter name="TkDDDStructure" value="PixelPhase2BarrelLayer"/>
+<Parameter name="TkDDDStructure" value="PixelPhase2TiltedBarrelLayer"/>
 </SpecPar>
 <SpecPar name="Phase2PixelBarrelRodPar">
 <PartSelector path="//pixel:RodUnflipped1"/>
@@ -33,7 +33,7 @@ note: see OT613_200_IT502_2017_07_25.cfg for full config files
 <PartSelector path="//pixel:RodFlipped3"/>
 <PartSelector path="//pixel:RodUnflipped4"/>
 <PartSelector path="//pixel:RodFlipped4"/>
-<Parameter name="TkDDDStructure" value="PixelPhase2BarrelLadder"/>
+<Parameter name="TkDDDStructure" value="PixelPhase2TiltedBarrelLadder"/>
 </SpecPar>
 <SpecPar name="InnerTrackerBarrelRingPar">
 <PartSelector path="//pixel:Ring4Layer1Minus"/>
@@ -98,7 +98,7 @@ note: see OT613_200_IT502_2017_07_25.cfg for full config files
 <PartSelector path="//pixel:Ring11Layer4Plus"/>
 <PartSelector path="//pixel:Ring12Layer4Plus"/>
 <PartSelector path="//pixel:Ring13Layer4Plus"/>
-<Parameter name="TkDDDStructure" value="PixelPhase2BarrelTiltedRing"/>
+<Parameter name="TkDDDStructure" value="PixelPhase2TiltedBarrelRing"/>
 </SpecPar>
 <SpecPar name="PixelPhase2EndcapSubDetPar">
 <PartSelector path="//pixfwd:Phase2PixelEndcap"/>
