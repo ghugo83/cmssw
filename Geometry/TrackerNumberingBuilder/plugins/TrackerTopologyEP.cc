@@ -42,11 +42,11 @@ void
 TrackerTopologyEP::fillParameters( const PTrackerParameters& ptp )
 {
   pxbVals_.layerStartBit_ = ptp.vitems[0].vpars[0];
-  //tobVals_.rod_fw_bwStartBit_= ptp.vitems[0].vpars[1];
+  //pxbVals_.rod_fw_bwStartBit_= ptp.vitems[0].vpars[1];  // TO DO: implement this and entirely view its consequences!
   pxbVals_.ladderStartBit_ = ptp.vitems[0].vpars[2];
   pxbVals_.moduleStartBit_ = ptp.vitems[0].vpars[3];
   pxbVals_.layerMask_ = ptp.vitems[0].vpars[4];
-  //tobVals_.rod_fw_bwMask_= ptp.vitems[0].vpars[5];
+  //pxbVals_.rod_fw_bwMask_= ptp.vitems[0].vpars[5]; // TO DO: implement this and entirely view its consequences!
   pxbVals_.ladderMask_ = ptp.vitems[0].vpars[6];
   pxbVals_.moduleMask_ = ptp.vitems[0].vpars[7];
   

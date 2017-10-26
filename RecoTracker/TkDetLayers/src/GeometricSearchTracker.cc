@@ -115,15 +115,7 @@ GeometricSearchTracker::idToLayer(const DetId& id) const
     break;
 
   case PixelSubdetector::PixelBarrel:
-    //std::cout << "id = " << id.rawId() << std::endl;
-   
-    //std::cout << "thePixelBarrelLayers.size() = " << thePixelBarrelLayers.size() << std::endl;
-    std::cout << "NEWWW" << theTrkTopo->print(id) << std::endl;
-    std::cout << "theTrkTopo->tobLayer(id) = " << theTrkTopo->tobLayer(id) << std::endl;
-
-
     return thePixelBarrelLayers[theTrkTopo->pxbLayer(id)-1];
-    //return thePixelBarrelLayers[theTrkTopo->tobLayer(id)-1];
     break;
 
   case PixelSubdetector::PixelEndcap:
