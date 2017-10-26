@@ -41,12 +41,14 @@ TrackerTopologyEP::produce( const TrackerTopologyRcd& iRecord )
 void
 TrackerTopologyEP::fillParameters( const PTrackerParameters& ptp )
 {
-  pxbVals_.layerStartBit_ = ptp.vitems[0].vpars[0]; // 16
-  pxbVals_.ladderStartBit_ = ptp.vitems[0].vpars[1]; // 8
-  pxbVals_.moduleStartBit_ = ptp.vitems[0].vpars[2]; // 2
-  pxbVals_.layerMask_ = ptp.vitems[0].vpars[3]; // 0xF
-  pxbVals_.ladderMask_ = ptp.vitems[0].vpars[4]; // 0xFF
-  pxbVals_.moduleMask_ = ptp.vitems[0].vpars[5]; // 0x3F
+  pxbVals_.layerStartBit_ = ptp.vitems[0].vpars[0];
+  //tobVals_.rod_fw_bwStartBit_= ptp.vitems[0].vpars[1];
+  pxbVals_.ladderStartBit_ = ptp.vitems[0].vpars[2];
+  pxbVals_.moduleStartBit_ = ptp.vitems[0].vpars[3];
+  pxbVals_.layerMask_ = ptp.vitems[0].vpars[4];
+  //tobVals_.rod_fw_bwMask_= ptp.vitems[0].vpars[5];
+  pxbVals_.ladderMask_ = ptp.vitems[0].vpars[6];
+  pxbVals_.moduleMask_ = ptp.vitems[0].vpars[7];
   
   pxfVals_.sideStartBit_ = ptp.vitems[1].vpars[0];
   pxfVals_.diskStartBit_ = ptp.vitems[1].vpars[1];
