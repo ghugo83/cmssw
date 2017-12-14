@@ -15,9 +15,9 @@ Scheme:
                                    0 <= phiSectorIdentifier <= 8
                                    There are 9 Phi-sectors in total, covering 40° each. 
                                    Phi angles are considered in CMS (XY) plane and counted from (X) axis.
-                                   Example: phiSectorIdentifier = 0 corresponds to the (0° 40°) PhiSector.
-                                            phiSectorIdentifier = 1 corresponds to the (40° 80°) PhiSector.
-                                            phiSectorIdentifier = 2 corresponds to the (80° 120°) PhiSector. 
+                                   Example: phiSectorIdentifier = 0 corresponds to the (0° 40°) Phi Sector.
+                                            phiSectorIdentifier = 1 corresponds to the (40° 80°) Phi Sector.
+                                            phiSectorIdentifier = 2 corresponds to the (80° 120°) Phi Sector. 
                                             
 * dtcSlot :                        int
                                    1 <= dtcSlot <= 12
@@ -28,6 +28,6 @@ Scheme:
 Example: dtcId = -73
 73 = 6 * 12 + 1.
 This DTC is connected to modules on the negative cabling side.
-phiSectorIdentifier = 6, ie the DTC covers the (240° 280°) Phi-sector.
+phiSectorIdentifier = 6, ie the DTC covers the (240° 280°) Phi Sector.
 dtcSlot = 1, ie the DTC is connected to PS modules (10 GB/s).
 
