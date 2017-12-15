@@ -182,6 +182,8 @@ class GeometricDet {
     return _container;
   }
 
+  void displayDet() const;
+
   /**
    * deepComponents() returns all the components below; please note that 
    * if the current GeometricDet is a leaf, it returns it!

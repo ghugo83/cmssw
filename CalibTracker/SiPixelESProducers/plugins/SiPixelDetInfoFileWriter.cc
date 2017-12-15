@@ -16,6 +16,67 @@
 #include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetUnit.h"
 
 
+
+
+
+
+#include "FWCore/Framework/interface/ESHandle.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
+
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "Geometry/CommonDetUnit/interface/TrackingGeometry.h"
+#include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
+#include "Geometry/TrackerNumberingBuilder/interface/GeometricDet.h"
+#include "Geometry/CommonTopologies/interface/PixelTopology.h"
+#include "Geometry/CommonTopologies/interface/StripTopology.h"
+#include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetType.h"
+#include "Geometry/TrackerGeometryBuilder/interface/StripGeomDetType.h"
+
+#include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetUnit.h"
+#include "DataFormats/GeometrySurface/interface/BoundSurface.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
+
+#include "Geometry/TrackerNumberingBuilder/interface/CmsTrackerDebugNavigator.h"
+#include "DataFormats/SiStripDetId/interface/StripSubdetector.h"
+#include "DataFormats/TrackerCommon/interface/TrackerTopology.h"
+#include "Geometry/Records/interface/IdealGeometryRecord.h"
+#include "Geometry/Records/interface/TrackerTopologyRcd.h"
+#include "Geometry/TrackerNumberingBuilder/interface/CmsTrackerStringToEnum.h"
+#include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
+#include "DetectorDescription/Core/interface/DDRoot.h"
+#include "DetectorDescription/Core/interface/DDExpandedView.h"
+#include "DetectorDescription/Core/interface/DDFilter.h"
+#include "DetectorDescription/Core/interface/DDFilteredView.h"
+#include "DetectorDescription/Core/interface/DDCompactView.h"
+#include "DetectorDescription/Core/interface/DDMaterial.h"
+
+// output
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <cmath>
+#include <bitset>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 using namespace cms;
 using namespace std;
 
@@ -42,6 +103,19 @@ void SiPixelDetInfoFileWriter::beginRun(const edm::Run &run , const edm::EventSe
   outputFile_.open(filePath_.c_str());
 
   if (outputFile_.is_open()){
+  
+  
+    // get the GeometricDet
+      edm::ESHandle<GeometricDet> rDD;
+      iSetup.get<IdealGeometryRecord>().get( rDD ); 
+
+     std::vector<const GeometricDet*> modules =  (*rDD).deepComponents();
+      for(unsigned int i=0; i<modules.size();i++){  
+        modules[i]->displayDet();
+      }
+
+  
+  
 
     edm::ESHandle<TrackerGeometry> pDD;
 
@@ -58,14 +132,15 @@ void SiPixelDetInfoFileWriter::beginRun(const edm::Run &run , const edm::EventSe
 
       if(mit!=nullptr){
 	nPixelDets++;
-      const PixelTopology & topol = mit->specificTopology();       
+      //const PixelTopology & topol = mit->specificTopology();       
       // Get the module sizes.
-      int nrows = topol.nrows();      // rows in x
-      int ncols = topol.ncolumns();   // cols in y      
-      uint32_t detid=(mit->geographicalId()).rawId();
+      //int nrows = topol.nrows();      // rows in x
+      //int ncols = topol.ncolumns();   // cols in y      
+      //uint32_t detid=(mit->geographicalId()).rawId();
       
       
-      outputFile_ << detid << " "<< ncols << " " << nrows << "\n";
+      //outputFile_ << detid << " "<< ncols << " " << nrows << "\n";
+      outputFile_ <<  "  "  << "\n"; 
       
       }
     }    

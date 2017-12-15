@@ -265,6 +265,18 @@ GeometricDet::GeometricDet ( const PGeometricDet::Item& onePGD, GeometricEnumTyp
  
 }
 
+
+void GeometricDet::displayDet() const {
+
+
+  std::cout << _geographicalID << ", " << _rho << ", " <<_trans.Z()  << ", "  << _phi *180. / M_PI << std::endl;
+
+}
+
+
+
+
+
 GeometricDet::ConstGeometricDetContainer GeometricDet::deepComponents() const {
   //
   // iterate on all the components ;)
