@@ -120,7 +120,7 @@ namespace edm {
             std::shared_ptr<ProcessConfiguration const> processConfiguration,
             PreallocationConfiguration const& allocations) {
     ParameterSet* main_input = params.getPSetForUpdate("@main_input");
-    if(main_input == 0) {
+    if(main_input == nullptr) {
       throw Exception(errors::Configuration)
         << "There must be exactly one source in the configuration.\n"
         << "It is missing (or there are sufficient syntax errors such that it is not recognized as the source)\n";
@@ -192,7 +192,7 @@ namespace edm {
 
     std::vector<std::string> loopers = params.getParameter<std::vector<std::string> >("@all_loopers");
 
-    if(loopers.size() == 0) {
+    if(loopers.empty()) {
       return vLooper;
     }
 
@@ -931,7 +931,8 @@ namespace edm {
       << "This likely indicates a bug in an input module or corrupted input or both\n";
   }
   
-  void EventProcessor::beginRun(ProcessHistoryID const& phid, RunNumber_t run) {
+  void EventProcessor::beginRun(ProcessHistoryID const& phid, RunNumber_t run, bool& globalBeginSucceeded) {
+    globalBeginSucceeded = false;
     RunPrincipal& runPrincipal = principalCache_.runPrincipal(phid, run);
     {
       SendSourceTerminationSignalIfException sentry(actReg_.get());
@@ -972,6 +973,7 @@ namespace edm {
         std::rethrow_exception(* (globalWaitTask->exceptionPtr()) );
       }
     }
+    globalBeginSucceeded = true;
     FDEBUG(1) << "\tbeginRun " << run << "\n";
     if(looper_) {
       looper_->doBeginRun(runPrincipal, es, &processContext_);
@@ -1002,8 +1004,13 @@ namespace edm {
     }
   }
 
-  void EventProcessor::endRun(ProcessHistoryID const& phid, RunNumber_t run, bool cleaningUpAfterException) {
+  void EventProcessor::endRun(ProcessHistoryID const& phid, RunNumber_t run, bool globalBeginSucceeded, bool cleaningUpAfterException) {
     RunPrincipal& runPrincipal = principalCache_.runPrincipal(phid, run);
+    runPrincipal.setAtEndTransition(true);
+    //We need to reset failed items since they might
+    // be set this time around
+    runPrincipal.resetFailedFromThisProcess();
+
     {
       SendSourceTerminationSignalIfException sentry(actReg_.get());
 
@@ -1021,7 +1028,7 @@ namespace edm {
       sentry.completedSuccessfully();
     }
     EventSetup const& es = esp_->eventSetup();
-    {
+    if(globalBeginSucceeded){
       //To wait, the ref count has to be 1+#streams
       auto streamLoopWaitTask = make_empty_waiting_task();
       streamLoopWaitTask->increment_ref_count();
@@ -1050,7 +1057,6 @@ namespace edm {
       auto globalWaitTask = make_empty_waiting_task();
       globalWaitTask->increment_ref_count();
 
-      runPrincipal.setAtEndTransition(true);
       typedef OccurrenceTraits<RunPrincipal, BranchActionGlobalEnd> Traits;
       endGlobalTransitionAsync<Traits>(WaitingTaskHolder(globalWaitTask.get()),
                                        *schedule_,
@@ -1070,7 +1076,8 @@ namespace edm {
     }
   }
 
-  void EventProcessor::beginLumi(ProcessHistoryID const& phid, RunNumber_t run, LuminosityBlockNumber_t lumi) {
+  void EventProcessor::beginLumi(ProcessHistoryID const& phid, RunNumber_t run, LuminosityBlockNumber_t lumi, bool& globalBeginSucceeded) {
+    globalBeginSucceeded = false;
     LuminosityBlockPrincipal& lumiPrincipal = principalCache_.lumiPrincipal(phid, run, lumi);
     {
       SendSourceTerminationSignalIfException sentry(actReg_.get());
@@ -1109,6 +1116,7 @@ namespace edm {
         std::rethrow_exception(* (globalWaitTask->exceptionPtr()) );
       }
     }
+    globalBeginSucceeded=true;
     FDEBUG(1) << "\tbeginLumi " << run << "/" << lumi << "\n";
     if(looper_) {
       looper_->doBeginLuminosityBlock(lumiPrincipal, es, &processContext_);
@@ -1139,8 +1147,13 @@ namespace edm {
     }
   }
 
-  void EventProcessor::endLumi(ProcessHistoryID const& phid, RunNumber_t run, LuminosityBlockNumber_t lumi, bool cleaningUpAfterException) {
+  void EventProcessor::endLumi(ProcessHistoryID const& phid, RunNumber_t run, LuminosityBlockNumber_t lumi, bool globalBeginSucceeded, bool cleaningUpAfterException) {
     LuminosityBlockPrincipal& lumiPrincipal = principalCache_.lumiPrincipal(phid, run, lumi);
+    lumiPrincipal.setAtEndTransition(true);
+    //We need to reset failed items since they might
+    // be set this time around
+    lumiPrincipal.resetFailedFromThisProcess();
+
     {
       SendSourceTerminationSignalIfException sentry(actReg_.get());
 
@@ -1159,7 +1172,7 @@ namespace edm {
       sentry.completedSuccessfully();
     }
     EventSetup const& es = esp_->eventSetup();
-    {
+    if(globalBeginSucceeded){
       //To wait, the ref count has to b 1+#streams
       auto streamLoopWaitTask = make_empty_waiting_task();
       streamLoopWaitTask->increment_ref_count();
@@ -1184,10 +1197,21 @@ namespace edm {
       //looper_->doStreamEndLuminosityBlock(schedule_->streamID(),lumiPrincipal, es);
     }
     {
-      lumiPrincipal.setAtEndTransition(true);
+      auto globalWaitTask = make_empty_waiting_task();
+      globalWaitTask->increment_ref_count();
+      
       typedef OccurrenceTraits<LuminosityBlockPrincipal, BranchActionGlobalEnd> Traits;
-      schedule_->processOneGlobal<Traits>(lumiPrincipal, es, cleaningUpAfterException);
-      for_all(subProcesses_, [&lumiPrincipal, &ts, cleaningUpAfterException](auto& subProcess){	subProcess.doEndLuminosityBlock(lumiPrincipal, ts, cleaningUpAfterException); });
+      endGlobalTransitionAsync<Traits>(WaitingTaskHolder(globalWaitTask.get()),
+                                       *schedule_,
+                                       lumiPrincipal,
+                                       ts,
+                                       es,
+                                       subProcesses_,
+                                       cleaningUpAfterException);
+      globalWaitTask->wait_for_all();
+      if(globalWaitTask->exceptionPtr() != nullptr) {
+        std::rethrow_exception(* (globalWaitTask->exceptionPtr()) );
+      }
     }
     FDEBUG(1) << "\tendLumi " << run << "/" << lumi << "\n";
     if(looper_) {
@@ -1425,8 +1449,17 @@ namespace edm {
 
   void EventProcessor::processEventAsync(WaitingTaskHolder iHolder,
                                          unsigned int iStreamIndex) {
+    tbb::task::spawn( *make_functor_task( tbb::task::allocate_root(), [=]() {
+      processEventAsyncImpl(iHolder, iStreamIndex);
+    }) );
+  }
+  
+  void EventProcessor::processEventAsyncImpl(WaitingTaskHolder iHolder,
+                                         unsigned int iStreamIndex) {
     auto pep = &(principalCache_.eventPrincipal(iStreamIndex));
     pep->setLuminosityBlockPrincipal(principalCache_.lumiPrincipalPtr());
+
+    ServiceRegistry::Operate operate(serviceToken_);
     Service<RandomNumberGenerator> rng;
     if(rng.isAvailable()) {
       Event ev(*pep, ModuleDescription(), nullptr);

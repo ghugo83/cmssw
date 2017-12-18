@@ -11,7 +11,6 @@
 		<Constant name="CMSZ1" value="450.0*m"/>
 		<Constant name="CMSZ2" value="26.0*m"/>
 	</ConstantsSection>
-	<!--
 	<SolidSection label="cmsextent.xml">
 		<Tubs name="CMStoZDC" rMin="[Rmin]" rMax="[CMSR2]" dz="56*m" startPhi="0*deg" deltaPhi="360*deg"/>
 		<Tubs name="ZDCtoFP420" rMin="[Rmin]" rMax="[CMSR2]" dz="120*m" startPhi="0*deg" deltaPhi="360*deg"/>
@@ -58,5 +57,4 @@
 			<Parameter name="ProdCutsForGamma" value="1*mm"/>
 		</SpecPar>
 	</SpecParSection>
-	-->
 </DDDefinition>

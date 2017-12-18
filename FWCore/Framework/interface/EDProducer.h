@@ -39,7 +39,7 @@ namespace edm {
     typedef EDProducer ModuleType;
 
     EDProducer ();
-    virtual ~EDProducer();
+    ~EDProducer() override;
 
     static void fillDescriptions(ConfigurationDescriptions& descriptions);
     static void prevalidate(ConfigurationDescriptions& descriptions);
@@ -47,6 +47,11 @@ namespace edm {
 
     // Warning: the returned moduleDescription will be invalid during construction
     ModuleDescription const& moduleDescription() const { return moduleDescription_; }
+    
+    static bool wantsGlobalRuns() {return true;}
+    static bool wantsGlobalLuminosityBlocks() {return true;}
+    static bool wantsStreamRuns() {return false;}
+    static bool wantsStreamLuminosityBlocks() {return false;};
 
   private:
     bool doEvent(EventPrincipal const& ep, EventSetup const& c,

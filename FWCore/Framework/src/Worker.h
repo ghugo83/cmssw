@@ -39,6 +39,7 @@ the worker is reset().
 #include "FWCore/ServiceRegistry/interface/PlaceInPathContext.h"
 #include "FWCore/ServiceRegistry/interface/ServiceRegistry.h"
 #include "FWCore/Concurrency/interface/SerialTaskQueueChain.h"
+#include "FWCore/Concurrency/interface/LimitedTaskQueue.h"
 #include "FWCore/Concurrency/interface/FunctorTask.h"
 #include "FWCore/Utilities/interface/Exception.h"
 #include "FWCore/Utilities/interface/ConvertException.h"
@@ -78,6 +79,34 @@ namespace edm {
   public:
     enum State { Ready, Pass, Fail, Exception };
     enum Types { kAnalyzer, kFilter, kProducer, kOutputModule};
+    struct TaskQueueAdaptor {
+      SerialTaskQueueChain* serial_ = nullptr;
+      LimitedTaskQueue* limited_ = nullptr;
+      
+      TaskQueueAdaptor() = default;
+      TaskQueueAdaptor(SerialTaskQueueChain* iChain): serial_(iChain) {}
+      TaskQueueAdaptor(LimitedTaskQueue* iLimited): limited_(iLimited) {}
+      
+      operator bool() { return serial_ != nullptr or limited_ != nullptr; }
+      
+      template <class F>
+      void push(F&& iF) {
+        if(serial_) {
+          serial_->push(iF);
+        } else {
+          limited_->push(iF);
+        }
+      }
+      template <class F>
+      void pushAndWait(F&& iF) {
+        if(serial_) {
+          serial_->pushAndWait(iF);
+        } else {
+          limited_->pushAndWait(iF);
+        }
+      }
+      
+    };
 
     Worker(ModuleDescription const& iMD, ExceptionToActionTable const* iActions);
     virtual ~Worker();
@@ -85,11 +114,25 @@ namespace edm {
     Worker(Worker const&) = delete; // Disallow copying and moving
     Worker& operator=(Worker const&) = delete; // Disallow copying and moving
 
+    virtual bool wantsGlobalRuns() const = 0;
+    virtual bool wantsGlobalLuminosityBlocks() const = 0;
+    virtual bool wantsStreamRuns() const = 0;
+    virtual bool wantsStreamLuminosityBlocks() const = 0;
+
     template <typename T>
     bool doWork(typename T::MyPrincipal const&, EventSetup const& c,
                 StreamID stream,
                 ParentContext const& parentContext,
                 typename T::Context const* context);
+    
+    void prePrefetchSelectionAsync(WaitingTask* task,
+                                      StreamID stream,
+                                      EventPrincipal const*);
+
+    void prePrefetchSelectionAsync(WaitingTask* task,
+                                   StreamID stream,
+                                   void const*) {assert(false);}
+
     template <typename T>
     void doWorkAsync(WaitingTask* task,
                      typename T::MyPrincipal const&, EventSetup const& c,
@@ -147,7 +190,7 @@ namespace edm {
     virtual void updateLookup(BranchType iBranchType,
                       ProductResolverIndexHelper const&) = 0;
     virtual void resolvePutIndicies(BranchType iBranchType,
-                                    std::unordered_multimap<std::string, edm::ProductResolverIndex> const& iIndicies) = 0;
+                                    std::unordered_multimap<std::string, std::tuple<TypeID const*, const char*, edm::ProductResolverIndex>> const& iIndicies) = 0;
 
     virtual void modulesWhoseProductsAreConsumed(std::vector<ModuleDescription const*>& modules,
                                                  ProductRegistry const& preg,
@@ -185,6 +228,8 @@ namespace edm {
     virtual std::string workerType() const = 0;
     virtual bool implDo(EventPrincipal const&, EventSetup const& c,
                         ModuleCallingContext const* mcc) = 0;
+    virtual void itemsToGetForSelection(std::vector<ProductResolverIndexAndSkipBit>&) const = 0;
+    virtual bool implNeedToRunSelection() const = 0;
     virtual bool implDoPrePrefetchSelection(StreamID id,
                                             EventPrincipal const& ep,
                                             ModuleCallingContext const* mcc) = 0;
@@ -236,7 +281,7 @@ namespace edm {
 
     virtual void implRegisterThinnedAssociations(ProductRegistry const&, ThinnedAssociationsHelper&) = 0;
     
-    virtual SerialTaskQueueChain* serializeRunModule() = 0;
+    virtual TaskQueueAdaptor serializeRunModule() = 0;
     
     static void exceptionContext(cms::Exception& ex,
                                  ModuleCallingContext const* mcc);
@@ -256,7 +301,7 @@ namespace edm {
     class TransitionIDValue : public TransitionIDValueBase {
     public:
       TransitionIDValue(T const& iP): p_(iP) {}
-      virtual std::string value() const override {
+      std::string value() const override {
         std::ostringstream iost;
         iost<<p_.id();
         return iost.str();
@@ -361,7 +406,7 @@ namespace edm {
             auto parentContext = m_parentContext;
             auto serviceToken = m_serviceToken;
             auto sContext = m_context;
-            queue->push( [worker, &principal, &es, streamID,parentContext,sContext, serviceToken]()
+            queue.push( [worker, &principal, &es, streamID,parentContext,sContext, serviceToken]()
             {
               //Need to make the services available
               ServiceRegistry::Operate guard(serviceToken);
@@ -456,10 +501,11 @@ namespace edm {
         //Signal sentry is handled by the module
         return iWorker->implDo(ep,es, mcc);
       }
-      static bool prePrefetchSelection(Worker* iWorker,StreamID id,
-                                       typename Arg::MyPrincipal const& ep,
-                                       ModuleCallingContext const* mcc) {
-        return iWorker->implDoPrePrefetchSelection(id,ep,mcc);
+      static bool wantsTransition(Worker const* iWorker) {
+        return true;
+      }      
+      static bool needToRunSelection( Worker const* iWorker) {
+        return iWorker->implNeedToRunSelection();
       }
     };
 
@@ -475,10 +521,11 @@ namespace edm {
         ModuleSignalSentry<Arg> cpp(actReg, context, mcc);
         return iWorker->implDoBegin(ep,es, mcc);
       }
-      static bool prePrefetchSelection(Worker* iWorker,StreamID id,
-                                       typename Arg::MyPrincipal const& ep,
-                                       ModuleCallingContext const* mcc) {
-        return true;
+      static bool wantsTransition(Worker const* iWorker) {
+        return iWorker->wantsGlobalRuns();
+      }
+      static bool needToRunSelection( Worker const* iWorker) {
+        return false;
       }
     };
     template<>
@@ -493,10 +540,11 @@ namespace edm {
         ModuleSignalSentry<Arg> cpp(actReg, context, mcc);
         return iWorker->implDoStreamBegin(id,ep,es, mcc);
       }
-      static bool prePrefetchSelection(Worker* iWorker,StreamID id,
-                                       typename Arg::MyPrincipal const& ep,
-                                       ModuleCallingContext const* mcc) {
-        return true;
+      static bool wantsTransition(Worker const* iWorker) {
+        return iWorker->wantsStreamRuns();
+      }
+      static bool needToRunSelection( Worker const* iWorker) {
+        return false;
       }
     };
     template<>
@@ -511,10 +559,11 @@ namespace edm {
         ModuleSignalSentry<Arg> cpp(actReg, context, mcc);
         return iWorker->implDoEnd(ep,es, mcc);
       }
-      static bool prePrefetchSelection(Worker* iWorker,StreamID id,
-                                       typename Arg::MyPrincipal const& ep,
-                                       ModuleCallingContext const* mcc) {
-        return true;
+      static bool wantsTransition(Worker const* iWorker) {
+        return iWorker->wantsGlobalRuns();
+      }
+      static bool needToRunSelection( Worker const* iWorker) {
+        return false;
       }
     };
     template<>
@@ -529,10 +578,11 @@ namespace edm {
         ModuleSignalSentry<Arg> cpp(actReg, context, mcc);
         return iWorker->implDoStreamEnd(id,ep,es, mcc);
       }
-      static bool prePrefetchSelection(Worker* iWorker,StreamID id,
-                                       typename Arg::MyPrincipal const& ep,
-                                       ModuleCallingContext const* mcc) {
-        return true;
+      static bool wantsTransition(Worker const* iWorker) {
+        return iWorker->wantsStreamRuns();
+      }
+      static bool needToRunSelection( Worker const* iWorker) {
+        return false;
       }
     };
 
@@ -548,11 +598,11 @@ namespace edm {
         ModuleSignalSentry<Arg> cpp(actReg, context, mcc);
         return iWorker->implDoBegin(ep,es, mcc);
       }
-
-      static bool prePrefetchSelection(Worker* iWorker,StreamID id,
-                                       typename Arg::MyPrincipal const& ep,
-                                       ModuleCallingContext const* mcc) {
-        return true;
+      static bool wantsTransition(Worker const* iWorker) {
+        return iWorker->wantsGlobalLuminosityBlocks();
+      }
+      static bool needToRunSelection( Worker const* iWorker) {
+        return false;
       }
     };
     template<>
@@ -567,11 +617,11 @@ namespace edm {
         ModuleSignalSentry<Arg> cpp(actReg, context, mcc);
         return iWorker->implDoStreamBegin(id,ep,es, mcc);
       }
-
-      static bool prePrefetchSelection(Worker* iWorker,StreamID id,
-                                       typename Arg::MyPrincipal const& ep,
-                                       ModuleCallingContext const* mcc) {
-        return true;
+      static bool wantsTransition(Worker const* iWorker) {
+        return iWorker->wantsStreamLuminosityBlocks();
+      }
+      static bool needToRunSelection( Worker const* iWorker) {
+        return false;
       }
 };
 
@@ -587,12 +637,12 @@ namespace edm {
         ModuleSignalSentry<Arg> cpp(actReg, context, mcc);
         return iWorker->implDoEnd(ep,es, mcc);
       }
-      static bool prePrefetchSelection(Worker* iWorker,StreamID id,
-                                       typename Arg::MyPrincipal const& ep,
-                                       ModuleCallingContext const* mcc) {
-        return true;
+      static bool wantsTransition(Worker const* iWorker) {
+        return iWorker->wantsGlobalLuminosityBlocks();
       }
-
+      static bool needToRunSelection( Worker const* iWorker) {
+        return false;
+      }
     };
     template<>
     class CallImpl<OccurrenceTraits<LuminosityBlockPrincipal, BranchActionStreamEnd>>{
@@ -606,11 +656,11 @@ namespace edm {
         ModuleSignalSentry<Arg> cpp(actReg, context, mcc);
         return iWorker->implDoStreamEnd(id,ep,es, mcc);
       }
-      
-      static bool prePrefetchSelection(Worker* iWorker,StreamID id,
-                                       typename Arg::MyPrincipal const& ep,
-                                       ModuleCallingContext const* mcc) {
-        return true;
+      static bool wantsTransition(Worker const* iWorker) {
+        return iWorker->wantsStreamLuminosityBlocks();
+       }
+      static bool needToRunSelection( Worker const* iWorker) {
+        return false;
       }
     };
   }
@@ -623,6 +673,10 @@ namespace edm {
                            StreamID streamID,
                            ParentContext const& parentContext,
                            typename T::Context const* context) {
+    if (not workerhelper::CallImpl<T>::wantsTransition(this)) {
+      return;
+    }
+
     waitingTasks_.add(task);
     if(T::isEvent_) {
       timesVisited_.fetch_add(1,std::memory_order_relaxed);
@@ -633,20 +687,27 @@ namespace edm {
       moduleCallingContext_.setContext(ModuleCallingContext::State::kPrefetching,parentContext,nullptr);
 
       //if have TriggerResults based selection we want to reject the event before doing prefetching
-      try {
-        if( not workerhelper::CallImpl<T>::prePrefetchSelection(this,streamID,ep,&moduleCallingContext_) ) {
-          setPassed<T::isEvent_>();
-          waitingTasks_.doneWaiting(nullptr);
-          return;
-        }
-      }catch(...) {}
-      
-      auto runTask = new (tbb::task::allocate_root()) RunModuleTask<T>(
-        this, ep,es,streamID,parentContext,context);
-      prefetchAsync(runTask, parentContext, ep);
+      if(workerhelper::CallImpl<T>::needToRunSelection(this)) {
+        //We need to run the selection in a different task so that
+        // we can prefetch the data needed for the selection
+        auto runTask = new (tbb::task::allocate_root()) RunModuleTask<T>(
+                                                                         this, ep,es,streamID,parentContext,context);
+
+        auto token = ServiceRegistry::instance().presentToken();
+        auto selectionTask = make_waiting_task(tbb::task::allocate_root(), [runTask,parentContext,&ep,token, this] (std::exception_ptr const* ){
+          
+          ServiceRegistry::Operate guard(token);
+          prefetchAsync(runTask, parentContext, ep);
+        });
+        prePrefetchSelectionAsync(selectionTask,streamID, &ep);
+      } else {
+        auto runTask = new (tbb::task::allocate_root()) RunModuleTask<T>(
+                           this, ep,es,streamID,parentContext,context);
+        prefetchAsync(runTask, parentContext, ep);
+      }
     }
   }
-     
+   
   template<typename T>
   std::exception_ptr Worker::runModuleAfterAsyncPrefetch(std::exception_ptr const* iEPtr,
                                                          typename T::MyPrincipal const& ep,
@@ -683,6 +744,9 @@ namespace edm {
                            StreamID streamID,
                            ParentContext const& parentContext,
                            typename T::Context const* context) {
+    if (not workerhelper::CallImpl<T>::wantsTransition(this)) {
+      return;
+    }
     waitingTasks_.add(task);
     bool expected = false;
     if(workStarted_.compare_exchange_strong(expected,true)) {
@@ -706,7 +770,7 @@ namespace edm {
         this->waitingTasks_.doneWaiting(exceptionPtr);
       };
       if(auto queue = this->serializeRunModule()) {
-        queue->push( toDo);
+        queue.push( toDo);
       } else {
         auto task = make_functor_task( tbb::task::allocate_root(), toDo);
         tbb::task::spawn(*task);
@@ -762,15 +826,19 @@ namespace edm {
     std::unique_ptr<ModuleCallingContext, decltype(resetContext)> prefetchSentry(&moduleCallingContext_,resetContext);
 
     if (T::isEvent_) {
-      try {
-        //if have TriggerResults based selection we want to reject the event before doing prefetching
-        if( not workerhelper::CallImpl<T>::prePrefetchSelection(this,streamID,ep,&moduleCallingContext_) ) {
-          timesRun_.fetch_add(1,std::memory_order_relaxed);
-          rc = setPassed<T::isEvent_>();
-          waitingTasks_.doneWaiting(nullptr);
+      //if have TriggerResults based selection we want to reject the event before doing prefetching
+      if ( workerhelper::CallImpl<T>::needToRunSelection(this)) {
+        auto waitTask = edm::make_empty_waiting_task();
+        waitTask->set_ref_count(2);
+        prePrefetchSelectionAsync(waitTask.get(), streamID, &ep);
+        waitTask->decrement_ref_count();
+        waitTask->wait_for_all();
+        
+        if(state() != Ready) {
+          //The selection must have rejected this event
           return true;
         }
-      }catch(...) {}
+      }
       auto waitTask = edm::make_empty_waiting_task();
       {
         //Make sure signal is sent once the prefetching is done
@@ -806,7 +874,7 @@ namespace edm {
     prefetchSentry.release();
     if(auto queue = serializeRunModule()) {
       auto serviceToken = ServiceRegistry::instance().presentToken();
-      queue->pushAndWait([&]() {
+      queue.pushAndWait([&]() {
         //Need to make the services available
         ServiceRegistry::Operate guard(serviceToken);
         try {

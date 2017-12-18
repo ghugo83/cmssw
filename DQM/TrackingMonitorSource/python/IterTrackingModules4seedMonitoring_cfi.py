@@ -10,6 +10,10 @@ TCSizeMax         = {}
 clusterLabel      = {}
 clusterBin        = {}
 clusterMax        = {}
+regionLabel       = {}
+regionCandidateLabel = {}
+trajCandPerSeedBin = {}
+trajCandPerSeedMax = {}
 
 seedInputTag     ['initialStep'] = cms.InputTag("initialStepSeeds")
 trackCandInputTag['initialStep'] = cms.InputTag("initialStepTrackCandidates")
@@ -143,6 +147,10 @@ trackSeedSizeMax ['jetCoreRegionalStep'] = cms.double(199.5)
 clusterLabel     ['jetCoreRegionalStep'] = cms.vstring('Tot')
 clusterBin       ['jetCoreRegionalStep'] = cms.int32(100)
 clusterMax       ['jetCoreRegionalStep'] = cms.double(100000)
+regionLabel      ['jetCoreRegionalStep'] = "jetCoreRegionalStepTrackingRegions"
+regionCandidateLabel['jetCoreRegionalStep'] = "jetsForCoreTracking"
+trajCandPerSeedBin['jetCoreRegionalStep'] = 50
+trajCandPerSeedMax['jetCoreRegionalStep'] = 49.5
 
 for _eraName, _postfix, _era in _cfg.allEras():
     locals()["selectedIterTrackingStep"+_postfix] = _cfg.iterationAlgos(_postfix)

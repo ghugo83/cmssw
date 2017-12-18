@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("DUMP")
-process.load("Geometry.CMSCommonData.Phase2BeamTestXML_cfi")
+process.load("Geometry.TrackerPhase2TestBeam.Phase2TestBeamGeometryXML_cfi")
 process.load("FWCore.MessageService.MessageLogger_cfi")
 
 process.MessageLogger = cms.Service("MessageLogger",

@@ -40,6 +40,7 @@ from Validation.L1T.L1Validator_cfi import *
 from Validation.SiPixelPhase1ConfigV.SiPixelPhase1OfflineDQM_sourceV_cff import *
 from DQMOffline.RecoB.dqmAnalyzer_cff import *
 from Validation.RecoB.BDHadronTrackValidation_cff import *
+from Validation.Configuration.hgcalSimValid_cff import *
 
 # filter/producer "pre-" sequence for globalValidation
 globalPrevalidationTracking = cms.Sequence(
@@ -109,7 +110,7 @@ if fastSim.isChosen():
     # besides: is this cross frame doing something, or is it a relic from the past?
     globalValidation.remove(ecalDigisValidationSequence)
     globalValidation.remove(ecalRecHitsValidationSequence)
-    
+
 #lite tracking validator to be used in the Validation matrix
 #lite validation
 globalValidationLiteTracking = cms.Sequence(globalValidation)
@@ -153,6 +154,8 @@ globalValidationHCAL = cms.Sequence(
     + calotowersValidationSequence
 )
 
+globalValidationHGCal = cms.Sequence(hgcalValidation)
+
 globalPrevalidationMuons = cms.Sequence(
       gemSimValid
     + me0SimValid
@@ -178,6 +181,7 @@ _run3_globalValidation += gemSimValid
 
 _phase2_globalValidation = _run3_globalValidation.copy()
 _phase2_globalValidation += me0SimValid
+
 
 from Configuration.Eras.Modifier_run2_GEM_2017_MCTest_cff import run2_GEM_2017_MCTest
 run2_GEM_2017_MCTest.toReplaceWith( globalValidation, _run3_globalValidation )
