@@ -41,5 +41,7 @@ NB: Analyzer in charge of actually plotting the SimHit map.
 
 
 
-### Digis
-cmsRun SimTracker/SiPixelDigitizer/test/testPixelDigitizer.py
+### Digis (on progress)
+cmsRun SimTracker/SiPixelDigitizer/test/testPixelDigitizer.py  SimHit -> Digis
+
+cmsRun SimTracker/SiPhase2Digitizer/test/DigiTest_cfg.py       Monitor Digis which are obtained at the previous step
