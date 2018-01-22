@@ -56,7 +56,7 @@
 
 //#include "PixelIndices.h"
 #include "DataFormats/SiPixelDetId/interface/PixelSubdetector.h"
-#include "DataFormats/TrackerCommon/interface/TrackerTopology.h"
+#include "DataFormats/TrackerCommon/interface/TelescopeTopology.h"
 #include "Geometry/Records/interface/IdealGeometryRecord.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -93,8 +93,8 @@
 #include "SimDataFormats/Track/interface/SimTrack.h"
 
 // Geometry
-#include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
-#include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
+#include "Geometry/TrackerPhase2TestBeam/interface/TelescopeGeometry.h"
+#include "Geometry/Records/interface/TelescopeDigiGeometryRecord.h"
 #include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetUnit.h"
 #include "Geometry/CommonTopologies/interface/PixelTopology.h"
 
@@ -119,7 +119,7 @@ void SiPixelDigitizerAlgorithm::init(const edm::EventSetup& es) {
   }
   //gets the map and geometry from the DB (to kill ROCs)
   es.get<SiPixelFedCablingMapRcd>().get(map_);
-  es.get<TrackerDigiGeometryRecord>().get(geom_);
+  es.get<TelescopeDigiGeometryRecord>().get(geom_);
 }
 
 //=========================================================================
@@ -495,7 +495,7 @@ void SiPixelDigitizerAlgorithm::init_DynIneffDB(const edm::EventSetup& es, const
   }
 }
 
-void SiPixelDigitizerAlgorithm::PixelEfficiencies::init_from_db(const edm::ESHandle<TrackerGeometry>& geom, const edm::ESHandle<SiPixelDynamicInefficiency>& SiPixelDynamicInefficiency) {
+void SiPixelDigitizerAlgorithm::PixelEfficiencies::init_from_db(const edm::ESHandle<TelescopeGeometry>& geom, const edm::ESHandle<SiPixelDynamicInefficiency>& SiPixelDynamicInefficiency) {
 
   theInstLumiScaleFactor = SiPixelDynamicInefficiency->gettheInstLumiScaleFactor();
   const std::map<uint32_t, double>& PixelGeomFactorsDB = SiPixelDynamicInefficiency->getPixelGeomFactors();
@@ -596,7 +596,7 @@ void SiPixelDigitizerAlgorithm::accumulateSimHits(std::vector<PSimHit>::const_it
 						  const unsigned int tofBin,
                                                   const PixelGeomDetUnit* pixdet,
                                                   const GlobalVector& bfield,
-						  const TrackerTopology *tTopo,
+						  const TelescopeTopology *tTopo,
                                                   CLHEP::HepRandomEngine* engine) {
     // produce SignalPoint's for all SimHit's in detector
     // Loop over hits
@@ -678,7 +678,7 @@ void SiPixelDigitizerAlgorithm::calculateInstlumiFactor(PileupMixingContent* puI
 void SiPixelDigitizerAlgorithm::digitize(const PixelGeomDetUnit* pixdet,
                                          std::vector<PixelDigi>& digis,
                                          std::vector<PixelDigiSimLink>& simlinks,
-					 const TrackerTopology *tTopo,
+					 const TelescopeTopology *tTopo,
                                          CLHEP::HepRandomEngine* engine) {
   
   // Pixel Efficiency moved from the constructor to this method because
@@ -900,7 +900,7 @@ void SiPixelDigitizerAlgorithm::fluctuateEloss(int pid, float particleMomentum,
 void SiPixelDigitizerAlgorithm::drift(const PSimHit& hit,
 			              const PixelGeomDetUnit* pixdet,
                                       const GlobalVector& bfield,
-				      const TrackerTopology *tTopo,
+				      const TelescopeTopology *tTopo,
                                       const std::vector<EnergyDepositUnit>& ionization_points,
                                       std::vector<SignalPoint>& collection_points) const {
   
@@ -1259,7 +1259,7 @@ void SiPixelDigitizerAlgorithm::make_digis(float thePixelThresholdInE,
 					   const PixelGeomDetUnit* pixdet,
                                            std::vector<PixelDigi>& digis,
                                            std::vector<PixelDigiSimLink>& simlinks,
-					   const TrackerTopology *tTopo) const  {
+					   const TelescopeTopology *tTopo) const  {
 
 #ifdef TP_DEBUG
   LogDebug ("Pixel Digitizer") << " make digis "<<" "
@@ -1474,7 +1474,7 @@ void SiPixelDigitizerAlgorithm::add_noise(const PixelGeomDetUnit* pixdet,
 // Delete a selected number of single pixels, dcols and rocs.
 void SiPixelDigitizerAlgorithm::pixel_inefficiency(const PixelEfficiencies& eff,
 			                           const PixelGeomDetUnit* pixdet,
-						   const TrackerTopology *tTopo,
+						   const TelescopeTopology *tTopo,
                                                    CLHEP::HepRandomEngine* engine) {
   
   uint32_t detID= pixdet->geographicalId().rawId();
@@ -1626,7 +1626,7 @@ void SiPixelDigitizerAlgorithm::pixel_inefficiency(const PixelEfficiencies& eff,
 
 float SiPixelDigitizerAlgorithm::pixel_aging(const PixelAging& aging,
 					     const PixelGeomDetUnit *pixdet,
-					     const TrackerTopology *tTopo) const {
+					     const TelescopeTopology *tTopo) const {
   
   uint32_t detID= pixdet->geographicalId().rawId();
   
@@ -1677,7 +1677,7 @@ float SiPixelDigitizerAlgorithm::pixel_aging(const PixelAging& aging,
   //float offset  = RandGaussQ::shoot(0.,theOffsetSmearing);
   //float newAmp = amp * gain + offset;
   // More complex misscalibration
-float SiPixelDigitizerAlgorithm::missCalibrate(uint32_t detID, const TrackerTopology *tTopo, const PixelGeomDetUnit* pixdet, int col,int row,
+float SiPixelDigitizerAlgorithm::missCalibrate(uint32_t detID, const TelescopeTopology *tTopo, const PixelGeomDetUnit* pixdet, int col,int row,
 				 const float signalInElectrons) const {
   // Central values
   //const float p0=0.00352, p1=0.868, p2=112., p3=113.; // pix(0,0,0)

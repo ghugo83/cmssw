@@ -79,6 +79,14 @@ class TelescopeTopology {
   unsigned int plane(const DetId &id) const;
   unsigned int module(const DetId &id) const;
 
+  unsigned int layer(const DetId &id) const { return plane(id); };
+  unsigned int pxbLayer(const DetId &id) const { return layer(id); }
+  unsigned int pxbLadder(const DetId &id) const { return 1; }
+  unsigned int pxbModule(const DetId &id) const { return module(id); }
+  unsigned int pxfPanel(const DetId &id) const { return 1; }
+  unsigned int pxfModule(const DetId &id) const { return module(id); }
+
+
 
   // layer numbers
   /*
@@ -533,16 +541,18 @@ class TelescopeTopology {
   //SiStripDetId::ModuleGeometry moduleGeometry(const DetId &id) const; 
   
 
-  /*
+  
   int getOTLayerNumber(const DetId &id)const;
   int getITPixelLayerNumber(const DetId &id)const;
+
+
 
   // Those is only implemented for Pixel right now, but can be extended to all 
   // subdetectors.
 
   // Extract the raw bit value for a given field type.
   // E.g. getField(id, PBLadder) == pxbLadder(id)
-  unsigned int getField(const DetId &id, DetIdFields idx) const {
+  /*unsigned int getField(const DetId &id, DetIdFields idx) const {
     return ((id.rawId()>>bits_per_field[idx].startBit)&bits_per_field[idx].mask);
   }
   // checks whether a given field can be extracted from a given DetId.

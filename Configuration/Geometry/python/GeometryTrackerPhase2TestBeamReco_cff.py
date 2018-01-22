@@ -7,6 +7,18 @@ from Configuration.Geometry.GeometryTrackerPhase2TestBeam_cff import *         #
 
 
 
+import Geometry.TrackerPhase2TestBeam.telescopeGeometry_cfi
+
+idealForDigiTelescopeGeometry = Geometry.TrackerPhase2TestBeam.telescopeGeometry_cfi.telescopeGeometry.clone()
+# The es_module providing fake (i.e. empty) alignment constants:
+from Alignment.CommonAlignmentProducer.fakeForIdealAlignmentProducer_cfi import *
+# need to set to False, see below:
+idealForDigiTelescopeGeometry.applyAlignment = False
+# Label of the produced TelescopeGeometry:
+idealForDigiTelescopeGeometry.appendToDataLabel = 'idealForDigi'
+# Alignments are looked for with this label:
+idealForDigiTelescopeGeometry.alignmentsLabel = 'fakeForIdeal'
+
 
 
 # Off-topic, but kept for understanding. Will be removed when reco is reached (not tomorrow).

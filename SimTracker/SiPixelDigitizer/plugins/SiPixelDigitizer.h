@@ -39,7 +39,7 @@ class PileUpEventPrincipal;
 class PixelGeomDetUnit;
 class PSimHit;
 class SiPixelDigitizerAlgorithm;
-class TrackerGeometry;
+class TelescopeGeometry;
 
 namespace CLHEP {
   class HepRandomEngine;
@@ -94,7 +94,7 @@ namespace cms {
     const std::string hitsProducer;
     const vstring trackerContainers;
     const std::string geometryType;
-    edm::ESHandle<TrackerGeometry> pDD;
+    edm::ESHandle<TelescopeGeometry> pDD;
     edm::ESHandle<MagneticField> pSetup;
     std::map<unsigned int, PixelGeomDetUnit const *> detectorUnits;
     std::vector<CLHEP::HepRandomEngine*> randomEngines_;

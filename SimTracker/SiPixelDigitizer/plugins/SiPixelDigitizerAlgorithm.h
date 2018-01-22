@@ -38,8 +38,8 @@ class SiPixelGainCalibrationOfflineSimService;
 class SiPixelLorentzAngle;
 class SiPixelQuality;
 class SiPixelDynamicInefficiency;
-class TrackerGeometry;
-class TrackerTopology;
+class TelescopeGeometry;
+class TelescopeTopology;
 
 class SiPixelDigitizerAlgorithm  {
  public:
@@ -60,12 +60,12 @@ class SiPixelDigitizerAlgorithm  {
 			 const unsigned int tofBin,
 			 const PixelGeomDetUnit *pixdet,
                          const GlobalVector& bfield,
-			 const TrackerTopology *tTopo,
+			 const TelescopeTopology *tTopo,
                          CLHEP::HepRandomEngine*);
   void digitize(const PixelGeomDetUnit *pixdet,
                 std::vector<PixelDigi>& digis,
                 std::vector<PixelDigiSimLink>& simlinks,
-		const TrackerTopology *tTopo,
+		const TelescopeTopology *tTopo,
                 CLHEP::HepRandomEngine*);
   void calculateInstlumiFactor(PileupMixingContent* puInfo);
   void init_DynIneffDB(const edm::EventSetup&, const unsigned int&);
@@ -80,7 +80,7 @@ class SiPixelDigitizerAlgorithm  {
 
   //Accessing Map and Geom:
   edm::ESHandle<SiPixelFedCablingMap> map_;
-  edm::ESHandle<TrackerGeometry> geom_;
+  edm::ESHandle<TelescopeGeometry> geom_;
 
   // Get Dynamic Inefficiency scale factors from DB
   edm::ESHandle<SiPixelDynamicInefficiency> SiPixelDynamicInefficiency_;
@@ -251,7 +251,7 @@ class SiPixelDigitizerAlgorithm  {
      std::map<uint32_t, double> ChipGeomFactors;
      std::map<uint32_t, size_t > iPU;
 
-     void init_from_db(const edm::ESHandle<TrackerGeometry>&, const edm::ESHandle<SiPixelDynamicInefficiency>&);
+     void init_from_db(const edm::ESHandle<TelescopeGeometry>&, const edm::ESHandle<SiPixelDynamicInefficiency>&);
      bool matches(const DetId&, const DetId&, const std::vector<uint32_t >&);
    };
 
@@ -385,7 +385,7 @@ class SiPixelDigitizerAlgorithm  {
     void drift(const PSimHit& hit,
                const PixelGeomDetUnit *pixdet,
                const GlobalVector& bfield,
-	       const TrackerTopology *tTopo,
+	       const TelescopeTopology *tTopo,
                const std::vector<EnergyDepositUnit>& ionization_points,
                std::vector<SignalPoint>& collection_points) const;
     void induce_signal(const PSimHit& hit,
@@ -405,21 +405,21 @@ class SiPixelDigitizerAlgorithm  {
 		    const PixelGeomDetUnit* pixdet,
                     std::vector<PixelDigi>& digis,
                     std::vector<PixelDigiSimLink>& simlinks,
-		    const TrackerTopology *tTopo) const;
+		    const TelescopeTopology *tTopo) const;
     void pixel_inefficiency(const PixelEfficiencies& eff,
 			    const PixelGeomDetUnit* pixdet,
-			    const TrackerTopology *tTopo,
+			    const TelescopeTopology *tTopo,
                             CLHEP::HepRandomEngine*);
 
     void pixel_inefficiency_db(uint32_t detID);
 
     float pixel_aging(const PixelAging& aging,
 		      const PixelGeomDetUnit* pixdet,
-		      const TrackerTopology *tTopo) const;
+		      const TelescopeTopology *tTopo) const;
     
     // access to the gain calibration payloads in the db. Only gets initialized if check_dead_pixels_ is set to true.
     const std::unique_ptr<SiPixelGainCalibrationOfflineSimService> theSiPixelGainCalibrationService_;    
-    float missCalibrate(uint32_t detID, const TrackerTopology *tTopo, const PixelGeomDetUnit* pixdet, int col, int row, float amp) const;  
+    float missCalibrate(uint32_t detID, const TelescopeTopology *tTopo, const PixelGeomDetUnit* pixdet, int col, int row, float amp) const;  
     LocalVector DriftDirection(const PixelGeomDetUnit* pixdet,
                                const GlobalVector& bfield,
                                const DetId& detId) const;

@@ -40,7 +40,7 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 #process.load('SimG4CMS.HGCalTestBeam.HGCalTBAnalyzer_cfi')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(50000)
+    input = cms.untracked.int32(50)
 )
 
 # Input source

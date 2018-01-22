@@ -1,6 +1,3 @@
-//#include "DataFormats/TrackerCommon/interface/TelescopeTopology.h"
-//#include "Geometry/TrackerPhase2TestBeam/interface/PTelescopeParameters.h"
-//#include "Geometry/Records/interface/PTelescopeParametersRcd.h"
 #include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetType.h"
 #include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetUnit.h"
 #include "Geometry/TrackerGeometryBuilder/interface/PixelTopologyBuilder.h"
@@ -18,9 +15,6 @@
 #include "FWCore/Utilities/interface/typelookup.h"
 
 
-//TYPELOOKUP_DATA_REG(TelescopeTopology);
-//TYPELOOKUP_DATA_REG(PTelescopeParameters);
-//TYPELOOKUP_DATA_REG(PTelescopeParametersRcd);
 TYPELOOKUP_DATA_REG(PixelGeomDetType);
 TYPELOOKUP_DATA_REG(PixelGeomDetUnit);
 TYPELOOKUP_DATA_REG(PixelTopologyBuilder);

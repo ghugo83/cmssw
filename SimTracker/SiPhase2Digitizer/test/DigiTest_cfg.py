@@ -15,19 +15,26 @@ process.maxEvents = cms.untracked.PSet(
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
-process.load('Configuration.Geometry.GeometryExtended2023D17Reco_cff')
-process.load('Configuration.StandardSequences.MagneticField_cff')
+
+
+
+process.load("Configuration.Geometry.GeometryTrackerPhase2TestBeamReco_cff")
+process.load('Configuration.StandardSequences.MagneticField_0T_cff')
+#process.load('Configuration.Geometry.GeometryExtended2023D17Reco_cff')
+#process.load('Configuration.StandardSequences.MagneticField_cff')
+
+
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
 # list of files
 
 process.source = cms.Source("PoolSource",
     fileNames =  cms.untracked.vstring(
-        'file:step2_DIGI.root'
+        'file:TrackerPhase2TestBeam_DIGI.root'
       )
 )
 # Production Info
@@ -47,9 +54,13 @@ process.DQMoutput = cms.OutputModule("PoolOutputModule",
         dataTier = cms.untracked.string('')
     )
 )
+
+
+
 process.load('SimTracker.SiPhase2Digitizer.Phase2TrackerMonitorDigi_cff')
-process.load('SimTracker.SiPhase2Digitizer.Phase2TrackerValidateDigi_cff')
-process.digiana_seq = cms.Sequence(process.pixDigiMon * process.otDigiMon * process.pixDigiValid * process.otDigiValid)
+#process.load('SimTracker.SiPhase2Digitizer.Phase2TrackerValidateDigi_cff')
+#process.digiana_seq = cms.Sequence(process.pixDigiMon * process.otDigiMon * process.pixDigiValid * process.otDigiValid)
+process.digiana_seq = cms.Sequence(process.pixDigiMon * process.otDigiMon)
 
 process.load('DQMServices.Components.DQMEventInfo_cfi')
 process.dqmEnv.subSystemFolder = cms.untracked.string('Ph2TkDigi')

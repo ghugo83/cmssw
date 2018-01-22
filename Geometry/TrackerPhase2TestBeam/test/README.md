@@ -38,3 +38,8 @@ NB: GEM_SIM step required, obviously.
 
     cmsRun Geometry/TrackerPhase2TestBeam/test/plotSimHitMap_cfg.py                 
 NB: Analyzer in charge of actually plotting the SimHit map.
+
+
+
+### Digis
+cmsRun SimTracker/SiPixelDigitizer/test/testPixelDigitizer.py

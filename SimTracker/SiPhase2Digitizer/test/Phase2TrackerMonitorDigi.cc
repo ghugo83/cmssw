@@ -25,8 +25,9 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Framework/interface/ESWatcher.h"
 
-#include "Geometry/Records/interface/TrackerDigiGeometryRecord.h" 
-#include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
+#include "Geometry/Records/interface/TelescopeDigiGeometryRecord.h" 
+#include "Geometry/TrackerPhase2TestBeam/interface/TelescopeGeometry.h"
+
 #include "Geometry/CommonDetUnit/interface/GeomDet.h"
 #include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetUnit.h"
 #include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetType.h"
@@ -83,23 +84,23 @@ void Phase2TrackerMonitorDigi::analyze(const edm::Event& iEvent, const edm::Even
   edm::Handle< edm::DetSetVector<Phase2TrackerDigi> > otDigiHandle;
   iEvent.getByToken(otDigiToken_, otDigiHandle); 
 
-  // Tracker Topology 
-  iSetup.get<TrackerTopologyRcd>().get(tTopoHandle_);
+  // Telescope Topology 
+  iSetup.get<TelescopeTopologyRcd>().get(tTopoHandle_);
 
-  edm::ESWatcher<TrackerDigiGeometryRecord> theTkDigiGeomWatcher;
+  edm::ESWatcher<TelescopeDigiGeometryRecord> theTkDigiGeomWatcher;
   if (theTkDigiGeomWatcher.check(iSetup)) {
-    edm::ESHandle<TrackerGeometry> geomHandle;
-    iSetup.get<TrackerDigiGeometryRecord>().get(geomType_, geomHandle);
+    edm::ESHandle<TelescopeGeometry> geomHandle;
+    iSetup.get<TelescopeDigiGeometryRecord>().get(geomType_, geomHandle);
 
     if (pixelFlag_) fillITPixelDigiHistos(pixDigiHandle, geomHandle);
     else  fillOTDigiHistos(otDigiHandle, geomHandle);
   }
 }
-void Phase2TrackerMonitorDigi::fillITPixelDigiHistos(const edm::Handle<edm::DetSetVector<PixelDigi>>  handle, const edm::ESHandle<TrackerGeometry> gHandle) {
+void Phase2TrackerMonitorDigi::fillITPixelDigiHistos(const edm::Handle<edm::DetSetVector<PixelDigi>>  handle, const edm::ESHandle<TelescopeGeometry> gHandle) {
   const edm::DetSetVector<PixelDigi>* digis = handle.product();
 
-  const TrackerTopology* tTopo = tTopoHandle_.product();
-  const TrackerGeometry* tGeom = gHandle.product();  
+  const TelescopeTopology* tTopo = tTopoHandle_.product();
+  const TelescopeGeometry* tGeom = gHandle.product();  
 
   for (typename edm::DetSetVector<PixelDigi>::const_iterator DSViter = digis->begin(); DSViter != digis->end(); DSViter++) {
     unsigned int rawid = DSViter->id; 
@@ -111,7 +112,7 @@ void Phase2TrackerMonitorDigi::fillITPixelDigiHistos(const edm::Handle<edm::DetS
 
     const DetId detId(rawid);
 
-    if (DetId(detId).det() != DetId::Detector::Tracker) continue;
+    if (DetId(detId).det() != DetId::Detector::Telescope) continue;
   
     const GeomDetUnit* gDetUnit = tGeom->idToDetUnit(detId);
     const GeomDet *geomDet = tGeom->idToDet(detId);
@@ -188,11 +189,11 @@ void Phase2TrackerMonitorDigi::fillITPixelDigiHistos(const edm::Handle<edm::DetS
     local_mes.nHitDetsPerLayer = 0;
   }
 }
-void Phase2TrackerMonitorDigi::fillOTDigiHistos(const edm::Handle<edm::DetSetVector<Phase2TrackerDigi>>  handle, const edm::ESHandle<TrackerGeometry> gHandle) {
+void Phase2TrackerMonitorDigi::fillOTDigiHistos(const edm::Handle<edm::DetSetVector<Phase2TrackerDigi>>  handle, const edm::ESHandle<TelescopeGeometry> gHandle) {
   const edm::DetSetVector<Phase2TrackerDigi>* digis = handle.product();
 
-  const TrackerTopology* tTopo = tTopoHandle_.product();
-  const TrackerGeometry* tGeom = gHandle.product();  
+  const TelescopeTopology* tTopo = tTopoHandle_.product();
+  const TelescopeGeometry* tGeom = gHandle.product();  
 
   for (typename edm::DetSetVector<Phase2TrackerDigi>::const_iterator DSViter = digis->begin(); DSViter != digis->end(); DSViter++) {
     unsigned int rawid = DSViter->id; 
@@ -205,7 +206,7 @@ void Phase2TrackerMonitorDigi::fillOTDigiHistos(const edm::Handle<edm::DetSetVec
     DigiMEs& local_mes = pos->second;
 
     local_mes.nHitDetsPerLayer++;
-    if (DetId(detId).det() != DetId::Detector::Tracker) continue;
+    if (DetId(detId).det() != DetId::Detector::Telescope) continue;
   
     const GeomDetUnit* gDetUnit = tGeom->idToDetUnit(detId);
     const GeomDet *geomDet = tGeom->idToDet(detId);
@@ -300,15 +301,15 @@ void Phase2TrackerMonitorDigi::bookHistograms(DQMStore::IBooker & ibooker,
 		 edm::EventSetup const &  iSetup ) {
 
   std::string top_folder = config_.getParameter<std::string>("TopFolderName");
-  edm::ESWatcher<TrackerDigiGeometryRecord> theTkDigiGeomWatcher;
+  edm::ESWatcher<TelescopeDigiGeometryRecord> theTkDigiGeomWatcher;
 
-  iSetup.get<TrackerTopologyRcd>().get(tTopoHandle_);
-  const TrackerTopology* const tTopo = tTopoHandle_.product();
+  iSetup.get<TelescopeTopologyRcd>().get(tTopoHandle_);
+  const TelescopeTopology* const tTopo = tTopoHandle_.product();
 
   if (theTkDigiGeomWatcher.check(iSetup)) {
-    edm::ESHandle<TrackerGeometry> geom_handle;
-    iSetup.get<TrackerDigiGeometryRecord>().get(geomType_, geom_handle);
-    const TrackerGeometry* tGeom = geom_handle.product();  
+    edm::ESHandle<TelescopeGeometry> geom_handle;
+    iSetup.get<TelescopeDigiGeometryRecord>().get(geomType_, geom_handle);
+    const TelescopeGeometry* tGeom = geom_handle.product();  
     for (auto const & det_u : tGeom->detUnits()) {
       unsigned int detId_raw = det_u->geographicalId().rawId();
       bookLayerHistos(ibooker,detId_raw, tTopo); 
@@ -359,7 +360,7 @@ void Phase2TrackerMonitorDigi::bookHistograms(DQMStore::IBooker & ibooker,
 //
 // -- Book Layer Histograms
 //
-void Phase2TrackerMonitorDigi::bookLayerHistos(DQMStore::IBooker & ibooker, unsigned int det_id, const TrackerTopology* tTopo){ 
+void Phase2TrackerMonitorDigi::bookLayerHistos(DQMStore::IBooker & ibooker, unsigned int det_id, const TelescopeTopology* tTopo){ 
 
   
   int layer;

@@ -43,14 +43,14 @@
 #include "DataFormats/GeometryVector/interface/LocalPoint.h"
 #include "DataFormats/GeometryVector/interface/LocalVector.h"
 #include "Geometry/CommonDetUnit/interface/GeomDet.h"
-#include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
+#include "Geometry/Records/interface/TelescopeDigiGeometryRecord.h"
 #include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetUnit.h"
-#include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
+#include "Geometry/TrackerPhase2TestBeam/interface/TelescopeGeometry.h"
 
 #include "Geometry/CommonTopologies/interface/PixelTopology.h"
 #include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetType.h"
 
-#include "DataFormats/TrackerCommon/interface/TrackerTopology.h"
+#include "DataFormats/TrackerCommon/interface/TelescopeTopology.h"
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -140,9 +140,9 @@ namespace cms
     if(hSimHits.isValid()) {
        std::set<unsigned int> detIds;
        std::vector<PSimHit> const& simHits = *hSimHits.product();
-       edm::ESHandle<TrackerTopology> tTopoHand;
-       iSetup.get<TrackerTopologyRcd>().get(tTopoHand);
-       const TrackerTopology *tTopo=tTopoHand.product();
+       edm::ESHandle<TelescopeTopology> tTopoHand;
+       iSetup.get<TelescopeTopologyRcd>().get(tTopoHand);
+       const TelescopeTopology *tTopo=tTopoHand.product();
        for(std::vector<PSimHit>::const_iterator it = simHits.begin(), itEnd = simHits.end(); it != itEnd; ++it, ++globalSimHitIndex) {
          unsigned int detId = (*it).detUnitId();
          if(detIds.insert(detId).second) {
@@ -178,11 +178,11 @@ namespace cms
     crossingSimHitIndexOffset_.clear();
 
     _pixeldigialgo->initializeEvent();
-    iSetup.get<TrackerDigiGeometryRecord>().get(geometryType, pDD);
+    iSetup.get<TelescopeDigiGeometryRecord>().get(geometryType, pDD);
     iSetup.get<IdealMagneticFieldRecord>().get(pSetup);
-    edm::ESHandle<TrackerTopology> tTopoHand;
-    iSetup.get<TrackerTopologyRcd>().get(tTopoHand);
-    const TrackerTopology *tTopo=tTopoHand.product();
+    edm::ESHandle<TelescopeTopology> tTopoHand;
+    iSetup.get<TelescopeTopologyRcd>().get(tTopoHand);
+    const TelescopeTopology *tTopo=tTopoHand.product();
 
     // FIX THIS! We only need to clear and (re)fill this map when the geometry type IOV changes.  Use ESWatcher to determine this.
     if(true) { // Replace with ESWatcher 
@@ -250,9 +250,9 @@ namespace cms
     edm::Service<edm::RandomNumberGenerator> rng;
     CLHEP::HepRandomEngine* engine = &rng->getEngine(iEvent.streamID());
 
-    edm::ESHandle<TrackerTopology> tTopoHand;
-    iSetup.get<TrackerTopologyRcd>().get(tTopoHand);
-    const TrackerTopology *tTopo=tTopoHand.product();
+    edm::ESHandle<TelescopeTopology> tTopoHand;
+    iSetup.get<TelescopeTopologyRcd>().get(tTopoHand);
+    const TelescopeTopology *tTopo=tTopoHand.product();
 
     std::vector<edm::DetSet<PixelDigi> > theDigiVector;
     std::vector<edm::DetSet<PixelDigiSimLink> > theDigiLinkVector;

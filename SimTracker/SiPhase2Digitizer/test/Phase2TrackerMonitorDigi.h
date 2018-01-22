@@ -8,12 +8,12 @@
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/Common/interface/DetSetVector.h"
 #include "DQMServices/Core/interface/DQMEDAnalyzer.h"
-#include "DataFormats/TrackerCommon/interface/TrackerTopology.h"
+#include "DataFormats/TrackerCommon/interface/TelescopeTopology.h"
 
 class MonitorElement;
 class PixelDigi;
 class Phase2TrackerDigi;
-class TrackerGeometry;
+class TelescopeGeometry;
 
 class Phase2TrackerMonitorDigi : public DQMEDAnalyzer{
 
@@ -54,9 +54,9 @@ public:
   MonitorElement* RZOccupancyMap;
 
 private:
-  void bookLayerHistos(DQMStore::IBooker & ibooker, unsigned int det_id, const TrackerTopology* tTopo); 
-  void fillITPixelDigiHistos(const edm::Handle<edm::DetSetVector<PixelDigi>>  handle, const edm::ESHandle<TrackerGeometry> gHandle);
-  void fillOTDigiHistos(const edm::Handle<edm::DetSetVector<Phase2TrackerDigi>>  handle, const edm::ESHandle<TrackerGeometry> gHandle);
+  void bookLayerHistos(DQMStore::IBooker & ibooker, unsigned int det_id, const TelescopeTopology* tTopo); 
+  void fillITPixelDigiHistos(const edm::Handle<edm::DetSetVector<PixelDigi>>  handle, const edm::ESHandle<TelescopeGeometry> gHandle);
+  void fillOTDigiHistos(const edm::Handle<edm::DetSetVector<Phase2TrackerDigi>>  handle, const edm::ESHandle<TelescopeGeometry> gHandle);
 
   edm::ParameterSet config_;
   std::map<unsigned int, DigiMEs> layerMEs;
@@ -66,7 +66,7 @@ private:
   edm::InputTag itPixelDigiSrc_; 
   const edm::EDGetTokenT< edm::DetSetVector<Phase2TrackerDigi> > otDigiToken_;
   const edm::EDGetTokenT< edm::DetSetVector<PixelDigi> > itPixelDigiToken_;
-  edm::ESHandle<TrackerTopology> tTopoHandle_;
+  edm::ESHandle<TelescopeTopology> tTopoHandle_;
 
 };
 #endif

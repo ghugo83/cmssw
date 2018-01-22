@@ -458,12 +458,12 @@ SiStripDetId::ModuleGeometry TelescopeTopology::moduleGeometry(const DetId &id) 
   }
   return SiStripDetId::UNKNOWNGEOMETRY;
 }
-
+*/
 
 int TelescopeTopology::getOTLayerNumber(const DetId &id) const {
-    int layer = -1;
+    int layer = 1;
     
-    if (id.det() == DetId::Telescope) {
+    /*if (id.det() == DetId::Telescope) {
       if (id.subdetId() == StripSubdetector::TOB) {
 	layer = tobLayer(id);
       } else if (id.subdetId() == StripSubdetector::TID) {
@@ -471,7 +471,7 @@ int TelescopeTopology::getOTLayerNumber(const DetId &id) const {
       } else {
 	edm::LogInfo("TelescopeTopology") << ">>> Invalid subdetId()  " ;
       }
-    }
+      }*/
     return layer;
 }
 
@@ -479,14 +479,15 @@ int TelescopeTopology::getITPixelLayerNumber(const DetId &id) const {
     int layer = -1;
     
     if (id.det() == DetId::Telescope) {
-      if (id.subdetId() == PixelSubdetector::PixelBarrel) {
+      /*if (id.subdetId() == PixelSubdetector::PixelBarrel) {
 	layer = pxbLayer(id);
       } else if (id.subdetId() == PixelSubdetector::PixelEndcap) {
 	layer = 100 * pxfSide(id)  + pxfDisk(id);
       } else {
 	edm::LogInfo("TelescopeTopology") << ">>> Invalid subdetId()  " ;
-      }
+	}*/
+      layer = plane(id);
     }
     return layer;
 }
-*/
+

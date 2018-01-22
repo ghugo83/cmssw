@@ -6,8 +6,13 @@ process = cms.Process("Test")
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 # process.load("Configuration.StandardSequences.Geometry_cff")
-process.load("Configuration.Geometry.GeometryIdeal_cff")
-process.load("Configuration.StandardSequences.MagneticField_38T_cff")
+
+process.load("Configuration.Geometry.GeometryTrackerPhase2TestBeamReco_cff")
+process.load('Configuration.StandardSequences.MagneticField_0T_cff')
+#process.load("Configuration.Geometry.GeometryIdeal_cff")
+#process.load("Configuration.StandardSequences.MagneticField_38T_cff")
+
+
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.Services_cff")
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
@@ -17,6 +22,19 @@ process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 # process.load("SimTracker.Configuration.SimTracker_cff")
 process.load("SimG4Core.Configuration.SimG4Core_cff")
 
+
+
+
+SiPixelFakeLorentzAngleESSource = cms.ESSource("SiPixelFakeLorentzAngleESSource",
+    file = cms.FileInPath('CalibTracker/SiPixelESProducers/data/PixelSkimmedGeometry.txt')
+)
+
+
+
+
+
+
+
 # process.load("SimGeneral.MixingModule.mixNoPU_cfi")
 from SimGeneral.MixingModule.aliases_cfi import * 
 from SimGeneral.MixingModule.mixObjects_cfi import *
@@ -24,6 +42,13 @@ from SimGeneral.MixingModule.mixObjects_cfi import *
 from SimGeneral.MixingModule.pixelDigitizer_cfi import *
 from SimGeneral.MixingModule.stripDigitizer_cfi import *
 from SimGeneral.MixingModule.trackingTruthProducer_cfi import *
+
+
+SiPixelFakeLorentzAngleESSource = cms.ESSource("SiPixelFakeLorentzAngleESSource",
+    file = cms.FileInPath('CalibTracker/SiPixelESProducers/data/PixelSkimmedGeometry.txt')
+)
+
+
 
 process.simSiPixelDigis = cms.EDProducer("MixingModule",
 #    digitizers = cms.PSet(theDigitizers),
@@ -140,7 +165,7 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring(
-       'file:/afs/cern.ch/work/d/dkotlins/public//MC/mu/pt100_71_pre5/simhits/simHits2.root'
+       'file:TrackerPhase2TestBeam_GEN_SIM.root'
   )
 )
 
@@ -150,12 +175,17 @@ process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring(
 #process.GlobalTag.globaltag = "START70_V1::All"
 #process.GlobalTag.globaltag = "START71_V1::All"
 #process.GlobalTag.globaltag = 'MC_71_V1::All'
-process.GlobalTag.globaltag = 'POSTLS171_V1::All'
+#process.GlobalTag.globaltag = 'auto:run2_mc::All'
 #process.GlobalTag.globaltag = "PRE_MC_71_V2::All"
+
+from Configuration.AlCa.GlobalTag import GlobalTag
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
+
+
 
 process.o1 = cms.OutputModule("PoolOutputModule",
             outputCommands = cms.untracked.vstring('drop *','keep *_*_*_Test'),
-      fileName = cms.untracked.string('file:/afs/cern.ch/work/d/dkotlins/public/MC/mu/pt100_71_pre7/digis/digis2_postls171.root')
+      fileName = cms.untracked.string('file:TrackerPhase2TestBeam_DIGI.root')
 #      fileName = cms.untracked.string('file:dummy.root')
 )
 
