@@ -35,6 +35,14 @@ pixDigiMon.RZPositionMapH = cms.PSet(
     ymin   = cms.double(0.),
     ymax   = cms.double(280.))
 
-otDigiMon = digiMon.clone()
-otDigiMon.PixelPlotFillingFlag = cms.bool(False)
-otDigiMon.TopFolderName = cms.string("Ph2TkDigi")
+
+
+otDigiMon = pixDigiMon.clone()
+
+#otDigiMon = digiMon.clone()
+#otDigiMon.options = cms.untracked.PSet(
+#  SkipEvent = cms.untracked.vstring('ProductNotFound')
+#)
+
+#otDigiMon.PixelPlotFillingFlag = cms.bool(False)
+#otDigiMon.TopFolderName = cms.string("Ph2TkDigi")

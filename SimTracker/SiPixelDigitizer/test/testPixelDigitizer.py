@@ -25,13 +25,6 @@ process.load("SimG4Core.Configuration.SimG4Core_cff")
 
 
 
-SiPixelFakeLorentzAngleESSource = cms.ESSource("SiPixelFakeLorentzAngleESSource",
-    file = cms.FileInPath('CalibTracker/SiPixelESProducers/data/PixelSkimmedGeometry.txt')
-)
-
-
-
-
 
 
 
@@ -43,10 +36,6 @@ from SimGeneral.MixingModule.pixelDigitizer_cfi import *
 from SimGeneral.MixingModule.stripDigitizer_cfi import *
 from SimGeneral.MixingModule.trackingTruthProducer_cfi import *
 
-
-SiPixelFakeLorentzAngleESSource = cms.ESSource("SiPixelFakeLorentzAngleESSource",
-    file = cms.FileInPath('CalibTracker/SiPixelESProducers/data/PixelSkimmedGeometry.txt')
-)
 
 
 
@@ -168,6 +157,7 @@ process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring(
        'file:TrackerPhase2TestBeam_GEN_SIM.root'
   )
 )
+
 
 # Choose the global tag here:
 # for v7.0

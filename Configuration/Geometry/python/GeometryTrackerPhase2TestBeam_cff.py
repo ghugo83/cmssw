@@ -14,7 +14,10 @@ from Geometry.TrackerPhase2TestBeam.telescopeTopology_cfi import *            # 
 from Geometry.TrackerPhase2TestBeam.telescopeGeometry_cfi import *            # Full geometry, as used by the Digitizer.
 
 
-#from SLHCUpgradeSimulations.Geometry.fakeConditions_phase2TkTilted4025_cff import *
+
+from SLHCUpgradeSimulations.Geometry.fakeConditions_phase2TkTiltedBase_cff import *
+
+
 #from Geometry.HcalCommonData.hcalParameters_cfi      import *
 #from Geometry.HcalCommonData.hcalDDDSimConstants_cfi import *
 #from Geometry.HGCalCommonData.hgcalV6ParametersInitialization_cfi import *
