@@ -15,8 +15,8 @@ def help():
    print "       dump in TGeo format to borwse it geomtery viewer"
    print "       import this will in Fireworks with option --sim-geom-file"
    print ""
-   print "   tracker=bool"
-   print "       include Tracker subdetectors"
+   print "   telescope=bool"
+   print "       include telescope subdetectors"
    print ""
    print "   muon=bool"
    print "       include Muon subdetectors"
@@ -96,6 +96,12 @@ def recoGeoLoad(score):
        )
        process.load("SimG4CMS.HGCalTestBeam.HGCalTB160XML_cfi")
        
+    elif score == "Telescope":
+       process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+       from Configuration.AlCa.autoCond import autoCond
+       process.GlobalTag.globaltag = autoCond['run2_mc']
+       process.load("Configuration.Geometry.GeometryTrackerPhase2TestBeamReco_cff")     
+       
     else:
       help()
 
@@ -108,7 +114,7 @@ options = VarParsing.VarParsing ()
 defaultOutputFileName="cmsRecoGeom.root"
 
 options.register ('tag',
-                  "2017", # default value
+                  "Telescope", # default value
                   VarParsing.VarParsing.multiplicity.singleton,
                   VarParsing.VarParsing.varType.string,
                   "tag info about geometry database conditions")
@@ -119,20 +125,20 @@ options.register ('tgeo',
                   VarParsing.VarParsing.varType.bool,
                   "write geometry in TGeo format")
 
-options.register ('tracker',
+options.register ('telescope',
                   True, # default value
                   VarParsing.VarParsing.multiplicity.singleton,
                   VarParsing.VarParsing.varType.bool,
-                  "write Tracker geometry")
+                  "write telescope geometry")
 
 options.register ('muon',
-                  True, # default value
+                  False, # default value
                   VarParsing.VarParsing.multiplicity.singleton,
                   VarParsing.VarParsing.varType.bool,
                   "write Muon geometry")
 
 options.register ('calo',
-                  True, # default value
+                  False, # default value
                   VarParsing.VarParsing.multiplicity.singleton,
                   VarParsing.VarParsing.varType.bool,
                   "write Calo geometry")
@@ -166,7 +172,7 @@ if ( options.tgeo == True):
     if (options.out == defaultOutputFileName ):
         options.out = "cmsTGeoRecoGeom-" +  str(options.tag) + ".root"
     process.add_(cms.ESProducer("FWTGeoRecoGeometryESProducer",
-                 Tracker = cms.untracked.bool(options.tracker),
+                 telescope = cms.untracked.bool(options.telescope),
                  Muon = cms.untracked.bool(options.muon),
                  Calo = cms.untracked.bool(options.calo),
                  Timing = cms.untracked.bool(options.timing)))
@@ -177,11 +183,13 @@ if ( options.tgeo == True):
 else:
     if (options.out == defaultOutputFileName ):
         options.out = "cmsRecoGeom-" +  str(options.tag) + ".root"
+        
     process.add_(cms.ESProducer("FWRecoGeometryESProducer",
-                 Tracker = cms.untracked.bool(options.tracker),
+                 telescope = cms.untracked.bool(options.telescope),
                  Muon = cms.untracked.bool(options.muon),
                  Calo = cms.untracked.bool(options.calo),
                  Timing = cms.untracked.bool(options.timing)))
+                 
     process.dump = cms.EDAnalyzer("DumpFWRecoGeometry",
                               level   = cms.untracked.int32(1),
                               tagInfo = cms.untracked.string(options.tag),

@@ -20,7 +20,7 @@
 #include "Geometry/GEMGeometry/interface/GEMGeometry.h"
 #include "Geometry/GEMGeometry/interface/ME0Geometry.h"
 #include "Geometry/Records/interface/CaloGeometryRecord.h"
-#include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
+#include "Geometry/TrackerPhase2TestBeam/interface/TelescopeGeometry.h"
 #include "Geometry/TrackerGeometryBuilder/interface/RectangularPixelTopology.h"
 #include "Geometry/TrackerGeometryBuilder/interface/PixelGeomDetUnit.h"
 #include "Geometry/TrackerGeometryBuilder/interface/StripGeomDetUnit.h"
@@ -30,6 +30,7 @@
 #include "Geometry/CommonTopologies/interface/TrapezoidalStripTopology.h"
 
 #include "TNamed.h"
+#include <iostream>
 
 void FWRecoGeometryESProducer::ADD_PIXEL_TOPOLOGY( unsigned int rawid, const GeomDet* detUnit ) {                                    
    const PixelGeomDetUnit* det = dynamic_cast<const PixelGeomDetUnit*>( detUnit ); 
@@ -86,7 +87,7 @@ namespace {
 FWRecoGeometryESProducer::FWRecoGeometryESProducer( const edm::ParameterSet& pset )
   : m_current( -1 )
 {
-  m_tracker = pset.getUntrackedParameter<bool>( "Tracker", true );
+  m_telescope = pset.getUntrackedParameter<bool>( "telescope", true );
   m_muon = pset.getUntrackedParameter<bool>( "Muon", true );
   m_calo = pset.getUntrackedParameter<bool>( "Calo", true );
   m_timing = pset.getUntrackedParameter<bool>( "Timing", false );
@@ -96,6 +97,13 @@ FWRecoGeometryESProducer::FWRecoGeometryESProducer( const edm::ParameterSet& pse
 FWRecoGeometryESProducer::~FWRecoGeometryESProducer( void )
 {}
 
+
+
+
+
+
+
+
 std::shared_ptr<FWRecoGeometry> 
 FWRecoGeometryESProducer::produce( const FWRecoGeometryRecord& record )
 {
@@ -103,13 +111,17 @@ FWRecoGeometryESProducer::produce( const FWRecoGeometryRecord& record )
 
   m_fwGeometry = std::make_shared<FWRecoGeometry>();
 
-  if( m_tracker || m_muon ) {
+std::cout << "FWRecoGeometryESProducer::produce" << std::endl;
+
+  if( m_telescope || m_muon ) {
+    std::cout << "if( m_telescope || m_muon )" << std::endl;
+  
     record.getRecord<GlobalTrackingGeometryRecord>().get( m_geomRecord );  
-    DetId detId( DetId::Tracker, 0 );
-    m_trackerGeom = (const TrackerGeometry*) m_geomRecord->slaveGeometry( detId );
+    DetId detId( DetId::Telescope, 0 );
+    m_telescopeGeom = (const TelescopeGeometry*) m_geomRecord->slaveGeometry( detId );
   }
   
-  if( m_tracker )
+  if( m_telescope )
   {
     addPixelBarrelGeometry( );
     addPixelForwardGeometry();
@@ -399,8 +411,8 @@ FWRecoGeometryESProducer::addME0Geometry( void )
 void
 FWRecoGeometryESProducer::addPixelBarrelGeometry( void )
 {
-  for( TrackerGeometry::DetContainer::const_iterator it = m_trackerGeom->detsPXB().begin(),
-						    end = m_trackerGeom->detsPXB().end();
+  for( TelescopeGeometry::DetContainer::const_iterator it = m_telescopeGeom->detsPXB().begin(),
+						    end = m_telescopeGeom->detsPXB().end();
        it != end; ++it)
   {
     const GeomDet *det = *it;
@@ -412,7 +424,7 @@ FWRecoGeometryESProducer::addPixelBarrelGeometry( void )
       unsigned int current = insert_id( rawid );
       fillShapeAndPlacement( current, det );
 
-      ADD_PIXEL_TOPOLOGY( current, m_trackerGeom->idToDetUnit( detid ));
+      ADD_PIXEL_TOPOLOGY( current, m_telescopeGeom->idToDetUnit( detid ));
     }
   }
 }
@@ -420,8 +432,8 @@ FWRecoGeometryESProducer::addPixelBarrelGeometry( void )
 void
 FWRecoGeometryESProducer::addPixelForwardGeometry( void )
 {
-  for( TrackerGeometry::DetContainer::const_iterator it = m_trackerGeom->detsPXF().begin(),
-						    end = m_trackerGeom->detsPXF().end();
+  for( TelescopeGeometry::DetContainer::const_iterator it = m_telescopeGeom->detsPXF().begin(),
+						    end = m_telescopeGeom->detsPXF().end();
        it != end; ++it )
   {
     const GeomDet *det = *it;
@@ -433,7 +445,7 @@ FWRecoGeometryESProducer::addPixelForwardGeometry( void )
       unsigned int current = insert_id( rawid );
       fillShapeAndPlacement( current, det );
     
-      ADD_PIXEL_TOPOLOGY( current, m_trackerGeom->idToDetUnit( detid ));
+      ADD_PIXEL_TOPOLOGY( current, m_telescopeGeom->idToDetUnit( detid ));
     }
   }
 }
@@ -441,8 +453,8 @@ FWRecoGeometryESProducer::addPixelForwardGeometry( void )
 void
 FWRecoGeometryESProducer::addTIBGeometry( void )
 {
-  for( TrackerGeometry::DetContainer::const_iterator it = m_trackerGeom->detsTIB().begin(),
-						    end = m_trackerGeom->detsTIB().end();
+  for( TelescopeGeometry::DetContainer::const_iterator it = m_telescopeGeom->detsTIB().begin(),
+						    end = m_telescopeGeom->detsTIB().end();
        it != end; ++it )
   {
     const GeomDet *det = *it;
@@ -454,7 +466,7 @@ FWRecoGeometryESProducer::addTIBGeometry( void )
       unsigned int current = insert_id( rawid );
       fillShapeAndPlacement( current, det );
 
-      ADD_SISTRIP_TOPOLOGY( current, m_trackerGeom->idToDet( detid ));
+      ADD_SISTRIP_TOPOLOGY( current, m_telescopeGeom->idToDet( detid ));
     }
   }
 }
@@ -462,8 +474,8 @@ FWRecoGeometryESProducer::addTIBGeometry( void )
 void
 FWRecoGeometryESProducer::addTOBGeometry( void )
 {
-  for( TrackerGeometry::DetContainer::const_iterator it = m_trackerGeom->detsTOB().begin(),
-						    end = m_trackerGeom->detsTOB().end();
+  for( TelescopeGeometry::DetContainer::const_iterator it = m_telescopeGeom->detsTOB().begin(),
+						    end = m_telescopeGeom->detsTOB().end();
        it != end; ++it )
   {
     const GeomDet *det = *it;
@@ -475,7 +487,7 @@ FWRecoGeometryESProducer::addTOBGeometry( void )
       unsigned int current = insert_id( rawid );
       fillShapeAndPlacement( current, det );
 
-      ADD_SISTRIP_TOPOLOGY( current, m_trackerGeom->idToDet( detid ));
+      ADD_SISTRIP_TOPOLOGY( current, m_telescopeGeom->idToDet( detid ));
     }
   }
 }
@@ -483,8 +495,8 @@ FWRecoGeometryESProducer::addTOBGeometry( void )
 void
 FWRecoGeometryESProducer::addTIDGeometry( void )
 {
-  for( TrackerGeometry::DetContainer::const_iterator it = m_trackerGeom->detsTID().begin(),
-						    end = m_trackerGeom->detsTID().end();
+  for( TelescopeGeometry::DetContainer::const_iterator it = m_telescopeGeom->detsTID().begin(),
+						    end = m_telescopeGeom->detsTID().end();
        it != end; ++it)
   {
     const GeomDet *det = *it;
@@ -496,7 +508,7 @@ FWRecoGeometryESProducer::addTIDGeometry( void )
       unsigned int current = insert_id( rawid );
       fillShapeAndPlacement( current, det );
 
-      ADD_SISTRIP_TOPOLOGY( current, m_trackerGeom->idToDet( detid ));
+      ADD_SISTRIP_TOPOLOGY( current, m_telescopeGeom->idToDet( detid ));
     }
   }
 }
@@ -504,8 +516,8 @@ FWRecoGeometryESProducer::addTIDGeometry( void )
 void
 FWRecoGeometryESProducer::addTECGeometry( void )
 {
-  for( TrackerGeometry::DetContainer::const_iterator it = m_trackerGeom->detsTEC().begin(),
-						    end = m_trackerGeom->detsTEC().end();
+  for( TelescopeGeometry::DetContainer::const_iterator it = m_telescopeGeom->detsTEC().begin(),
+						    end = m_telescopeGeom->detsTEC().end();
        it != end; ++it )
   {
     const GeomDet *det = *it;
@@ -517,7 +529,7 @@ FWRecoGeometryESProducer::addTECGeometry( void )
       unsigned int current = insert_id( rawid );
       fillShapeAndPlacement( current, det );
 
-      ADD_SISTRIP_TOPOLOGY( current, m_trackerGeom->idToDet( detid ));
+      ADD_SISTRIP_TOPOLOGY( current, m_telescopeGeom->idToDet( detid ));
     }
   }
 }

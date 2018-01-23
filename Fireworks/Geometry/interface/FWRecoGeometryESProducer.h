@@ -15,7 +15,7 @@ namespace edm
 class CaloGeometry;
 class HGCalGeometry;
 class GlobalTrackingGeometry;
-class TrackerGeometry;
+class TelescopeGeometry;
 class FastTimeGeometry;
 class FWRecoGeometry;
 class FWRecoGeometryRecord;
@@ -26,6 +26,8 @@ class FWRecoGeometryESProducer : public edm::ESProducer
 public:
   FWRecoGeometryESProducer( const edm::ParameterSet& );
   ~FWRecoGeometryESProducer( void ) override;
+  
+ 
   
   std::shared_ptr<FWRecoGeometry> produce( const FWRecoGeometryRecord& );
 
@@ -61,11 +63,11 @@ private:
   edm::ESHandle<CaloGeometry>                m_caloGeom;
   edm::ESHandle<FastTimeGeometry>            m_ftlBarrelGeom,m_ftlEndcapGeom;
   std::vector<edm::ESHandle<HGCalGeometry> > m_hgcalGeoms;
-  const TrackerGeometry*                     m_trackerGeom;
+  const TelescopeGeometry*                   m_telescopeGeom;
   std::shared_ptr<FWRecoGeometry>            m_fwGeometry;
   
   unsigned int m_current;
-  bool m_tracker;
+  bool m_telescope;
   bool m_muon;
   bool m_calo;
   bool m_timing;

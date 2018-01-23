@@ -45,3 +45,11 @@ NB: Analyzer in charge of actually plotting the SimHit map.
 cmsRun SimTracker/SiPixelDigitizer/test/testPixelDigitizer.py  SimHit -> Digis
 
 cmsRun SimTracker/SiPhase2Digitizer/test/DigiTest_cfg.py       Monitor Digis which are obtained at the previous step
+
+
+
+### Debug with Fireworks (on progress)
+ cmsShow -i TrackerPhase2TestBeam_DIGI.root  --sim-geom-file  simGeoTelescope.root  -c $CMSSW_RELEASE_BASE/src/Fireworks/Core/macros/simGeo.fwc
+ # replace by
+ cmsRun Fireworks/Geometry/python/dumpRecoGeometry_cfg.py tag=Telescope out=recoGeoTelescope.root
+ cmsShow -i TrackerPhase2TestBeam_DIGI.root  --geom-file  recoGeoTelescope.root  -c $CMSSW_RELEASE_BASE/src/Fireworks/Core/macros/simGeo.fwc <- or miniaod.fwc ?

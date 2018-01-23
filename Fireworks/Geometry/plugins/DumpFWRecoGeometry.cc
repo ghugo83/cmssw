@@ -6,10 +6,12 @@
 #include "Fireworks/Geometry/interface/FWRecoGeometry.h"
 #include "Fireworks/Geometry/interface/FWRecoGeometryRecord.h"
 
+
 #include "TFile.h"
 #include "TTree.h"
 #include "TError.h"
 #include "TSystem.h"
+#include <iostream>
 
 class DumpFWRecoGeometry : public edm::EDAnalyzer
 {
@@ -37,6 +39,10 @@ void
 DumpFWRecoGeometry::analyze( const edm::Event& event, const edm::EventSetup& eventSetup )
 {
   using namespace edm;
+
+
+std::cout << "DumpFWRecoGeometry::analyze" << std::endl;
+
 
   ESTransientHandle<FWRecoGeometry> geoh;
   eventSetup.get<FWRecoGeometryRecord>().get( geoh );
