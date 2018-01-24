@@ -53,3 +53,8 @@ cmsRun SimTracker/SiPhase2Digitizer/test/DigiTest_cfg.py       Monitor Digis whi
  # replace by
  cmsRun Fireworks/Geometry/python/dumpRecoGeometry_cfg.py tag=Telescope out=recoGeoTelescope.root
  cmsShow -i TrackerPhase2TestBeam_DIGI.root  --geom-file  recoGeoTelescope.root  -c $CMSSW_RELEASE_BASE/src/Fireworks/Core/macros/simGeo.fwc <- or miniaod.fwc ?
+ 
+ 
+ https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePixelDigitization 
+ https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideEDMParametersForModules
+ https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideSimulation 
