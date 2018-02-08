@@ -49,7 +49,7 @@ class GeometricDet {
   //
   // more can be added; please add at the end!
   //
-  typedef enum GDEnumType {unknown=100, Tracker=0, PixelBarrel=1, PixelEndCap=2,
+  typedef enum GDEnumType { unknown=100, Tracker=0, PixelBarrel=1, PixelEndCap=2,
 			  TIB=3, TID=4, TOB=5, TEC=6,
 			  layer=8, wheel=9, strng=10, rod=11, petal=12, ring=13,
 			   ladder=14, mergedDet=15, DetUnit=16, disk=17, panel=18, 
@@ -58,8 +58,12 @@ class GeometricDet {
 			   OTPhase2EndCap=204, OTPhase2Barrel=205, OTPhase2Layer=208, OTPhase2Stack=215,
 			   PixelPhase2Barrel=201, PixelPhase2EndCap=202, OTPhase2Wheel=209,
 			   PixelPhase2FullDisk=217,PixelPhase2ReducedDisk=227,
-			   PixelPhase2TDRDisk=237 } GeometricEnumType;
-			   // PixelV4021Barrel=301, PixelV4021EndCap=302 } GeometricEnumType;
+			   PixelPhase2TDRDisk=237,
+			    Telescope = 300, 
+			    DUTContainer = 301, DUTHolder = 302, DUT = 303,
+			    Arm = 310, Plane = 311, Phase1PixelModule = 312
+  } GeometricEnumType;
+			   
   /**
    * Constructors to be used when looping over DDD
    */
