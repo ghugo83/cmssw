@@ -80,6 +80,7 @@ process.RAWSIMoutput = cms.OutputModule("PoolOutputModule",       # process.FEVT
 
 # Other statements
 process.genstepfilter.triggerConditions=cms.vstring("generation_step")
+process.g4SimHits.UseMagneticField = cms.bool(False)
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')  # TO DO: Conditions will obviously need to be tuned.
 # 'auto:phase2_realistic'
