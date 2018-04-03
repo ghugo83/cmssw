@@ -34,7 +34,8 @@ process.maxEvents = cms.untracked.PSet(
 # Input source
 process.source = cms.Source ("PoolSource",
     fileNames = cms.untracked.vstring ([
-        "file:TrackerPhase2TestBeam_GEN_SIM.root"    
+        #"file:TrackerPhase2TestBeam_GEN_SIM.root"    
+        "file:SinglePionE120GeV_FlatRandomEThetaGun_cfi_py_GEN_SIM.root"    
         ])
 )
 
