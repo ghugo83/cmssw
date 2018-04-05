@@ -6861,6 +6861,19 @@ note: see OT613_200_IT404_2018_04_05.cfg for full config files
 <rMaterial name="tracker:tkLayout_Steel"/>
 </MaterialFraction>
 </CompositeMaterial>
+<CompositeMaterial name="supportcompositeR1155Z2000" density="0.94265*g/cm3" method="mixture by weight">
+<MaterialFraction fraction="0.914337">
+<rMaterial name="tracker:tkLayout_CF"/>
+</MaterialFraction>
+<MaterialFraction fraction="0.0856628">
+<rMaterial name="tracker:tkLayout_PE"/>
+</MaterialFraction>
+</CompositeMaterial>
+<CompositeMaterial name="supportcompositeR714Z291" density="2.2815*g/cm3" method="mixture by weight">
+<MaterialFraction fraction="1">
+<rMaterial name="tracker:tkLayout_CF"/>
+</MaterialFraction>
+</CompositeMaterial>
 </MaterialSection>
 <RotationSection label="tracker.xml">
 <Rotation name="OUTERTRACKERRODTOFLIPPEDMODULE" thetaX="90*deg" phiX="270*deg" thetaY="0*deg" phiY="0*deg" thetaZ="90*deg" phiZ="180*deg"/>

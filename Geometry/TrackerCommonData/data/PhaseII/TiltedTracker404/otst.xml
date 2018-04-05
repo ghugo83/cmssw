@@ -25,19 +25,6 @@
 	<rMaterial name="tracker:tkLayout_CF"/>
       </MaterialFraction>
     </CompositeMaterial>
-    <CompositeMaterial name="supportcompositeR1155Z2000" density="0.94265*g/cm3" method="mixture by weight">
-      <MaterialFraction fraction="0.914337">
-	<rMaterial name="tracker:tkLayout_CF"/>
-      </MaterialFraction>
-      <MaterialFraction fraction="0.0856628">
-	<rMaterial name="tracker:tkLayout_PE"/>
-      </MaterialFraction>
-    </CompositeMaterial>
-    <CompositeMaterial name="supportcompositeR714Z291" density="2.2815*g/cm3" method="mixture by weight">
-      <MaterialFraction fraction="1">
-	<rMaterial name="tracker:tkLayout_CF"/>
-      </MaterialFraction>
-    </CompositeMaterial>
   </MaterialSection>
   
   <LogicalPartSection label="otst.xml">
