@@ -10,7 +10,7 @@ note: see OT613_200_IT404_2018_04_05.cfg for full config files
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.cern.ch/www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
 <ConstantsSection label="tracker.xml" eval="true">
 <Constant name="BackPlaneDz" value="0.015*mm"/>
-<Constant name="TrackerOutermostRadius" value="120.0*cm"/>
+<Constant name="TrackerOutermostRadius" value="122.15*cm"/>
 </ConstantsSection>
 <MaterialSection label="tracker.xml">
 <ElementaryMaterial name="tkLayout_Li" symbol="Li" atomicNumber="3" atomicWeight="6.8678*g/mole" density="0.534*g/cm3"/>
