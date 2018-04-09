@@ -29,6 +29,9 @@
 #include "DataFormats/ForwardDetId/interface/BTLDetId.h"
 #include "DataFormats/ForwardDetId/interface/ETLDetId.h"
 
+
+//#define DEB_NUM
+
 class TestMTDNumbering : public edm::one::EDAnalyzer<> {
 public:
   explicit TestMTDNumbering( const edm::ParameterSet& );
@@ -129,11 +132,17 @@ void TestMTDNumbering::checkMTD ( const DDCompactView& cpv, std::string fname, i
       isBarrel = true;
       limit = num;
       write = true;
+#ifdef DEB_NUM
+      edm::LogInfo("TestMTDNumbering") << "isBarrel = " << isBarrel;
+#endif
     }
     else if ( epv.geoHistory()[num-1].logicalPart().name() == "etl:EndcapTimingLayer" ) {
       isBarrel = false;
       limit = num;
       write = true;
+#ifdef DEB_NUM
+      edm::LogInfo("TestMTDNumbering") << "isBarrel = " << isBarrel;
+#endif
     }
 
     // Actions for MTD volumes: searchg for sensitive detectors
@@ -180,7 +189,9 @@ void TestMTDNumbering::theBaseNumber( const DDGeoHistory& gh ) {
     std::string name(gh[i].logicalPart().name());
     int copyN(gh[i].copyno());
     thisN_.addLevel( name, copyN );
-    //    std::cout << name << " " << copyN << std::endl;
+#ifdef DEB_NUM
+    edm::LogInfo("TestMTDNumbering") << name << " " << copyN;
+#endif
   }
 
 }

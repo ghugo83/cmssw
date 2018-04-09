@@ -23,7 +23,7 @@ uint32_t BTLNumberingScheme::getUnitID(const MTDBaseNumber& baseNumber) const {
   edm::LogInfo("MTDGeom") << "BTLNumberingScheme geometry levels = " << nLevels;
 #endif  
 
-  if( 10 > nLevels )
+  if( 9 > nLevels )
   {   
      edm::LogWarning("MTDGeom") << "BTLNumberingScheme::getUnitID(): "
                                 << "Not enough levels found in MTDBaseNumber ( "
@@ -31,6 +31,18 @@ uint32_t BTLNumberingScheme::getUnitID(const MTDBaseNumber& baseNumber) const {
                                 << ") Returning 0" ;
      return 0;
   }
+
+#ifdef DEB_NUM
+  edm::LogInfo("MTDGeom") << baseNumber.getLevelName(0) << ", "
+                          << baseNumber.getLevelName(1) << ", "
+                          << baseNumber.getLevelName(2) << ", "
+                          << baseNumber.getLevelName(3) << ", "
+                          << baseNumber.getLevelName(4) << ", "
+                          << baseNumber.getLevelName(5) << ", "
+                          << baseNumber.getLevelName(6) << ", "
+                          << baseNumber.getLevelName(7) << ", "
+                          << baseNumber.getLevelName(8);
+#endif
 
   const uint32_t crystal ( baseNumber.getCopyNumber( 0 ) ) ;
 
@@ -43,19 +55,6 @@ uint32_t BTLNumberingScheme::getUnitID(const MTDBaseNumber& baseNumber) const {
   const uint32_t zside = ( pos <= strlen(modName.c_str()) ? 1 : 0 );
   std::string baseName = modName.substr(modName.find(":")+1);
   const int modtyp ( ::atoi( (baseName.substr(7,1)).c_str() ) ) ;
-
-#ifdef DEB_NUM
-  edm::LogInfo("MTDGeom") << baseNumber.getLevelName(0) << ", "
-                          << baseNumber.getLevelName(1) << ", "
-                          << baseNumber.getLevelName(2) << ", "
-                          << baseNumber.getLevelName(3) << ", "
-                          << baseNumber.getLevelName(4) << ", "
-                          << baseNumber.getLevelName(5) << ", "
-                          << baseNumber.getLevelName(6) << ", "
-                          << baseNumber.getLevelName(7) << ", "
-                          << baseNumber.getLevelName(8) << ", "
-                          << baseNumber.getLevelName(9) ;
-#endif
   
   // error checking
 
