@@ -7,11 +7,6 @@ namespace DataFormats_FTLDigi {
     FTLSample anFTLsample;
     std::vector<FTLSample> vFTLsample;
 
-    FTLDataFrame anFTLDataFrame;
-    std::vector<FTLDataFrame> vFTLDataFrames;
-    edm::SortedCollection< FTLDataFrame > scFTLDataFrames;
-    edm::Wrapper< edm::SortedCollection< FTLDataFrame > > prodFTLDataFrames;
-
     BTLDataFrame anBTLDataFrame;
     std::vector<BTLDataFrame> vBTLDataFrames;
     edm::SortedCollection< BTLDataFrame > scBTLDataFrames;

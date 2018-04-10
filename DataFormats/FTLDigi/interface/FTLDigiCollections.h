@@ -3,13 +3,9 @@
 
 #include "DataFormats/Common/interface/SortedCollection.h"
 #include "DataFormats/FTLDigi/interface/FTLDataFrameT.h"
-#include "DataFormats/ForwardDetId/interface/MTDDetId.h"
 #include "DataFormats/ForwardDetId/interface/BTLDetId.h"
 #include "DataFormats/ForwardDetId/interface/ETLDetId.h"
 #include "DataFormats/FTLDigi/interface/FTLSample.h"
-
-typedef FTLDataFrameT<MTDDetId,FTLSample> FTLDataFrame;
-typedef edm::SortedCollection< FTLDataFrame > FTLDigiCollection;
 
 typedef FTLDataFrameT<BTLDetId,FTLSample> BTLDataFrame;
 typedef edm::SortedCollection< BTLDataFrame > BTLDigiCollection;
