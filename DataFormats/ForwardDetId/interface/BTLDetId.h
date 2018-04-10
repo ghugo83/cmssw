@@ -8,6 +8,10 @@
     @class BTLDetId
     @brief Detector identifier class for the Barrel Timing Layer.
     The crystal count must start from 0, copy number must be scaled by 1 unit.
+
+    bit 15-10: module sequential number
+    bit 9-8  : crystal type (1 - 3)
+    bit 7-0  : crystal sequential number within a module ( 0 - 63 )
 */
 
 class BTLDetId : public MTDDetId {
@@ -15,7 +19,7 @@ class BTLDetId : public MTDDetId {
  private:
   
   static const uint32_t kBTLmoduleOffset           = 10;
-  static const uint32_t kBTLmoduleMask             = 0x7F;
+  static const uint32_t kBTLmoduleMask             = 0x3F;
   static const uint32_t kBTLmodTypeOffset          = 8;
   static const uint32_t kBTLmodTypeMask            = 0x3;
   static const uint32_t kBTLCrystalOffset          = 0;
@@ -27,8 +31,6 @@ class BTLDetId : public MTDDetId {
   
   /** Construct a null id */
   // BTLDetId() : MTDDetId( DetId::MTD, MTDDetId::BTL ) {;}
-  // Temporary hack to avoid recompiling CMSSW
- BTLDetId() : MTDDetId( DetId::HGCalEE, MTDDetId::BTL ) {;}
 
   /** Construct from a raw value */
  BTLDetId( const uint32_t& raw_id ) : MTDDetId( raw_id ) {;}
@@ -42,8 +44,9 @@ class BTLDetId : public MTDDetId {
            uint32_t module, 
            uint32_t modtyp, 
            //           uint32_t crystal ) : MTDDetId( DetId::MTD, MTDDetId::BTL ) {
-           uint32_t crystal ) : MTDDetId( DetId::HGCalEE, MTDDetId::BTL ) {
-    id_ |= ( zside& kZsideMask ) << kZsideOffset |
+           uint32_t crystal ) : MTDDetId( DetId::Forward, ForwardSubdetector::FastTime ) {
+    id_ |= ( MTDType::BTL& kMTDsubdMask ) << kMTDsubdOffset |
+      ( zside& kZsideMask ) << kZsideOffset |
       ( rod& kRodRingMask ) << kRodRingOffset |
       ( module& kBTLmoduleMask ) << kBTLmoduleOffset |
       ( modtyp& kBTLmodTypeMask ) << kBTLmodTypeOffset |

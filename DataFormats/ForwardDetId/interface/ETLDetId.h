@@ -7,6 +7,9 @@
 /** 
     @class ETLDetId
     @brief Detector identifier class for the Endcap Timing Layer.
+
+    bit 15-7 : module sequential number
+    bit 6-5  : module type (unused so far)
 */
 
 class ETLDetId : public MTDDetId {
@@ -24,8 +27,6 @@ class ETLDetId : public MTDDetId {
   
   /** Construct a null id */
   // ETLDetId() : MTDDetId( DetId::MTD, MTDDetId::ETL ) {;}
-  // Temporary hack to avoid recompiling CMSSW
- ETLDetId() : MTDDetId( DetId::HGCalEE, MTDDetId::ETL ) {;}
   
   /** Construct from a raw value */
  ETLDetId( const uint32_t& raw_id ) : MTDDetId( raw_id ) {;}
@@ -38,8 +39,9 @@ class ETLDetId : public MTDDetId {
            uint32_t ring, 
            uint32_t module, 
            //           uint32_t modtyp ) : MTDDetId( DetId::MTD, MTDDetId::ETL ) {
-           uint32_t modtyp ) : MTDDetId( DetId::HGCalEE, MTDDetId::ETL ) {
-    id_ |= ( zside& kZsideMask ) << kZsideOffset |
+           uint32_t modtyp ) : MTDDetId( DetId::Forward, ForwardSubdetector::FastTime ) {
+    id_ |= ( MTDType::ETL& kMTDsubdMask ) << kMTDsubdOffset |
+      ( zside& kZsideMask ) << kZsideOffset |
       ( ring& kRodRingMask ) << kRodRingOffset |
       ( module& kETLmoduleMask ) << kETLmoduleOffset |
       ( modtyp& kETLmodTypeMask ) << kETLmodTypeOffset ;
