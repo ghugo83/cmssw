@@ -1,10 +1,10 @@
-#include "SimFastTiming/FastTimingCommon/interface/SimpleElectronicsSimInMIPs.h"
+#include "SimFastTiming/FastTimingCommon/interface/BTLElectronicsSim.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 using namespace ftl;
 
-SimpleElectronicsSimInMIPs::SimpleElectronicsSimInMIPs(const edm::ParameterSet& pset) :
+BTLElectronicsSim::BTLElectronicsSim(const edm::ParameterSet& pset) :
   debug_( pset.getUntrackedParameter<bool>("debug",false) ),
   adcNbits_( pset.getParameter<uint32_t>("adcNbits") ),
   tdcNbits_( pset.getParameter<uint32_t>("tdcNbits") ),
@@ -14,8 +14,9 @@ SimpleElectronicsSimInMIPs::SimpleElectronicsSimInMIPs(const edm::ParameterSet& 
   toaLSB_ns_( pset.getParameter<double>("toaLSB_ns")) {    
 }
 
-void SimpleElectronicsSimInMIPs::run(const ftl::FTLSimHitDataAccumulator& input,
-				     FTLDigiCollection& output) const {
+
+void BTLElectronicsSim::runBTL(const ftl::FTLSimHitDataAccumulator& input,
+			       BTLDigiCollection& output) const {
   
   FTLSimHitData chargeColl,toa;
   
@@ -37,24 +38,24 @@ void SimpleElectronicsSimInMIPs::run(const ftl::FTLSimHitDataAccumulator& input,
     }
     
     //run the shaper to create a new data frame
-    FTLDataFrame rawDataFrame( it->first );    
-    runTrivialShaper(rawDataFrame,chargeColl,toa);
-    updateOutput(output,rawDataFrame);
+    BTLDataFrame rawDataFrame( it->first );    
+    runTrivialShaperBTL(rawDataFrame,chargeColl,toa);
+    updateOutputBTL(output,rawDataFrame);
     
   }
     
 }
 
   
-void SimpleElectronicsSimInMIPs::runTrivialShaper(FTLDataFrame &dataFrame, 
-						  const ftl::FTLSimHitData& chargeColl,
-						  const ftl::FTLSimHitData& toa) const {
+void BTLElectronicsSim::runTrivialShaperBTL(BTLDataFrame &dataFrame, 
+					    const ftl::FTLSimHitData& chargeColl,
+					    const ftl::FTLSimHitData& toa) const {
     bool debug = debug_;
 #ifdef EDM_ML_DEBUG  
   for(int it=0; it<(int)(chargeColl.size()); it++) debug |= (chargeColl[it]>adcThreshold_fC_);
 #endif
     
-  if(debug) edm::LogVerbatim("FTLSimpleElectronicsSimInMIPs") << "[runTrivialShaper]" << std::endl;
+  if(debug) edm::LogVerbatim("BTLElectronicsSim") << "[runTrivialShaper]" << std::endl;
   
   //set new ADCs 
   for(int it=0; it<(int)(chargeColl.size()); it++)
@@ -66,28 +67,30 @@ void SimpleElectronicsSimInMIPs::runTrivialShaper(FTLDataFrame &dataFrame,
       newSample.set(chargeColl[it] > adcThreshold_MIP_,false,tdc_time,adc);
       dataFrame.setSample(it,newSample);
 
-      if(debug) edm::LogVerbatim("FTLSimpleElectronicsSimInMIPs") << adc << " (" << chargeColl[it] << "/" << adcLSB_MIP_ << ") ";
+      if(debug) edm::LogVerbatim("BTLElectronicsSim") << adc << " (" << chargeColl[it] << "/" << adcLSB_MIP_ << ") ";
     }
 
   if(debug) { 
     std::ostringstream msg;
     dataFrame.print(msg);
-    edm::LogVerbatim("FTLSimpleElectronicsSimInMIPs") << msg.str() << std::endl;
+    edm::LogVerbatim("BTLElectronicsSim") << msg.str() << std::endl;
   } 
 }
   
-void SimpleElectronicsSimInMIPs::updateOutput(FTLDigiCollection &coll,
-					      const FTLDataFrame& rawDataFrame) const {
+void BTLElectronicsSim::updateOutputBTL(BTLDigiCollection &coll,
+					const BTLDataFrame& rawDataFrame) const {
   int itIdx(9);
   if(rawDataFrame.size()<=itIdx+2) return;
   
-  FTLDataFrame dataFrame( rawDataFrame.id() );
+  BTLDataFrame dataFrame( rawDataFrame.id() );
   dataFrame.resize(5);
   bool putInEvent(false);
   for(int it=0;it<5; ++it) {    
     dataFrame.setSample(it, rawDataFrame[itIdx-2+it]);
     if(it==2) putInEvent = rawDataFrame[itIdx-2+it].threshold(); 
   }
+
+  //std::cout << dataFrame.id() << std::endl;
 
   if(putInEvent) {
     coll.push_back(dataFrame);    
