@@ -20,8 +20,8 @@ class FTLUncalibratedRecHitProducer : public edm::stream::EDProducer<> {
   
  private:
   
-  const edm::EDGetTokenT<FTLDigiCollection> ftlbDigis_; // collection of HGCEE digis
-  const edm::EDGetTokenT<FTLDigiCollection> ftleDigis_; // collection of HGCHEF digis
+  const edm::EDGetTokenT<BTLDigiCollection> ftlbDigis_; // collection of BTL digis
+  const edm::EDGetTokenT<ETLDigiCollection> ftleDigis_; // collection of ETL digis
   
   const std::string ftlbInstance_; // instance name of barrel hits
   const std::string ftleInstance_; // instance name of endcap hits
@@ -30,8 +30,8 @@ class FTLUncalibratedRecHitProducer : public edm::stream::EDProducer<> {
 };
 
 FTLUncalibratedRecHitProducer::FTLUncalibratedRecHitProducer(const edm::ParameterSet& ps) :
-  ftlbDigis_( consumes<FTLDigiCollection>( ps.getParameter<edm::InputTag>("barrelDigis") ) ),
-  ftleDigis_( consumes<FTLDigiCollection>( ps.getParameter<edm::InputTag>("endcapDigis") ) ),
+  ftlbDigis_( consumes<BTLDigiCollection>( ps.getParameter<edm::InputTag>("barrelDigis") ) ),
+  ftleDigis_( consumes<ETLDigiCollection>( ps.getParameter<edm::InputTag>("endcapDigis") ) ),
   ftlbInstance_( ps.getParameter<std::string>("BarrelHitsName") ),
   ftleInstance_( ps.getParameter<std::string>("EndcapHitsName") ) {
   
@@ -67,14 +67,14 @@ FTLUncalibratedRecHitProducer::produce(edm::Event& evt, const edm::EventSetup& e
   auto barrelRechits = std::make_unique<FTLUncalibratedRecHitCollection>();
   auto endcapRechits = std::make_unique<FTLUncalibratedRecHitCollection>();
   
-  edm::Handle< FTLDigiCollection > hBarrel;
+  edm::Handle< BTLDigiCollection > hBarrel;
   evt.getByToken( ftlbDigis_, hBarrel );  
   barrelRechits->reserve(hBarrel->size()/2);
   for(const auto& digi : *hBarrel) {
     barrelRechits->push_back( std::move(barrel_->makeRecHit(digi)) );
   }
 
-  edm::Handle< FTLDigiCollection > hEndcap;
+  edm::Handle< ETLDigiCollection > hEndcap;
   evt.getByToken( ftleDigis_, hEndcap );  
   endcapRechits->reserve(hEndcap->size()/2);
   for(const auto& digi : *hEndcap) {
