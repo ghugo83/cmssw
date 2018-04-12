@@ -21,6 +21,7 @@ class BTLDeviceSim {
 
   void getHitsResponse(const std::vector<std::tuple<int,uint32_t,float>  > &hitRefs, 
 		       const edm::Handle<edm::PSimHitContainer> &hits,
+		       const float bxTime, const float tofDelay,
 		       ftl_digitizer::FTLSimHitDataAccumulator *simHitAccumulator);
 
   float getChargeForHit(const PSimHit& hit) const {

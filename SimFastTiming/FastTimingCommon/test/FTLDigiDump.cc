@@ -78,7 +78,7 @@ FTLDigiDump::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       // --- detector element ID:
       std::cout << "   det ID:  det = " << dataFrame.id().det() 
-		<< "  subdet = "  << dataFrame.id().subdetId() 
+		<< "  subdet = "  << dataFrame.id().mtdSubDetector() 
 		<< "  side = "    << dataFrame.id().mtdSide() 
 		<< "  rod = "     << dataFrame.id().mtdRR() 
 		<< "  mod = "     << dataFrame.id().btlModule() 
@@ -118,7 +118,7 @@ FTLDigiDump::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       // --- detector element ID:
       std::cout << "   det ID:  det = " << dataFrame.id().det() 
-		<< "  subdet = " << dataFrame.id().subdetId() 
+		<< "  subdet = " << dataFrame.id().mtdSubDetector()
 		<< "  side = "   << dataFrame.id().mtdSide() 
 		<< "  ring = "   << dataFrame.id().mtdRR() 
 		<< "  mod = "    << dataFrame.id().etlModule() 

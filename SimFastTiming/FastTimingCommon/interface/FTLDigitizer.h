@@ -140,7 +140,7 @@ namespace ftl_digitizer {
     }
     std::sort(hitRefs.begin(),hitRefs.end(),FTLHelpers::orderByDetIdThenTime);
     
-    deviceSim_.getHitsResponse(hitRefs, hits, &simHitAccumulator_);
+    deviceSim_.getHitsResponse(hitRefs, hits, bxTime_, tofDelay_, &simHitAccumulator_);
 
     hitRefs.clear();
 

@@ -90,8 +90,6 @@ void BTLElectronicsSim::updateOutputBTL(BTLDigiCollection &coll,
     if(it==2) putInEvent = rawDataFrame[itIdx-2+it].threshold(); 
   }
 
-  //std::cout << dataFrame.id() << std::endl;
-
   if(putInEvent) {
     coll.push_back(dataFrame);    
   }
