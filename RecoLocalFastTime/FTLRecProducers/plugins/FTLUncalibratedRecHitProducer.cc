@@ -34,10 +34,10 @@ FTLUncalibratedRecHitProducer::FTLUncalibratedRecHitProducer(const edm::Paramete
   ftleDigis_( consumes<ETLDigiCollection>( ps.getParameter<edm::InputTag>("endcapDigis") ) ),
   ftlbInstance_( ps.getParameter<std::string>("BarrelHitsName") ),
   ftleInstance_( ps.getParameter<std::string>("EndcapHitsName") ) {
-  
+
   produces< FTLUncalibratedRecHitCollection >(ftlbInstance_);
   produces< FTLUncalibratedRecHitCollection >(ftleInstance_);
-  
+
   auto sumes = consumesCollector();
 
   const edm::ParameterSet& barrel = ps.getParameterSet("barrel");
@@ -54,8 +54,7 @@ FTLUncalibratedRecHitProducer::~FTLUncalibratedRecHitProducer() {
 
 void
 FTLUncalibratedRecHitProducer::produce(edm::Event& evt, const edm::EventSetup& es) {
-  
- 
+
   // tranparently get things from event setup
   barrel_->getEventSetup(es);
   endcap_->getEventSetup(es);
@@ -80,7 +79,7 @@ FTLUncalibratedRecHitProducer::produce(edm::Event& evt, const edm::EventSetup& e
   for(const auto& digi : *hEndcap) {
     endcapRechits->push_back( std::move(endcap_->makeRecHit(digi)) );
   }
-      
+
   // put the collection of recunstructed hits in the event
   evt.put(std::move(barrelRechits), ftlbInstance_);
   evt.put(std::move(endcapRechits), ftleInstance_);

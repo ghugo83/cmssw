@@ -31,7 +31,7 @@ FlatTrd::CornersVec RecHitTools::getCorners(const DetId& id) const {
 }
 
 RecHitTools::HitType RecHitTools::getHitType(const DetId& id) const {
-  MTDDetId fid(id);
+  MTDDetId fid(id.rawId());
   return (HitType)fid.mtdSubDetector();
 }
 
