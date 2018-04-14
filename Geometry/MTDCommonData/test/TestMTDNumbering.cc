@@ -22,9 +22,9 @@
 #include "DetectorDescription/Core/interface/DDExpandedView.h"
 #include "DetectorDescription/Core/interface/DDLogicalPart.h"
 
-#include "Geometry/MTDData/interface/MTDBaseNumber.h"
-#include "Geometry/MTDData/interface/BTLNumberingScheme.h"
-#include "Geometry/MTDData/interface/ETLNumberingScheme.h"
+#include "Geometry/MTDCommonData/interface/MTDBaseNumber.h"
+#include "Geometry/MTDCommonData/interface/BTLNumberingScheme.h"
+#include "Geometry/MTDCommonData/interface/ETLNumberingScheme.h"
 
 #include "DataFormats/ForwardDetId/interface/BTLDetId.h"
 #include "DataFormats/ForwardDetId/interface/ETLDetId.h"

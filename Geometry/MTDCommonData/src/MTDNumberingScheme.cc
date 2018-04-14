@@ -1,4 +1,4 @@
-#include "Geometry/MTDData/interface/MTDNumberingScheme.h"
+#include "Geometry/MTDCommonData/interface/MTDNumberingScheme.h"
 
 #include <iostream>
 

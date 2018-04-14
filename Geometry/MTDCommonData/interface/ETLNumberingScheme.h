@@ -1,7 +1,7 @@
 #ifndef ETLNumberingScheme_h
 #define ETLNumberingScheme_h
 
-#include "Geometry/MTDData/interface/MTDNumberingScheme.h"
+#include "Geometry/MTDCommonData/interface/MTDNumberingScheme.h"
 
 class ETLNumberingScheme : public MTDNumberingScheme {
  public:

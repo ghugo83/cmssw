@@ -1,4 +1,4 @@
-#include "Geometry/MTDData/interface/BTLNumberingScheme.h"
+#include "Geometry/MTDCommonData/interface/BTLNumberingScheme.h"
 #include "DataFormats/ForwardDetId/interface/BTLDetId.h"
 
 #include <iostream>

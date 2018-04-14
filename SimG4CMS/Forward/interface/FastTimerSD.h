@@ -12,7 +12,7 @@
 
 #include "SimG4CMS/Forward/interface/BscG4Hit.h"
 #include "SimG4CMS/Forward/interface/BscG4HitCollection.h"
-#include "Geometry/MTDData/interface/MTDNumberingScheme.h"
+#include "Geometry/MTDCommonData/interface/MTDNumberingScheme.h"
   
 #include "G4Step.hh"
 #include "G4StepPoint.hh"

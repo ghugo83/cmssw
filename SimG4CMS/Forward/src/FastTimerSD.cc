@@ -15,9 +15,9 @@
 
 #include "Geometry/Records/interface/IdealGeometryRecord.h"
 
-#include "Geometry/MTDData/interface/MTDBaseNumber.h"
-#include "Geometry/MTDData/interface/BTLNumberingScheme.h"
-#include "Geometry/MTDData/interface/ETLNumberingScheme.h"
+#include "Geometry/MTDCommonData/interface/MTDBaseNumber.h"
+#include "Geometry/MTDCommonData/interface/BTLNumberingScheme.h"
+#include "Geometry/MTDCommonData/interface/ETLNumberingScheme.h"
 #include "DataFormats/ForwardDetId/interface/MTDDetId.h"
 
 #include "SimDataFormats/SimHitMaker/interface/TrackingSlaveSD.h"

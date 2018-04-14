@@ -1,5 +1,5 @@
-#ifndef MTDData_MTDBaseNumber_h
-#define MTDData_MTDBaseNumber_h
+#ifndef MTDCommonData_MTDBaseNumber_h
+#define MTDCommonData_MTDBaseNumber_h
 
 /** \class MTDBaseNumber
  *   

@@ -1,4 +1,4 @@
-#include "Geometry/MTDData/interface/ETLNumberingScheme.h"
+#include "Geometry/MTDCommonData/interface/ETLNumberingScheme.h"
 #include "DataFormats/ForwardDetId/interface/ETLDetId.h"
 
 #include <iostream>

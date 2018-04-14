@@ -3,7 +3,7 @@
 <use   name="MagneticField/Records"/>
 <use   name="DetectorDescription/Core"/>
 <use   name="DetectorDescription/Parser"/>
-<use   name="Geometry/MTDData"/>
+<use   name="Geometry/MTDCommonData"/>
 <flags   EDM_PLUGIN="1"/>
 <library   file="TestMTDNumbering.cc">
 </library>

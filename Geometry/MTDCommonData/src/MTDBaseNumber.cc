@@ -1,4 +1,4 @@
-#include "Geometry/MTDData/interface/MTDBaseNumber.h"
+#include "Geometry/MTDCommonData/interface/MTDBaseNumber.h"
 
 MTDBaseNumber::MTDBaseNumber():_theLevels(0) { } 
 
