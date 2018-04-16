@@ -15131,6 +15131,11 @@ note: see OT613_200_IT404_2018_04_05.cfg for full config files
 </LogicalPart>
 </LogicalPartSection>
 <SolidSection label="tracker.xml">
+<!-- 
+Tracker volume contains Inner Tracker + Outer Tracker + (BTL) + OTST.
+(BTL) is in parentheses as it is not included in all geometry scenarios.
+See Configuration/Geometry/README.md for more details.
+ -->
 <Polycone name="Tracker" startPhi="0*deg" deltaPhi="360*deg">
   <!-- TEMPORARY!! Should be defined automatically -->
   <ZSection z="-291.0*cm" rMin="6.3*cm" rMax="[tracker:TrackerOutermostRadius]"/>
