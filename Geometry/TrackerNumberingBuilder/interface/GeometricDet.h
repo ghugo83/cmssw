@@ -59,9 +59,11 @@ class GeometricDet {
 			   PixelPhase2Barrel=201, PixelPhase2EndCap=202, OTPhase2Wheel=209,
 			   PixelPhase2FullDisk=217,PixelPhase2ReducedDisk=227,
 			   PixelPhase2TDRDisk=237,
-			    Telescope = 300, 
-			    DUTContainer = 301, DUTHolder = 302, DUT = 303,
-			    Arm = 310, Plane = 311, Phase1PixelModule = 312
+			    //Telescope = 300,
+			    Arm = 302, // % 100 = 2, hence subdetector 2 DetId scheme is used.
+			    Plane = 303, Phase1PixelModule = 304,
+			    DUTContainer = 305, // % 100 = 5, hence subdetector 5 DetId scheme is used.
+			    DUTHolder = 306  //DUT = 303,
   } GeometricEnumType;
 			   
   /**
