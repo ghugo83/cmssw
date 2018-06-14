@@ -70,6 +70,7 @@ CmsTrackerStringToEnum::Impl::Impl(){
   _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("Arm",GeometricDet::Arm));
   _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("Plane",GeometricDet::Plane));
   _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("Phase1PixelModule",GeometricDet::Phase1PixelModule));
+  _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("Phase1PixelWafer",GeometricDet::Phase1PixelWafer));
 
 
   //
@@ -116,6 +117,7 @@ CmsTrackerStringToEnum::Impl::Impl(){
   _reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::Arm,"Arm")); 
   _reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::Plane,"Plane")); 
   _reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::Phase1PixelModule,"Phase1PixelModule")); 
+  _reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::Phase1PixelWafer,"Phase1PixelWafer")); 
   //
   // done
   //

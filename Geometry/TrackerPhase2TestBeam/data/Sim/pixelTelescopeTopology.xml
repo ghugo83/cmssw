@@ -69,15 +69,17 @@
 <Parameter name="TkDDDStructure" value="Phase1PixelModule"/>
 </SpecPar>
 
-<SpecPar name="Phase1PixelAddiSensorActivePar">
-<PartSelector path="//Phase1BPIXLayer4Module:PixelBarrelActiveFull3"/>
-<Parameter name="TkDDDStructure" value="PixelBarrelDet"/>  <!-- TO DO : Renaming and associated work here as well: instead of PixelBarrelDet <-> GeometricDet::DetUnit, could add Phase1PixelSensor <-> GeometricDet::DetUnit -->
+<!--
+<SpecPar name="Phase1PixelWaferPar">
+<PartSelector path="//Phase1BPIXLayer4Module:PixelBarrelSensorFull"/>
+<Parameter name="TkDDDStructure" value="Phase1PixelWafer"/> 
 </SpecPar>
+-->
 
 <SpecPar name="Phase1PixelSensorActivePar">
 <PartSelector path="//Phase1BPIXLayer4Module:PixelBarrelActiveFull3"/>
-      <!-- <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>   TO DO : Renaming and associated work here as well: instead of PixelBarrelDet <-> GeometricDet::DetUnit, could add Phase1PixelSensor <-> GeometricDet::DetUnit -->
-      <!-- <Parameter name="Phase1PixelSensor" value="true"/> -->
+      <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>   <!-- TO DO : Renaming and associated work here as well: instead of PixelBarrelDet <-> GeometricDet::DetUnit, could add Phase1PixelSensor <-> GeometricDet::DetUnit -->
+      <Parameter name="Phase1PixelSensor" value="true"/>
       <Parameter name="PixelROCRows" value="80"/>
       <Parameter name="PixelROCCols" value="52"/>
       <Parameter name="PixelROC_X" value="2"/>

@@ -5,40 +5,40 @@
 #include "DataFormats/DetId/interface/DetId.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-#include "Geometry/TrackerNumberingBuilder/plugins/CmsDetConstruction.h"
+#include "Geometry/TrackerNumberingBuilder/plugins/CmsTelescopePhase1PixelWaferBuilder.h"
 
 #include <bitset>
 
 CmsTelescopePhase1PixelModuleBuilder::CmsTelescopePhase1PixelModuleBuilder() {}
 
 void CmsTelescopePhase1PixelModuleBuilder::buildComponent( DDFilteredView& fv, GeometricDet* module, std::string attribute ) {
-CmsDetConstruction myCmsDetBuilder;
+  CmsTelescopePhase1PixelWaferBuilder myPhase1PixelWaferBuilder;
 
-  GeometricDet* myPhase1PixelSensor = new GeometricDet( &fv, theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( attribute, &fv )));
-  switch( theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( attribute, &fv ))) {
-  case GeometricDet::DetUnit:
+  GeometricDet* myWafer = new GeometricDet( &fv, theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( attribute, &fv )));
+  if ( theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( attribute, &fv )) == GeometricDet::Phase1PixelWafer) {
     // TEST
-    std::cout << "Found a Phase1PixelSensor:"
-	      << "myPhase1PixelSensor DetId = " << myPhase1PixelSensor->geographicalID().rawId() 
-	      << ", x = " << myPhase1PixelSensor->translation().X() 
-	      << ", y = " << myPhase1PixelSensor->translation().Y()
-	      << ", z = " << myPhase1PixelSensor->translation().Z()
-	      << ", phi = "  << myPhase1PixelSensor->phi() * 180. / M_PI << std::endl;
+    std::cout << "Found a Phase1PixelWafer:"
+	      << "myPhase1PixelWafer DetId = " << myWafer->geographicalID().rawId() 
+	      << ", x = " << myWafer->translation().X() 
+	      << ", y = " << myWafer->translation().Y()
+	      << ", z = " << myWafer->translation().Z()
+	      << ", phi = "  << myWafer->phi() * 180. / M_PI << std::endl;
     // END TEST
-    myCmsDetBuilder.build( fv, myPhase1PixelSensor, attribute);      
-    break;
-  default:
-    edm::LogError( "CmsTelescopePhase1PixelModuleBuilder" ) << " ERROR - Could not find a DetUnit, but found a " << ExtractStringFromDDD::getString( attribute, &fv );
-  }
+    myPhase1PixelWaferBuilder.build( fv, myWafer, attribute);      
+    // break;
+    //default:
+    //edm::LogError( "CmsTelescopePhase1PixelModuleBuilder" ) << " ERROR - Could not find a Phase1PixelWafer, but found a " << ExtractStringFromDDD::getString( attribute, &fv );
+    //}
   
-  module->addComponent(myPhase1PixelSensor);
+    module->addComponent(myWafer);
+  }
 }
 
 
 
 void CmsTelescopePhase1PixelModuleBuilder::sortNS( DDFilteredView& fv, GeometricDet* parent ) {  
-  GeometricDet::ConstGeometricDetContainer& allPhase1PixelModules = parent->components();
-  std::stable_sort( allPhase1PixelModules.begin(), allPhase1PixelModules.end(), LessY());  // TO DO: use LessR() instead??
+  GeometricDet::ConstGeometricDetContainer& allModules = parent->components();
+  std::stable_sort( allModules.begin(), allModules.end(), LessY());  // TO DO: one one wafer per module!!!
 }
 
 

@@ -5,14 +5,14 @@
 #include "DataFormats/DetId/interface/DetId.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-#include "Geometry/TrackerNumberingBuilder/plugins/CmsTelescopePhase1PixelModuleBuilder.h"
+#include "Geometry/TrackerNumberingBuilder/plugins/ActiveSensorBuilder.h"
 
 #include <bitset>
 
 CmsTelescopePlaneBuilder::CmsTelescopePlaneBuilder() {}
 
 void CmsTelescopePlaneBuilder::buildComponent( DDFilteredView& fv, GeometricDet* plane, std::string attribute ) {
-  CmsTelescopePhase1PixelModuleBuilder myPhase1PixelModuleBuilder;
+  ActiveSensorBuilder myActiveSensorBuilder;
 
   GeometricDet* myModule = new GeometricDet( &fv, theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( attribute, &fv )));
   switch( theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( attribute, &fv ))) {
@@ -25,7 +25,7 @@ void CmsTelescopePlaneBuilder::buildComponent( DDFilteredView& fv, GeometricDet*
 	      << ", z = " << myModule->translation().Z()
 	      << ", phi = "  << myModule->phi() * 180. / M_PI << std::endl;
     // END TEST
-    myPhase1PixelModuleBuilder.build( fv, myModule, attribute);      
+    myActiveSensorBuilder.build( fv, myModule, attribute);      
     break;
   default:
     edm::LogError( "CmsTelescopePlaneBuilder" ) << " ERROR - Could not find a Phase1PixelModule, but found a " << ExtractStringFromDDD::getString( attribute, &fv );
