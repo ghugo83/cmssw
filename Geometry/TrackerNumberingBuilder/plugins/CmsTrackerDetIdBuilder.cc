@@ -90,6 +90,7 @@ CmsTrackerDetIdBuilder::iterate( GeometricDet *in, int level, unsigned int ID )
 	for( uint32_t i = 0; i < (in)->components().size(); i++ )
 	  {
 	    auto component = in->component(i);
+	    std::cout << "CmsTrackerDetIdBuilder::iterate component->type()  =" << component->type() << std::endl;
 	    uint32_t temp = ID;
 	    
 	    if(level<maxLevels) {

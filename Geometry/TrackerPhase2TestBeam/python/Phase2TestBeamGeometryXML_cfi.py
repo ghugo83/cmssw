@@ -36,7 +36,8 @@ XMLIdealGeometryESSource = cms.ESSource("XMLIdealGeometryESSource",
         'Geometry/TrackerPhase2TestBeam/data/Reco/pixelTelescopeRecoMaterial.xml',
         
         # DetId Scheme file
-        'Geometry/TrackerPhase2TestBeam/data/Common/telescopeDetIdScheme.xml'
+        #'Geometry/TrackerPhase2TestBeam/data/Common/telescopeDetIdScheme.xml'
+        'Geometry/TrackerCommonData/data/PhaseII/trackerParameters.xml'
       
     ),
     rootNodeName = cms.string('cms:OCMS')

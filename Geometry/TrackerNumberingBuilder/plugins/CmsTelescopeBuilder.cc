@@ -12,36 +12,45 @@
 
 CmsTelescopeBuilder::CmsTelescopeBuilder() {}
 
-void CmsTelescopeBuilder::buildComponent( DDFilteredView& fv, GeometricDet* allTelescopeContainers, std::string attribute ) {
+void CmsTelescopeBuilder::buildComponent( DDFilteredView& fv, GeometricDet* dutContainerOrArm, std::string attribute ) {
   CmsTelescopeDUTHolderBuilder myDUTHolderBuilder;
   CmsTelescopePlaneBuilder myPlaneBuilder;
 
-  GeometricDet* myTelescopeContainer = new GeometricDet( &fv, theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( attribute, &fv )));
+  GeometricDet* myDUTHolderOrPlane = new GeometricDet( &fv, theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( attribute, &fv )));
   switch( theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( attribute, &fv ))) {
     // DUT holder
   case GeometricDet::DUTHolder:
-    myDUTHolderBuilder.build( fv, myTelescopeContainer, attribute);      
+    // TEST
+    std::cout << "Found a DUT Holder:"
+	      << " myDUTHolder DetId = " <<  myDUTHolderOrPlane->geographicalID().rawId() 
+	      << ", x = " <<  myDUTHolderOrPlane->translation().X() 
+	      << ", y = " <<  myDUTHolderOrPlane->translation().Y()
+	      << ", z = " <<  myDUTHolderOrPlane->translation().Z()
+	      << ", phi = "  <<  myDUTHolderOrPlane->phi() * 180. / M_PI << std::endl;
+    // END TEST
+    myDUTHolderBuilder.build( fv, myDUTHolderOrPlane, attribute);      
     break;
     // Telescope plane
   case GeometricDet::Plane:
-    // TEST        
-    /*std::cout << "arm DetId = " << telescopeContainer->geographicalID().rawId() 
-      << ", x = " << telescopeContainer->translation().X() 
-      << ", y = " << telescopeContainer->translation().Y()
-      << ", z = " << telescopeContainer->translation().Z()
-      << ", phi = "  << telescopeContainer->phi() * 180. / M_PI << std::endl;*/
+    // TEST  
+    std::cout << "Found a Plane:"      
+	      << " plane DetId = " << myDUTHolderOrPlane->geographicalID().rawId() 
+      << ", x = " << myDUTHolderOrPlane->translation().X() 
+      << ", y = " << myDUTHolderOrPlane->translation().Y()
+      << ", z = " << myDUTHolderOrPlane->translation().Z()
+      << ", phi = "  << myDUTHolderOrPlane->phi() * 180. / M_PI << std::endl;
     // END TEST
-    myPlaneBuilder.build( fv, myTelescopeContainer, attribute);      
+    myPlaneBuilder.build( fv, myDUTHolderOrPlane, attribute);      
     break;
   default:
     edm::LogError( "CmsTelescopeBuilder" ) << " ERROR - Could not find a DUTHolder or a Plane, but found a " << ExtractStringFromDDD::getString( attribute, &fv );
   }
   
-  allTelescopeContainers->addComponent( myTelescopeContainer );
+  dutContainerOrArm->addComponent( myDUTHolderOrPlane );
 }
 
 
 void CmsTelescopeBuilder::sortNS( DDFilteredView& fv, GeometricDet* parent ) {  
-  GeometricDet::ConstGeometricDetContainer& allTelescopeContainers = parent->components();
-  std::stable_sort( allTelescopeContainers.begin(), allTelescopeContainers.end(), LessZ());
+  GeometricDet::ConstGeometricDetContainer& allDutHoldersOrPlanes = parent->components();
+  std::stable_sort( allDutHoldersOrPlanes.begin(), allDutHoldersOrPlanes.end(), LessModZ());
 }

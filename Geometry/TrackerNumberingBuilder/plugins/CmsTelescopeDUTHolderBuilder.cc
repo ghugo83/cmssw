@@ -11,20 +11,29 @@
 
 CmsTelescopeDUTHolderBuilder::CmsTelescopeDUTHolderBuilder() {}
 
-void CmsTelescopeDUTHolderBuilder::buildComponent( DDFilteredView& fv, GeometricDet* allDUTHolders, std::string attribute ) {
+void CmsTelescopeDUTHolderBuilder::buildComponent( DDFilteredView& fv, GeometricDet* dutHolder, std::string attribute ) {
   CmsDetConstruction myCmsDetBuilder;
 
-  GeometricDet* myDUTHolder = new GeometricDet( &fv, theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( attribute, &fv )));
+  GeometricDet* myDUT = new GeometricDet( &fv, theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( attribute, &fv )));
   switch( theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( attribute, &fv ))) {
-  case GeometricDet::DetUnit:
-    myCmsDetBuilder.build( fv, myDUTHolder, attribute);      
+  case GeometricDet::OTPhase2Stack:
+    // TEST
+    std::cout << "Found a DUT:"
+	      << " myDUT DetId = " <<  myDUT->geographicalID().rawId() 
+	      << ", x = " <<  myDUT->translation().X() 
+	      << ", y = " <<  myDUT->translation().Y()
+	      << ", z = " <<  myDUT->translation().Z()
+	      << ", phi = "  <<  myDUT->phi() * 180. / M_PI << std::endl;
+    // END TEST
+    myCmsDetBuilder.build( fv, myDUT, attribute);      
     break;
   default:
-    edm::LogError( "CmsTelescopeDUTHolderBuilder" ) << " ERROR - Could not find a DUTHolder, but found a " << ExtractStringFromDDD::getString( attribute, &fv );
+    edm::LogError( "CmsTelescopeDUTHolderBuilder" ) << " ERROR - Could not find a OTPhase2Stack, but found a " << ExtractStringFromDDD::getString( attribute, &fv );
   }
   
-  allDUTHolders->addComponent( myDUTHolder );
+  dutHolder->addComponent( myDUT );
 }
+
 
 
 void CmsTelescopeDUTHolderBuilder::sortNS( DDFilteredView& fv, GeometricDet* parent ) {  

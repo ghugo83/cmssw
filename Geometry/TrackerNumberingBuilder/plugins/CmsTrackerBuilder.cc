@@ -32,7 +32,7 @@ CmsTrackerBuilder::buildComponent( DDFilteredView& fv, GeometricDet* g, std::str
   case GeometricDet::PixelPhase1Barrel:
     theCmsTrackerSubStrctBuilder.build( fv, subdet, s );      
     break;
-      case GeometricDet::PixelPhase2Barrel:
+  case GeometricDet::PixelPhase2Barrel:
     theCmsTrackerSubStrctBuilder.build( fv, subdet, s );      
     break;
   case GeometricDet::PixelEndCap:
@@ -63,14 +63,32 @@ CmsTrackerBuilder::buildComponent( DDFilteredView& fv, GeometricDet* g, std::str
     theCmsTrackerSubStrctBuilder.build( fv, subdet, s );      
     break;
   case GeometricDet::DUTContainer:
+    // TEST
+    std::cout << "Found a DUTContainer:"
+	      << " subdet DetId = " << subdet->geographicalID().rawId() 
+	      << ", x = " << subdet->translation().X() 
+	      << ", y = " << subdet->translation().Y()
+	      << ", z = " << subdet->translation().Z()
+	      << ", phi = "  << subdet->phi() * 180. / M_PI << std::endl;
+    // END TEST
     theCmsTelescopeBuilder.build( fv, subdet, s );    
     break;
   case GeometricDet::Arm:
+    // TEST
+    std::cout << "Found an Arm:"
+	      << " subdet DetId = " << subdet->geographicalID().rawId() 
+	      << ", x = " << subdet->translation().X() 
+	      << ", y = " << subdet->translation().Y()
+	      << ", z = " << subdet->translation().Z()
+	      << ", phi = "  << subdet->phi() * 180. / M_PI << std::endl;
+    // END TEST
     theCmsTelescopeBuilder.build( fv, subdet, s );    
     break;
   default:
     edm::LogError( "CmsTrackerBuilder" ) << " ERROR - I was expecting a SubDet, I got a " << ExtractStringFromDDD::getString( s, &fv );
   }
+
+  std::cout << "CmsTrackerBuilder::buildComponent:   ExtractStringFromDDD::getString( s, &fv ) = " << ExtractStringFromDDD::getString( s, &fv ) << std::endl;
   
   g->addComponent( subdet );
 }

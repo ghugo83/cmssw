@@ -31,6 +31,8 @@ namespace {
     if(gdenum == GeometricDet::GDEnumType::PixelPhase2EndCap) return GeomDetEnumerators::SubDetector::P2PXEC;
     if(gdenum == GeometricDet::GDEnumType::OTPhase2Barrel) return GeomDetEnumerators::SubDetector::P2OTB;
     if(gdenum == GeometricDet::GDEnumType::OTPhase2EndCap) return GeomDetEnumerators::SubDetector::P2OTEC;
+    if(gdenum == GeometricDet::GDEnumType::DUTContainer) return GeomDetEnumerators::SubDetector::P2OTB;
+    if(gdenum == GeometricDet::GDEnumType::Arm) return GeomDetEnumerators::SubDetector::P1PXEC;
     return GeomDetEnumerators::SubDetector::invalidDet;
   }
   

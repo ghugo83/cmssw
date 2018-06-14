@@ -4,9 +4,9 @@ process = cms.Process("NumberingTest")
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 
-process.load("Configuration.Geometry.GeometryReco_cff")
-process.load("Geometry.CMSCommonData.cmsExtendedGeometryXML_cfi")
-process.load("Alignment.CommonAlignmentProducer.FakeAlignmentSource_cfi")
+process.load("Configuration.Geometry.GeometryTrackerPhase2TestBeamReco_cff")
+process.load("Geometry.TrackerPhase2TestBeam.Phase2TestBeamGeometryXML_cfi")
+#process.load("Alignment.CommonAlignmentProducer.FakeAlignmentSource_cfi")
 
 #this is always needed if users want access to the vector<GeometricDetExtra>
 process.TrackerGeometricDetExtraESModule = cms.ESProducer( "TrackerGeometricDetExtraESModule",

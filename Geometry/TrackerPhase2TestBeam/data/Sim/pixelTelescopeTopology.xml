@@ -7,29 +7,29 @@
 <!-- Telescope volume -->
 <SpecPar name="TelescopePar">
 <PartSelector path="//telescope:Telescope" />
-<Parameter name="TelescopeDDDStructure" value="Telescope"/>
+<Parameter name="TkDDDStructure" value="Telescope"/>
 </SpecPar>
 
 
 <!-- DUT Holder and DUT -->
 <SpecPar name="DUTContainerPar">
 <PartSelector path="//telescope:DUTContainer"/>
-<Parameter name="TelescopeDDDStructure" value="DUTContainer"/>
+<Parameter name="TkDDDStructure" value="DUTContainer"/>
 </SpecPar>
 
 <SpecPar name="DUTHolderPar">
 <PartSelector path="//telescope:DUTHolder"/>
-<Parameter name="TelescopeDDDStructure" value="DUTHolder"/>
+<Parameter name="TkDDDStructure" value="DUTHolder"/>
 </SpecPar>
 
 <SpecPar name="DUTPar">
 <PartSelector path="//DUT:BModule1Layer6"/>
-<Parameter name="TelescopeDDDStructure" value="DUT"/>
+<Parameter name="TkDDDStructure" value="DUT"/>
 </SpecPar>
 
 <SpecPar name="InnerSensor2SActivePar">
 <PartSelector path="//DUT:BModule1Layer6Lower2Sactive"/>
-<Parameter name="TelescopeDDDStructure" value="PixelBarrelDet"/>     <!-- TO DO : Renaming and associated work here as well: instead of PixelBarrelDet <-> GeometricDet::DetUnit, could add DUTSensor <-> GeometricDet::DetUnit-->
+<Parameter name="TkDDDStructure" value="PixelBarrelDet"/>     <!-- TO DO : Renaming and associated work here as well: instead of PixelBarrelDet <-> GeometricDet::DetUnit, could add DUTSensor <-> GeometricDet::DetUnit-->
 <Parameter name="TrackerLowerDetectors" value="true"/>
 <!-- <Parameter name="DUTInnerSensor" value="true"/>   -->                    
 <Parameter name="PixelROCRows" value="127"/>
@@ -40,7 +40,7 @@
 
 <SpecPar name="OuterSensor2SActivePar">
 <PartSelector path="//DUT:BModule1Layer6Upper2Sactive"/>
-<Parameter name="TelescopeDDDStructure" value="PixelBarrelDet"/>
+<Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
 <Parameter name="TrackerUpperDetectors" value="true"/>
 <!-- <Parameter name="DUTOuterSensor" value="true"/>   -->
 <Parameter name="PixelROCRows" value="127"/>
@@ -56,22 +56,27 @@
 
 <SpecPar name="ArmPar">
 <PartSelector path="//telescope:Arm"/>
-<Parameter name="TelescopeDDDStructure" value="Arm"/>
+<Parameter name="TkDDDStructure" value="Arm"/>
 </SpecPar>
 
 <SpecPar name="PlanePar">
 <PartSelector path="//telescope:Plane"/>
-<Parameter name="TelescopeDDDStructure" value="Plane"/>
+<Parameter name="TkDDDStructure" value="Plane"/>
 </SpecPar>
 
 <SpecPar name="Phase1PixelModulePar">
 <PartSelector path="//Phase1BPIXLayer4Module:PixelBarrelModuleFullPlus"/>
-<Parameter name="TelescopeDDDStructure" value="Phase1PixelModule"/>
+<Parameter name="TkDDDStructure" value="Phase1PixelModule"/>
+</SpecPar>
+
+<SpecPar name="Phase1PixelAddiSensorActivePar">
+<PartSelector path="//Phase1BPIXLayer4Module:PixelBarrelActiveFull3"/>
+<Parameter name="TkDDDStructure" value="PixelBarrelDet"/>  <!-- TO DO : Renaming and associated work here as well: instead of PixelBarrelDet <-> GeometricDet::DetUnit, could add Phase1PixelSensor <-> GeometricDet::DetUnit -->
 </SpecPar>
 
 <SpecPar name="Phase1PixelSensorActivePar">
 <PartSelector path="//Phase1BPIXLayer4Module:PixelBarrelActiveFull3"/>
-      <Parameter name="TelescopeDDDStructure" value="PixelBarrelDet"/>  <!-- TO DO : Renaming and associated work here as well: instead of PixelBarrelDet <-> GeometricDet::DetUnit, could add Phase1PixelSensor <-> GeometricDet::DetUnit -->
+      <!-- <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>   TO DO : Renaming and associated work here as well: instead of PixelBarrelDet <-> GeometricDet::DetUnit, could add Phase1PixelSensor <-> GeometricDet::DetUnit -->
       <!-- <Parameter name="Phase1PixelSensor" value="true"/> -->
       <Parameter name="PixelROCRows" value="80"/>
       <Parameter name="PixelROCCols" value="52"/>

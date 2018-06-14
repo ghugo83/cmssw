@@ -22,7 +22,9 @@ DDDCmsTrackerContruction::construct( const DDCompactView* cpv, std::vector<int> 
   DDFilteredView fv( *cpv, filter ); 
   if( theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString(attribute,&fv)) != GeometricDet::Tracker )
   {
+    std::cout << "DDDCmsTrackerContruction::construct before getchild " << ExtractStringFromDDD::getString( attribute, &fv ) << std::endl;
     fv.firstChild();
+    std::cout << "DDDCmsTrackerContruction::construct after getchild " << ExtractStringFromDDD::getString( attribute, &fv ) << std::endl;
     if( theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString(attribute,&fv)) != GeometricDet::Tracker )
     {  
       throw cms::Exception( "Configuration" ) << " The first child of the DDFilteredView is not what is expected \n"

@@ -11,32 +11,33 @@
 
 CmsTelescopePlaneBuilder::CmsTelescopePlaneBuilder() {}
 
-void CmsTelescopePlaneBuilder::buildComponent( DDFilteredView& fv, GeometricDet* arm, std::string attribute ) {
+void CmsTelescopePlaneBuilder::buildComponent( DDFilteredView& fv, GeometricDet* plane, std::string attribute ) {
   CmsTelescopePhase1PixelModuleBuilder myPhase1PixelModuleBuilder;
 
-  GeometricDet* myPlane = new GeometricDet( &fv, theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( attribute, &fv )));
+  GeometricDet* myModule = new GeometricDet( &fv, theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( attribute, &fv )));
   switch( theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( attribute, &fv ))) {
-  case GeometricDet::Plane:
+  case GeometricDet::Phase1PixelModule:
     // TEST
-    /*std::cout << "myPlane DetId = " << myPlane->geographicalID().rawId() 
-	      << ", x = " << myPlane->translation().X() 
-	      << ", y = " << myPlane->translation().Y()
-	      << ", z = " << myPlane->translation().Z()
-	      << ", phi = "  << myPlane->phi() * 180. / M_PI << std::endl;*/
+    std::cout << "Found a Phase1PixelModule:"
+	      << "myModule DetId = " << myModule->geographicalID().rawId() 
+	      << ", x = " << myModule->translation().X() 
+	      << ", y = " << myModule->translation().Y()
+	      << ", z = " << myModule->translation().Z()
+	      << ", phi = "  << myModule->phi() * 180. / M_PI << std::endl;
     // END TEST
-    myPhase1PixelModuleBuilder.build( fv, myPlane, attribute);      
+    myPhase1PixelModuleBuilder.build( fv, myModule, attribute);      
     break;
   default:
-    edm::LogError( "CmsTelescopePlaneBuilder" ) << " ERROR - Could not find a Plane, but found a " << ExtractStringFromDDD::getString( attribute, &fv );
+    edm::LogError( "CmsTelescopePlaneBuilder" ) << " ERROR - Could not find a Phase1PixelModule, but found a " << ExtractStringFromDDD::getString( attribute, &fv );
   }
   
-  arm->addComponent(myPlane);
+  plane->addComponent(myModule);
 }
 
 
 void CmsTelescopePlaneBuilder::sortNS( DDFilteredView& fv, GeometricDet* parent ) {  
-  GeometricDet::ConstGeometricDetContainer& allPlanes= parent->components();
-  std::stable_sort( allPlanes.begin(), allPlanes.end(), LessModZ());
+  GeometricDet::ConstGeometricDetContainer& allModules= parent->components();
+  std::stable_sort( allModules.begin(), allModules.end(), LessY());  // TO DO: use LessR() instead??
 }
 
 
