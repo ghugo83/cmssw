@@ -35,9 +35,17 @@ void CmsTelescopePlaneBuilder::buildComponent( DDFilteredView& fv, GeometricDet*
 }
 
 
-void CmsTelescopePlaneBuilder::sortNS( DDFilteredView& fv, GeometricDet* parent ) {  
-  GeometricDet::ConstGeometricDetContainer& allModules= parent->components();
+void CmsTelescopePlaneBuilder::sortNS( DDFilteredView& fv, GeometricDet* plane ) {  
+  GeometricDet::ConstGeometricDetContainer& allModules = plane->components();
   std::stable_sort( allModules.begin(), allModules.end(), LessY());  // TO DO: use LessR() instead??
+
+  for (uint32_t i = 0; i < allModules.size(); i++) {
+    plane->component(i)->setGeographicalID(i+1);
+  }
+
+  if (allModules.empty() ){
+    edm::LogError("CmsTelescopePlaneBuilder") << "Found no Phase1PixelModule within the Plane.";
+  } 
 }
 
 

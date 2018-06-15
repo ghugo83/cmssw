@@ -50,7 +50,15 @@ void CmsTelescopeBuilder::buildComponent( DDFilteredView& fv, GeometricDet* dutC
 }
 
 
-void CmsTelescopeBuilder::sortNS( DDFilteredView& fv, GeometricDet* parent ) {  
-  GeometricDet::ConstGeometricDetContainer& allDutHoldersOrPlanes = parent->components();
+void CmsTelescopeBuilder::sortNS( DDFilteredView& fv, GeometricDet* telescopeSubStructure) {  
+  GeometricDet::ConstGeometricDetContainer& allDutHoldersOrPlanes = telescopeSubStructure->components();
   std::stable_sort( allDutHoldersOrPlanes.begin(), allDutHoldersOrPlanes.end(), LessModZ());
+
+  for (uint32_t i = 0; i < allDutHoldersOrPlanes.size(); i++) {
+    telescopeSubStructure->component(i)->setGeographicalID(i+1);
+  }
+
+  if (allDutHoldersOrPlanes.empty() ){
+    edm::LogError("CmsTelescopeBuilder") << "Found no DUTHolder or Plane within the TelescopeSubStructure.";
+  } 
 }

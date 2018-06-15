@@ -4,6 +4,9 @@
 #include "DataFormats/DetId/interface/DetId.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
+
+//#include "Geometry/TrackerNumberingBuilder/plugins/ExtractStringFromDDD.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -61,6 +64,10 @@ CmsTrackerDetIdBuilder::iterate( GeometricDet *in, int level, unsigned int ID )
 	    temp |= (iSubDet<<25);
 	    component->setGeographicalID(temp);	
 	    
+	    std::cout << "CmsTrackerDetIdBuilder::iterate level = " << level << std::endl;
+	    std::cout << "iSubDet = " << iSubDet << std::endl;
+	    std::cout << "m_detidshifts[level*nSubDet+iSubDet-1] = " << m_detidshifts[level*nSubDet+iSubDet-1] << std::endl;
+
 	    if(iSubDet>0 && iSubDet<=nSubDet && m_detidshifts[level*nSubDet+iSubDet-1]>=0) {
 	      if(m_detidshifts[level*nSubDet+iSubDet-1]+2<25) temp|= (0<<(m_detidshifts[level*nSubDet+iSubDet-1]+2)); 
 	      bool negside = component->translation().z()<0.;
@@ -79,6 +86,9 @@ CmsTrackerDetIdBuilder::iterate( GeometricDet *in, int level, unsigned int ID )
 	    }
 	    component->setGeographicalID(DetId(temp));	
 	    
+	    std::cout << "component->type()  =" << component->type() << std::endl;
+	    std::cout << "temp = " << temp << " component->geographicalID().rawId() = " << component->geographicalID().rawId() << std::endl;
+	    
 	    // next level
 	    iterate(component,level+1,((in)->components())[i]->geographicalID().rawId());
 	  }	
@@ -90,14 +100,23 @@ CmsTrackerDetIdBuilder::iterate( GeometricDet *in, int level, unsigned int ID )
 	for( uint32_t i = 0; i < (in)->components().size(); i++ )
 	  {
 	    auto component = in->component(i);
-	    std::cout << "CmsTrackerDetIdBuilder::iterate component->type()  =" << component->type() << std::endl;
+	    
 	    uint32_t temp = ID;
 	    
 	    if(level<maxLevels) {
+	      std::cout << "CmsTrackerDetIdBuilder::iterate level = " << level << std::endl;
+	      std::cout << "iSubDet = " << iSubDet << std::endl;
+
 	      if(iSubDet>0 && iSubDet <=nSubDet && m_detidshifts[level*nSubDet+iSubDet-1]>=0) {
 		temp |= (component->geographicalID().rawId()<<m_detidshifts[level*nSubDet+iSubDet-1]); 
+		std::cout << "m_detidshifts[level*nSubDet+iSubDet-1] = " << m_detidshifts[level*nSubDet+iSubDet-1] << std::endl;
+		std::cout << "component->geographicalID().rawId() before bit shift = " << component->geographicalID().rawId() << std::endl;
 	      }
 	      component->setGeographicalID( temp );
+	     
+	      std::cout << "component->type()  =" << component->type() << std::endl;
+	      std::cout << "temp = " << temp << " component->geographicalID().rawId() = " << component->geographicalID().rawId() << std::endl;
+
 	      // next level
 	      iterate(component,level+1,((in)->components())[i]->geographicalID().rawId());      
 	    }
