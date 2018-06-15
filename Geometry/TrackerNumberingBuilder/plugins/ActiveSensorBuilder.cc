@@ -20,7 +20,7 @@ void ActiveSensorBuilder::buildComponent( DDFilteredView& fv, GeometricDet* pare
   } 
 
   else if (ExtractStringFromDDD::getString(isPixel,&fv) == "true") {
-    temp = 0;
+    temp = 1;
   }
   
   else {
