@@ -23,7 +23,7 @@ process.load('Configuration.EventContent.EventContent_cff')
 
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
 
-process.load('Configuration.Geometry.GeometryTrackerPhase2TestBeam_cff') # Load DDGeometry + telescopeGeometryNumbering_cfi + telescopeParameters_cfi + telescopeTopology_cfi + telescopeGeometry_cfi
+process.load('Configuration.Geometry.GeometryTrackerPhase2TestBeamReco_cff') # Load DDGeometry + telescopeGeometryNumbering_cfi + telescopeParameters_cfi + telescopeTopology_cfi + telescopeGeometry_cfi
 
 
 #process.load('Configuration.StandardSequences.MagneticField_cff')  # TO DO: Tune here. But according to Nikkie: Around the telescope there is no magnetic field. 
