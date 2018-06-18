@@ -5,7 +5,7 @@ process = cms.Process("GeometryTest")
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 
 # Choose Tracker Geometry
-process.load("Geometry.TrackerRecoData.trackerRecoGeometryXML_cfi")
+process.load('Configuration.Geometry.GeometryTrackerPhase2TestBeamReco_cff')
 
 process.load("Geometry.TrackerNumberingBuilder.trackerNumberingGeometry_cfi")
 

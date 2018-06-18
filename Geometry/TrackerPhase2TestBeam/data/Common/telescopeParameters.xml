@@ -50,4 +50,5 @@
     80, 52, 1, 2, 2, 8
   </Vector>
   Both vectors need to be included!!!!
+  Temporary hard coded (1,2) values for Phase 1 in Geometry/TrackerGeometryBuilder/src/TrackerGeomBuilderFromGeometricDet.cc
   -->

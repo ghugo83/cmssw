@@ -95,12 +95,13 @@ TrackerGeomBuilderFromGeometricDet::build( const GeometricDet* gd, const PTracke
 		 BIG_PIX_PER_ROC_X,
 		 BIG_PIX_PER_ROC_Y);
     // Phase2 case
-        if(gdsubdetmap[i] == GeometricDet::PixelPhase2Barrel) 
+    if(gdsubdetmap[i] == GeometricDet::PixelPhase2Barrel) 
       buildPixel(dets[i],tracker,GeomDetEnumerators::SubDetector::P2PXB,
 		 true,
 		 BIG_PIX_PER_ROC_X,
 		 BIG_PIX_PER_ROC_Y);
-	//
+    //
+    
     if(gdsubdetmap[i] == GeometricDet::PixelEndCap)
       buildPixel(dets[i],tracker,GeomDetEnumerators::SubDetector::PixelEndcap,
 		 false,
@@ -126,6 +127,16 @@ TrackerGeomBuilderFromGeometricDet::build( const GeometricDet* gd, const PTracke
 		 true,
 		 BIG_PIX_PER_ROC_X,
 		 BIG_PIX_PER_ROC_Y); 
+    if(gdsubdetmap[i] == GeometricDet::DUTContainer) 
+      buildPixel(dets[i],tracker,GeomDetEnumerators::SubDetector::P2OTB,
+		 true,
+		 BIG_PIX_PER_ROC_X,
+		 BIG_PIX_PER_ROC_Y);
+    if(gdsubdetmap[i] == GeometricDet::Arm)
+      buildPixel(dets[i],tracker,GeomDetEnumerators::SubDetector::P1PXEC,
+		 false,
+		 1,
+		 2); 
   }
   //now building Strips
   for(unsigned int i=0;i<6;++i) {
