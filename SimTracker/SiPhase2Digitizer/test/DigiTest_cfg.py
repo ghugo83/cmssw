@@ -15,21 +15,28 @@ process.maxEvents = cms.untracked.PSet(
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
-process.load('Configuration.Geometry.GeometryExtended2023D17Reco_cff')
-process.load('Configuration.StandardSequences.MagneticField_cff')
+#process.load('Configuration.Geometry.GeometryExtended2023D17Reco_cff')
+process.load('Configuration.Geometry.GeometryTrackerPhase2TestBeamReco_cff')
+process.load("Configuration.StandardSequences.MagneticField_0T_cff")
+#process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
 # list of files
 
 process.source = cms.Source("PoolSource",
     fileNames =  cms.untracked.vstring(
-        'file:step2_DIGI.root'
+        'file:/afs/cern.ch/work/g/ghugo/private/CMSSW_10_0_0_pre1/src/21200.0_FourMuPt1_200+FourMuPt_1_200_pythia8_2023D21_GenSimHLBeamSpotFull+DigiFullTrigger_2023D21+RecoFullGlobal_2023D21+HARVESTFullGlobal_2023D21/step2_DIGI.root'
       )
 )
+
+process.options = cms.untracked.PSet(
+    SkipEvent = cms.untracked.vstring('ProductNotFound')
+)
+
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
     version = cms.untracked.string('$Revision: 1.19 $'),
