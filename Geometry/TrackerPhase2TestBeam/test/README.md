@@ -6,12 +6,13 @@
 
 ### Print DetIds and associated coordinates. 
 
-    cmsRun Geometry/TrackerPhase2TestBeam/test/printDetIds_cfg.py
+    cmsRun SLHCUpgradeSimulations/Geometry/test/printGeometry_pixelTelescope_cfg.py
+    cmsRun  Geometry/TrackerNumberingBuilder/test/printDetIds_cfg.py
 
 
 ### Produce the DetIds, numRows, numCols mapping file 
 
-    cmsRun SLHCUpgradeSimulations/Geometry/test/printGeometry_pixelTelescope_cfg.py
+    cmsRun  SLHCUpgradeSimulations/Geometry/test/writeFile_phase2TiltedPixel4021_cfg.py
 
 
 ### Test topology 
@@ -19,11 +20,11 @@
     cmsRun Geometry/TrackerPhase2TestBeam/test/printTelescopeTopology_cfg.py
 
 
-### Test TelescopeDigiGeometry   
+### Test TrackerDigiGeometry   
 
 This is obviously not the DIGI step! But this geometry is the one directly used by the Digitizer.    
 
-    cmsRun Geometry/TrackerPhase2TestBeam/test/telescope_cfg.py
+    cmsRun  Geometry/TrackerGeometryBuilder/test/tracker_cfg.py 
 
 
 ### GEM_SIM step 
