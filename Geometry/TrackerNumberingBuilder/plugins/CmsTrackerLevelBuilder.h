@@ -57,13 +57,7 @@ public:
       return fabs(a->translation().z()) < fabs(b->translation().z());   
     }
   };
-
-
-  struct LessY{
-    bool operator() (const GeometricDet* a, const GeometricDet* b) const {
-      return (a->translation().Y() < b->translation().Y());
-    }
-  };
+  
 
   struct ExtractPhi:public uFcn{
     double operator()(const GeometricDet* a)const{

@@ -342,4 +342,3 @@ std::unique_ptr<Bounds> GeometricDet::bounds() const{
   return std::unique_ptr<Bounds>(shapeToBounds.buildBounds(_shape,par));
 }
 
-
