@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
 
+<!-- NB: Unfortunately, doesnt seem to be possible to rename the cms namespace nor the OCMS volume. -->
+
 	<ConstantsSection label="cms.xml" eval="true">	
 		<Constant name="TestBeamSpaceHalfZLength" value="100.0*m"/>
 		<Constant name="TestBeamSpaceRadiusMin" value="0*fm"/>		
 		<Constant name="TestBeamSpaceRadiusMax" value="10.0*m"/>		
 	</ConstantsSection>
-	
 	
 	<SolidSection label="cms.xml">
 		<Polycone name="OCMS" startPhi="0*deg" deltaPhi="360*deg">
@@ -14,7 +15,6 @@
 			<ZSection z="[TestBeamSpaceHalfZLength]" rMin="[TestBeamSpaceRadiusMin]" rMax="[TestBeamSpaceRadiusMax]"/>
 		</Polycone>		
 	</SolidSection> 
-	
 	
 	<LogicalPartSection label="cms.xml">	
 		<LogicalPart name="World" category="unspecified">
@@ -24,8 +24,7 @@
 		<LogicalPart name="OCMS" category="unspecified">
 			<rSolid name="OCMS"/>
 			<rMaterial name="materials:Air"/>
-		</LogicalPart>
-		
+		</LogicalPart>		
 		
 	<PosPart copyNumber="1">
    <rParent name="cms:World"/>

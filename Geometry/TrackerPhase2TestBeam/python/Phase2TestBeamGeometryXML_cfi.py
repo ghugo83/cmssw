@@ -10,9 +10,7 @@ XMLIdealGeometryESSource = cms.ESSource("XMLIdealGeometryESSource",
          # World volume creation and default CMS materials
         'Geometry/CMSCommonData/data/materials.xml',
         'Geometry/CMSCommonData/data/rotations.xml',
-        #'Geometry/TrackerPhase2TestBeam/data/Common/cmsextent.xml',
         'Geometry/TrackerPhase2TestBeam/data/Common/cms.xml',
-        #'Geometry/TrackerPhase2TestBeam/data/Common/cmsMother.xml',
         
          # Define standalone Phase 1 BPIX module and associated materials
         'Geometry/TrackerCommonData/data/PhaseI/pixbarmaterial.xml',
