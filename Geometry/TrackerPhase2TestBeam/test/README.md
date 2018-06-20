@@ -6,7 +6,7 @@
 
 ### Print DetIds and associated coordinates. 
 
-    cmsRun SLHCUpgradeSimulations/Geometry/test/printGeometry_pixelTelescope_cfg.py
+    #cmsRun SLHCUpgradeSimulations/Geometry/test/printGeometry_pixelTelescope_cfg.py
     cmsRun  Geometry/TrackerNumberingBuilder/test/printDetIds_cfg.py
 
 

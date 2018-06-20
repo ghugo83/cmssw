@@ -45,16 +45,28 @@ void TelescopeTopologyAnalyzer::analyze( const edm::Event &iEvent, const edm::Ev
     if ( id->det() == DetId::Tracker ) {
 
       std::cout << "tTopo->side(*id) = " << tTopo->side(*id) 
-		<< " tTopo->layer(*id) = " << tTopo->layer(*id) 
-		<< " tTopo->module(*id) = " << tTopo->module(*id) 
-		<< std::endl;
+		            << " tTopo->layer(*id) = " << tTopo->layer(*id) 
+		            << " tTopo->module(*id) = " << tTopo->module(*id) 
+		            << std::endl;
 
+      if (tTopo->side(*id) == 0) {
+        std::cout << "tTopo->tobSide(*id) = " << tTopo->tobSide(*id)
+                  << " tTopo->tobRod(*id) = " << tTopo->tobRod(*id)
+                  << " tTopo->tobLower(*id) = " << tTopo->tobLower(*id)
+                  << " tTopo->tobUpper(*id) = " << tTopo->tobUpper(*id)
+                  << std::endl;
+      }
+      else {
+        std::cout << "tTopo->pxfBlade(*id) = " << tTopo->pxfBlade(*id)
+                  << " tTopo->pxfPanel(*id) = " << tTopo->pxfPanel(*id)
+                  << std::endl;     
+      }
 
       const GeomDet* geom = geo->idToDet(*id);
       std::cout << "  (phi, z, r) : ("
-		<< geom->surface().position().phi()  << " , "
-		<< geom->surface().position().z()    << " , "
-		<< geom->surface().position().perp() << ")" << std::endl;
+		            << geom->surface().position().phi()  << " , "
+		            << geom->surface().position().z()    << " , "
+		            << geom->surface().position().perp() << ")" << std::endl;
 
     }
 
