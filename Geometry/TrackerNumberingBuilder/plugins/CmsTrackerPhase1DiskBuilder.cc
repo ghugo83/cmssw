@@ -135,7 +135,6 @@ CmsTrackerPhase1DiskBuilder::sortNS( DDFilteredView& fv, GeometricDet* det )
     }
   }
 
-
   for( uint32_t fn = 0; fn < zminpanels.size(); fn++ )
   {
     uint32_t blade = fn + 1;

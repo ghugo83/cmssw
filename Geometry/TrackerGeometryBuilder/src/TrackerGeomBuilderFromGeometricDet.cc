@@ -101,7 +101,6 @@ TrackerGeomBuilderFromGeometricDet::build( const GeometricDet* gd, const PTracke
 		 BIG_PIX_PER_ROC_X,
 		 BIG_PIX_PER_ROC_Y);
     //
-    
     if(gdsubdetmap[i] == GeometricDet::PixelEndCap)
       buildPixel(dets[i],tracker,GeomDetEnumerators::SubDetector::PixelEndcap,
 		 false,
@@ -126,7 +125,7 @@ TrackerGeomBuilderFromGeometricDet::build( const GeometricDet* gd, const PTracke
       buildPixel(dets[i],tracker,GeomDetEnumerators::SubDetector::P2OTEC,
 		 true,
 		 BIG_PIX_PER_ROC_X,
-		 BIG_PIX_PER_ROC_Y);
+		 BIG_PIX_PER_ROC_Y); 
   }
   //now building Strips
   for(unsigned int i=0;i<6;++i) {

@@ -1,3 +1,5 @@
+!! Go on pixel_telescope_same_as_tracker_debug branch to have all of this working absolutely out of the box. Otherwise, you will have to change in the .py the geometry files loaded by default.
+
 ### Visualize DDGeometry on Fireworks
 
     cmsRun Fireworks/Geometry/python/dumpSimGeometry_cfg.py tag=Telescope out=simGeoTelescope.root

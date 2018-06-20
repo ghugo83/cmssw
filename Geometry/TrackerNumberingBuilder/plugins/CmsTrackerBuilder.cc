@@ -30,7 +30,7 @@ CmsTrackerBuilder::buildComponent( DDFilteredView& fv, GeometricDet* g, std::str
   case GeometricDet::PixelPhase1Barrel:
     theCmsTrackerSubStrctBuilder.build( fv, subdet, s );      
     break;
-  case GeometricDet::PixelPhase2Barrel:
+      case GeometricDet::PixelPhase2Barrel:
     theCmsTrackerSubStrctBuilder.build( fv, subdet, s );      
     break;
   case GeometricDet::PixelEndCap:
@@ -63,8 +63,6 @@ CmsTrackerBuilder::buildComponent( DDFilteredView& fv, GeometricDet* g, std::str
   default:
     edm::LogError( "CmsTrackerBuilder" ) << " ERROR - I was expecting a SubDet, I got a " << ExtractStringFromDDD::getString( s, &fv );
   }
-
-  std::cout << "CmsTrackerBuilder::buildComponent:   ExtractStringFromDDD::getString( s, &fv ) = " << ExtractStringFromDDD::getString( s, &fv ) << std::endl;
   
   g->addComponent( subdet );
 }

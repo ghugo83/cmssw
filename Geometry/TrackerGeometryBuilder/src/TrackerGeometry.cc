@@ -58,12 +58,12 @@ TrackerGeometry::TrackerGeometry(GeometricDet const* gd)
     assert(subdetgd[i]->geographicalId().subdetId()>0 && subdetgd[i]->geographicalId().subdetId()<7);
     theSubDetTypeMap[subdetgd[i]->geographicalId().subdetId()-1]= geometricDetToGeomDet(subdetgd[i]->type());
     theNumberOfLayers[subdetgd[i]->geographicalId().subdetId()-1]= subdetgd[i]->components().size();
-    std::cout << "subdet " << i 
+    LogTrace("BuildingSubDetTypeMap") << "subdet " << i 
 				      << " Geometric Det type " << subdetgd[i]->type()
 				      << " Geom Det type " << theSubDetTypeMap[subdetgd[i]->geographicalId().subdetId()-1]
 				      << " detid " <<  subdetgd[i]->geographicalId()
 				      << " subdetid " <<  subdetgd[i]->geographicalId().subdetId()
-	      << " number of layers " << subdetgd[i]->components().size() << std::endl;
+				      << " number of layers " << subdetgd[i]->components().size();
   }
   LogDebug("SubDetTypeMapContent") << "Content of theSubDetTypeMap";
   for(unsigned int i=1;i<7;++i) {
@@ -110,8 +110,6 @@ void TrackerGeometry::finalize() {
     theTIDDets.shrink_to_fit(); // not owned: they're also in 'theDets'
     theTOBDets.shrink_to_fit(); // not owned: they're also in 'theDets'
     theTECDets.shrink_to_fit(); // not owned: they're also in 'theDets'
-    std::cout << "thePXFDets.size() = " << thePXFDets.size() << std::endl;
-    std::cout << "theTOBDets.size() = " << theTOBDets.size() << std::endl;
 }
 
 void TrackerGeometry::addType(GeomDetType const * p) {

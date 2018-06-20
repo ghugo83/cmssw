@@ -15,9 +15,6 @@ void CmsDetConstruction::buildComponent(DDFilteredView& fv,
   //Phase1 mergedDet: searching for sensors
   if (theCmsTrackerStringToEnum.type(ExtractStringFromDDD::getString(attribute,&fv)) ==  GeometricDet::mergedDet){
 
-
-    std::cout << "Found a merged Det" << std::endl;
-
     // I have to go one step lower ...
     bool dodets = fv.firstChild(); // descend to the first Layer
     while (dodets) {
@@ -33,14 +30,7 @@ void CmsDetConstruction::buildComponent(DDFilteredView& fv,
 
   //Phase2 stackDet: same procedure, different nomenclature
   else if (theCmsTrackerStringToEnum.type(ExtractStringFromDDD::getString(attribute,&fv)) ==  GeometricDet::OTPhase2Stack){
-    // TEST
-    std::cout << "Found a OTPhase2Stack:"
-	      << " det DetId = " <<  det->geographicalID().rawId() 
-	      << ", x = " <<  det->translation().X() 
-	      << ", y = " <<  det->translation().Y()
-	      << ", z = " <<  det->translation().Z()
-	      << ", phi = "  <<  det->phi() * 180. / M_PI << std::endl;
-    // END TEST
+  
     bool dodets = fv.firstChild(); 
     while (dodets) {
       buildSmallDetsforStack(fv,det,attribute);
@@ -49,9 +39,6 @@ void CmsDetConstruction::buildComponent(DDFilteredView& fv,
     fv.parent();
   }
   
-
-  std::cout << "CmsDetConstruction : theCmsTrackerStringToEnum.type(ExtractStringFromDDD::getString(attribute,&fv)) = " << theCmsTrackerStringToEnum.type(ExtractStringFromDDD::getString(attribute,&fv)) << std::endl;
-
   mother->addComponent(det);
 
 }

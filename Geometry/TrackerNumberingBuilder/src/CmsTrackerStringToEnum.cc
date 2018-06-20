@@ -70,7 +70,6 @@ CmsTrackerStringToEnum::Impl::Impl(){
   _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("Arm",GeometricDet::PixelPhase1EndCap));
   _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("Plane",GeometricDet::PixelPhase1Disk));
   _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("Phase1PixelFullSensor",GeometricDet::panel));
-  //_map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("Phase1PixelWafer",GeometricDet::Phase1PixelWafer));
 
 
   //
@@ -108,15 +107,6 @@ CmsTrackerStringToEnum::Impl::Impl(){
   _reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::PixelPhase2ReducedDisk,"Disk")); 
   _reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::PixelPhase2TDRDisk,"Disk")); 
   _reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::panel,"Panel")); 
-  
-  //_reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::Telescope,"Telescope"));
-  //_reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::DUTContainer,"DUTContainer")); 
-  //_reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::DUTHolder,"DUTHolder")); 
-  //_reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::DUT,"DUT")); 
-  //_reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::Arm,"Arm")); 
-  //_reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::Plane,"Plane")); 
-  //_reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::Phase1PixelModule,"Phase1PixelModule")); 
-  //_reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::Phase1PixelWafer,"Phase1PixelWafer")); 
   //
   // done
   //
@@ -135,5 +125,4 @@ std::string const & CmsTrackerStringToEnum::name(GeometricDet::GeometricEnumType
     return p->second;
   return u;
 }
-
 
