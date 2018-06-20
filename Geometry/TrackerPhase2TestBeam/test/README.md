@@ -42,7 +42,7 @@ NB: Analyzer in charge of actually plotting the SimHit map.
 
 ### DIGI step 
 
-    cmsRun SimTracker/SiPhase2Digitizer/test/DigiTest_cfg.py
+    cmsRun Geometry/TrackerPhase2TestBeam/python/SinglePionE120GeV_DIGI_cfg.py
 NB: produces step2_DIGI.root  
 
 
