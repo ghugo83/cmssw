@@ -3,6 +3,13 @@
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
 # with command line options: step2 --conditions auto:phase2_realistic -s DIGI:pdigi_valid --datatier GEN-SIM-DIGI-RAW -n 10 --geometry Phase2TestBeam --era Phase2 --eventcontent FEVTDEBUGHLT --filein file:SinglePionE120GeV_GEN_SIM.root --python SinglePionE120GeV_tkOnlyDIGI_cfg.py --no_exec
+
+# WARNING !!!!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# Only GEN_SIM and DIGI steps are fully operational on BeamTest.
+# This could be a start base for DIGI-TO-RAW (should be nearly nothing to do, just desactivate the expectancies from other detectors, as was done for example at SimTracker/SiPhase2Digitizer/python/CustomizeDigi_cff.py).
+# Should update to beam test conditions.
+
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.StandardSequences.Eras import eras

@@ -3,6 +3,13 @@
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
 # with command line options: step3 --conditions auto:phase2_realistic -n 10 --era Phase2 --eventcontent FEVTDEBUGHLT,MINIAODSIM,DQM --runUnscheduled -s RAW2DIGI,L1Reco,RECO,RECOSIM,PAT,VALIDATION:@phase2Validation+@miniAODValidation,DQM:@phase2+@miniAODDQM --datatier GEN-SIM-RECO,MINIAODSIM,DQMIO --geometry Extended2023D21 --filein file:step2.root --fileout file:step3.root
+
+# WARNING !!!!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# Only GEN_SIM and DIGI steps are fully operational on BeamTest.
+# This could be a start base for LOCAL RECO (should Select the desire steps + Desactivate the expectancies from other detectors, as was done for example at SimTracker/SiPhase2Digitizer/python/CustomizeDigi_cff.py).
+# Should update to beam test conditions.
+
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.StandardSequences.Eras import eras
