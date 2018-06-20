@@ -6,7 +6,7 @@
     <!-- Telescope inactive materials --> 
     <SpecPar name="telescope-dead">
       <PartSelector path="//telescope:Telescope"/>
-      <Parameter name="CMSCutsRegion" value="TrackerDeadRegion" eval="false"/>  <!-- TO DO : Are these values relevant ??? + renaming! -->
+      <Parameter name="CMSCutsRegion" value="TrackerDeadRegion" eval="false"/>  <!-- TO DO : Are these values relevant ??? -->
       <Parameter name="ProdCutsForElectrons" value="1*mm"/>
       <Parameter name="ProdCutsForPositrons" value="1*mm"/>
       <Parameter name="ProdCutsForGamma" value="1*mm"/>
@@ -16,7 +16,7 @@
     <SpecPar name="telescope-sens-dut">
       <PartSelector path="//DUT:BModule1Layer6Lower2Sactive"/>
       <PartSelector path="//DUT:BModule1Layer6Upper2Sactive"/>
-      <Parameter name="CMSCutsRegion" value="TrackerSensRegion" eval="false"/>   <!-- TO DO : Are these values relevant ??? + renaming! -->
+      <Parameter name="CMSCutsRegion" value="TrackerSensRegion" eval="false"/>   <!-- TO DO : Are these values relevant ??? -->
       <Parameter name="ProdCutsForElectrons" value="0.01*mm"/>
       <Parameter name="ProdCutsForPositrons" value="0.01*mm"/>
       <Parameter name="ProdCutsForGamma" value="0.01*mm"/>
@@ -25,7 +25,7 @@
     <!-- Phase 1 Pixel sensors -->
     <SpecPar name="tracker-sens-pixel">
       <PartSelector path="//Phase1BPIXLayer4Module:PixelBarrelActiveFull3" />
-      <Parameter name="CMSCutsRegion" value="TrackerPixelSensRegion" eval="false"/>  <!-- TO DO : Are these values relevant ??? + renaming! -->
+      <Parameter name="CMSCutsRegion" value="TrackerPixelSensRegion" eval="false"/>  <!-- TO DO : Are these values relevant ??? -->
       <Parameter name="ProdCutsForElectrons" value="0.01*mm"/>
       <Parameter name="ProdCutsForPositrons" value="0.01*mm"/>
       <Parameter name="ProdCutsForGamma" value="0.01*mm"/>
