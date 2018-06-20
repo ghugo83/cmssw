@@ -29,7 +29,7 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
 
 process.source = cms.Source("PoolSource",
     fileNames =  cms.untracked.vstring(
-        'file:/afs/cern.ch/work/g/ghugo/private/CMSSW_10_0_0_pre1/src/step2_DIGI.root'
+        'file:step2_DIGI.root'
       )
 )
 

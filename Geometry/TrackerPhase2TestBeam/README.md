@@ -1,4 +1,4 @@
-!! Go on pixel_telescope_same_as_tracker_debug branch to have all of this working absolutely out of the box. Otherwise, you will have to change in the .py the geometry files loaded by default.
+!! Go on pixel_telescope_same_as_tracker_debug branch, Geometry/TrackerPhase2TestBeam/test to have more test examples working out of the box.
 
 ### Visualize DDGeometry on Fireworks
 
@@ -6,19 +6,9 @@
     cmsShow --sim-geom-file simGeoTelescope.root -c $CMSSW_RELEASE_BASE/src/Fireworks/Core/macros/simGeo.fwc
 
 
-### Print DetIds and associated coordinates. 
-
-    cmsRun  Geometry/TrackerNumberingBuilder/test/printDetIds_cfg.py
-
-
 ### Produce the DetIds, numRows, numCols mapping file 
 
     cmsRun  SLHCUpgradeSimulations/Geometry/test/writeFile_phase2TiltedPixel4021_cfg.py
-
-
-### Test topology 
-
-    cmsRun Geometry/TrackerPhase2TestBeam/test/printTelescopeTopology_cfg.py
 
 
 ### Test TrackerDigiGeometry   
@@ -33,22 +23,13 @@ This is obviously not the DIGI step! But this geometry is the one directly used 
     cmsRun Geometry/TrackerPhase2TestBeam/python/TrackerPhase2TestBeam_GEN_SIM_cfg.py
 
 
-### Produce SimHit map
-
-    cmsRun Geometry/TrackerPhase2TestBeam/python/TrackerPhase2TestBeam_GEN_SIM_cfg.py    
-NB: GEM_SIM step required, obviously.   
-
-    cmsRun Geometry/TrackerPhase2TestBeam/test/plotSimHitMap_cfg.py                 
-NB: Analyzer in charge of actually plotting the SimHit map.
-
-
 ### DIGI step 
 
     cmsRun Geometry/TrackerPhase2TestBeam/python/SinglePionE120GeV_DIGI_cfg.py
 NB: produces step2_DIGI.root  
 
 
-### Produce DIGI map  
+### Produce DIGI map  (and SIMHIT map as well by the way)
 
     cmsRun SimTracker/SiPhase2Digitizer/test/DigiTest_cfg.py
 NB: Reads step2_DIGI.root and produces step1_DigiTest.root
