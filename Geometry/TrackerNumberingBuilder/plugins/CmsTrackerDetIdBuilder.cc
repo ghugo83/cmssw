@@ -77,10 +77,12 @@ CmsTrackerDetIdBuilder::iterate( GeometricDet *in, int level, unsigned int ID )
 					       << " and component z translation is " << component->components().front()->translation().z();
 	      if(negside)
 		{
+		  std::cout << "negside" << std::endl;
 		  temp |= (1<<m_detidshifts[level*nSubDet+iSubDet-1]);
 		}
 	      else
 		{
+		  std::cout << "posside" << std::endl;
 		  temp |= (2<<m_detidshifts[level*nSubDet+iSubDet-1]);
 		}
 	    }

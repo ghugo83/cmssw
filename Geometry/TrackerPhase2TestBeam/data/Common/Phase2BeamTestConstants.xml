@@ -10,7 +10,7 @@
 <!-- DEFINE DUT HOLDER TRANSLATION AND TILT -->
 <Constant name="DUTTransX" value="0.0*mm"/>         <!-- Total DUT Holder translation along X axis -->
 <Constant name="DUTTransY" value="0.0*mm"/>         <!-- Total DUT Holder translation along Y axis -->
-<Constant name="DUTTransZ" value="0.0*mm"/>         <!-- Total DUT Holder translation along Z axis -->
+<Constant name="DUTTransZ" value="1.0*mm"/>         <!-- Total DUT Holder translation along Z axis --> <!-- TO DO!! Tune this as desire. Please not that 0. might cause issue as was not expected to have tilted rings at 0. at the first place-->
 <Constant name="DUTTiltAngle" value="10.0*deg"/>    <!-- Angle around X, counted from (XY) plane. -->
                                                     <!-- Angle is in [0 20] deg. -->
                                                     <!-- No negative value!! If angle >= 0, please use DUTTiltPlus in telescope.xml, if angle < 0 please use DUTTiltMinus in telescope.xml -->
