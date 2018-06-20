@@ -8,7 +8,6 @@
 #include "Geometry/TrackerNumberingBuilder/plugins/CmsTrackerSubStrctBuilder.h"
 #include "Geometry/TrackerNumberingBuilder/plugins/CmsTrackerPixelPhase1EndcapBuilder.h"
 #include "Geometry/TrackerNumberingBuilder/plugins/CmsTrackerPixelPhase2EndcapBuilder.h"
-#include "Geometry/TrackerNumberingBuilder/plugins/CmsTelescopeBuilder.h"
 
 #include <bitset>
 
@@ -21,7 +20,6 @@ CmsTrackerBuilder::buildComponent( DDFilteredView& fv, GeometricDet* g, std::str
   CmsTrackerSubStrctBuilder theCmsTrackerSubStrctBuilder;
   CmsTrackerPixelPhase1EndcapBuilder theCmsTrackerPixelPhase1EndcapBuilder;
   CmsTrackerPixelPhase2EndcapBuilder theCmsTrackerPixelPhase2EndcapBuilder;
-  CmsTelescopeBuilder theCmsTelescopeBuilder;
 
   GeometricDet* subdet = new GeometricDet( &fv, theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( s, &fv )));
   switch( theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( s, &fv )))
@@ -61,28 +59,6 @@ CmsTrackerBuilder::buildComponent( DDFilteredView& fv, GeometricDet* g, std::str
     break;
   case GeometricDet::TID:
     theCmsTrackerSubStrctBuilder.build( fv, subdet, s );      
-    break;
-  case GeometricDet::DUTContainer:
-    // TEST
-    std::cout << "Found a DUTContainer:"
-	      << " subdet DetId = " << subdet->geographicalID().rawId() 
-	      << ", x = " << subdet->translation().X() 
-	      << ", y = " << subdet->translation().Y()
-	      << ", z = " << subdet->translation().Z()
-	      << ", phi = "  << subdet->phi() * 180. / M_PI << std::endl;
-    // END TEST
-    theCmsTelescopeBuilder.build( fv, subdet, s );    
-    break;
-  case GeometricDet::Arm:
-    // TEST
-    std::cout << "Found an Arm:"
-	      << " subdet DetId = " << subdet->geographicalID().rawId() 
-	      << ", x = " << subdet->translation().X() 
-	      << ", y = " << subdet->translation().Y()
-	      << ", z = " << subdet->translation().Z()
-	      << ", phi = "  << subdet->phi() * 180. / M_PI << std::endl;
-    // END TEST
-    theCmsTelescopeBuilder.build( fv, subdet, s );    
     break;
   default:
     edm::LogError( "CmsTrackerBuilder" ) << " ERROR - I was expecting a SubDet, I got a " << ExtractStringFromDDD::getString( s, &fv );

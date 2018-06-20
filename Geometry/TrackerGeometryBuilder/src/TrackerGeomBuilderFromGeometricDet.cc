@@ -110,8 +110,8 @@ TrackerGeomBuilderFromGeometricDet::build( const GeometricDet* gd, const PTracke
     if(gdsubdetmap[i] == GeometricDet::PixelPhase1EndCap)
       buildPixel(dets[i],tracker,GeomDetEnumerators::SubDetector::P1PXEC,
 		 false,
-		 BIG_PIX_PER_ROC_X,
-		 BIG_PIX_PER_ROC_Y); 
+		 1,
+		 2); // TO DO: Call this directly from vPars!! Find a way to specify different vPars for Phase 1 and Phase 2 parts
     if(gdsubdetmap[i] == GeometricDet::PixelPhase2EndCap)
       buildPixel(dets[i],tracker,GeomDetEnumerators::SubDetector::P2PXEC,
 		 true,
@@ -126,17 +126,7 @@ TrackerGeomBuilderFromGeometricDet::build( const GeometricDet* gd, const PTracke
       buildPixel(dets[i],tracker,GeomDetEnumerators::SubDetector::P2OTEC,
 		 true,
 		 BIG_PIX_PER_ROC_X,
-		 BIG_PIX_PER_ROC_Y); 
-    if(gdsubdetmap[i] == GeometricDet::DUTContainer) 
-      buildPixel(dets[i],tracker,GeomDetEnumerators::SubDetector::P2OTB,
-		 true,
-		 BIG_PIX_PER_ROC_X,
 		 BIG_PIX_PER_ROC_Y);
-    if(gdsubdetmap[i] == GeometricDet::Arm)
-      buildPixel(dets[i],tracker,GeomDetEnumerators::SubDetector::P1PXEC,
-		 false,
-		 1,
-		 2); 
   }
   //now building Strips
   for(unsigned int i=0;i<6;++i) {

@@ -62,14 +62,14 @@ CmsTrackerStringToEnum::Impl::Impl(){
   _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("TECGluedDet",GeometricDet::mergedDet));
   _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("TECDet",GeometricDet::DetUnit));
   
-  // pixel Telescope. TO DO : move to pixel Telescope package ? (Not trivial, as we might not want to duplicate the GeometricDet class.)
   _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("Telescope",GeometricDet::Tracker));
-  _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("DUTContainer",GeometricDet::DUTContainer));
-  _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("DUTHolder",GeometricDet::DUTHolder));
+  _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("DUTContainer",GeometricDet::OTPhase2Barrel));
+  _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("DUTLayer",GeometricDet::OTPhase2Layer));
+  _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("DUTHolder",GeometricDet::panel));
   _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("DUT",GeometricDet::OTPhase2Stack));
-  _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("Arm",GeometricDet::Arm));
-  _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("Plane",GeometricDet::Plane));
-  _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("Phase1PixelModule",GeometricDet::Phase1PixelModule));
+  _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("Arm",GeometricDet::PixelPhase1EndCap));
+  _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("Plane",GeometricDet::PixelPhase1Disk));
+  _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("Phase1PixelFullSensor",GeometricDet::panel));
   //_map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("Phase1PixelWafer",GeometricDet::Phase1PixelWafer));
 
 
@@ -109,14 +109,13 @@ CmsTrackerStringToEnum::Impl::Impl(){
   _reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::PixelPhase2TDRDisk,"Disk")); 
   _reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::panel,"Panel")); 
   
-   // pixel Telescope. TO DO : move to pixel Telescope package ? (Not trivial, as we might not want to duplicate the GeometricDet class.)
   //_reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::Telescope,"Telescope"));
-  _reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::DUTContainer,"DUTContainer")); 
-  _reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::DUTHolder,"DUTHolder")); 
+  //_reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::DUTContainer,"DUTContainer")); 
+  //_reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::DUTHolder,"DUTHolder")); 
   //_reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::DUT,"DUT")); 
-  _reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::Arm,"Arm")); 
-  _reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::Plane,"Plane")); 
-  _reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::Phase1PixelModule,"Phase1PixelModule")); 
+  //_reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::Arm,"Arm")); 
+  //_reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::Plane,"Plane")); 
+  //_reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::Phase1PixelModule,"Phase1PixelModule")); 
   //_reverseMap.insert(std::pair<GeometricDet::GeometricEnumType, std::string>(GeometricDet::Phase1PixelWafer,"Phase1PixelWafer")); 
   //
   // done

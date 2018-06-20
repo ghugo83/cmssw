@@ -12,6 +12,10 @@
 <rSolid name="telescope:DUTContainer"/>
 <rMaterial name="materials:Air"/>
 </LogicalPart>
+<LogicalPart name="DUTLayer" category="unspecified">
+<rSolid name="telescope:DUTLayer"/>
+<rMaterial name="materials:Air"/>
+</LogicalPart>
 <LogicalPart name="DUTHolder" category="unspecified">
 <rSolid name="telescope:DUTHolder"/>
 <rMaterial name="materials:Air"/>
@@ -31,6 +35,7 @@
 <SolidSection label="telescope.xml">
 <Box name="Telescope" dx="500.0*mm" dy="300.0*mm" dz="1000.0*mm"/>
 <Box name="DUTContainer" dx="260.0*mm" dy="180.0*mm" dz="73.0*mm"/>
+<Box name="DUTLayer" dx="260.0*mm" dy="180.0*mm" dz="73.0*mm"/>
 <Box name="DUTHolder" dx="260.0*mm" dy="160.0*mm" dz="20.0*mm"/>
 <Box name="Arm" dx="70.0*mm" dy="160.0*mm" dz="101.0*mm"/>
 <Box name="Plane" dx="[Phase2BeamTestConstants:Phase1BPIXModuleWidth]" dy="[Phase2BeamTestConstants:Phase1BPIXModuleThickness]" dz="[Phase2BeamTestConstants:Phase1BPIXModuleLength]/2.0"/>
@@ -56,6 +61,11 @@
 
 <PosPart copyNumber="1">
 <rParent name="telescope:DUTContainer"/>
+<rChild name="telescope:DUTLayer"/>          
+</PosPart>
+
+<PosPart copyNumber="1">
+<rParent name="telescope:DUTLayer"/>
 <rChild name="telescope:DUTHolder"/>
 <rRotation name="Phase2BeamTestConstants:DUTTiltMinus"/>
 <Translation x="[Phase2BeamTestConstants:DUTTransX]" y="[Phase2BeamTestConstants:DUTTransY]" z="[Phase2BeamTestConstants:DUTTransZ]"/>

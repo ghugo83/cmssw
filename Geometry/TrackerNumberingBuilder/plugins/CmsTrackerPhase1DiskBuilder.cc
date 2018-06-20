@@ -59,14 +59,18 @@ CmsTrackerPhase1DiskBuilder::PhiPosNegSplit_innerOuter( std::vector< GeometricDe
     }
   }
 
+  unsigned int num_outer = 0;
   for(vector<const GeometricDet*>::const_iterator it=theCompsPosNeg.begin();
       it!=theCompsPosNeg.end();it++){
-    if((**it).rho() > radius_split) theCompsInnerOuter.emplace_back(*it);
+    if((**it).rho() > radius_split) {
+      theCompsInnerOuter.emplace_back(*it);
+      num_outer++;
+    }
   }
   //  std::cout << "num of inner = " << num_inner << " with radius less than " << radius_split << std::endl;
   // now shift outer by one
 
-  std::rotate(theCompsInnerOuter.begin()+num_inner,theCompsInnerOuter.end()-1,theCompsInnerOuter.end());
+  if (num_outer > 0) { std::rotate(theCompsInnerOuter.begin()+num_inner,theCompsInnerOuter.end()-1,theCompsInnerOuter.end()); }
   std::rotate(theCompsInnerOuter.begin(),theCompsInnerOuter.begin()+num_inner-1,theCompsInnerOuter.begin()+num_inner);
   std::copy(theCompsInnerOuter.begin(), theCompsInnerOuter.end(), begin);
 }
@@ -94,6 +98,7 @@ CmsTrackerPhase1DiskBuilder::sortNS( DDFilteredView& fv, GeometricDet* det )
 
 
   GeometricDet::ConstGeometricDetContainer & comp = det->components();
+  std::cout << "CmsTrackerPhase1DiskBuilder det->components().size() = " << det->components().size() << std::endl;
 
   switch( det->components().front()->type())
   {
@@ -108,12 +113,20 @@ CmsTrackerPhase1DiskBuilder::sortNS( DDFilteredView& fv, GeometricDet* det )
   GeometricDet::GeometricDetContainer zmaxpanels;  // So, zmin panel is always closer to ip.
 
   uint32_t totalblade = comp.size()/2;
+  std::cout << "totalblade  =" << totalblade << std::endl;
   //  std::cout << "pixel_disk " << pixel_disk << endl; 
 
   zminpanels.reserve( totalblade );
   zmaxpanels.reserve( totalblade );
+  std::cout << "zminpanels.size() = " << zminpanels.size() << std::endl;
+  std::cout << "zmaxpanels.size() = " << zmaxpanels.size() << std::endl;
+  std::cout << "zminpanels.capacity() = " << zminpanels.capacity() << std::endl;
+  std::cout << "zmaxpanels.capacity() = " << zmaxpanels.capacity() << std::endl;
   for( uint32_t j = 0; j < totalblade; j++ )
   {
+    std::cout << "comp[2*j]->translation().z() = " << comp[2*j]->translation().z() << std::endl;
+    std::cout << "comp[2*j+1]->translation().z() = " << comp[2*j+1]->translation().z() << std::endl;
+
     if( fabs( comp[2*j]->translation().z()) > fabs( comp[ 2*j +1 ]->translation().z()))
     {
       zmaxpanels.emplace_back( det->component(2*j) );
@@ -130,6 +143,10 @@ CmsTrackerPhase1DiskBuilder::sortNS( DDFilteredView& fv, GeometricDet* det )
       edm::LogWarning( "CmsTrackerPhase1DiskBuilder" ) << "WARNING - The Z of  both panels are equal! ";
     }
   }
+
+  std::cout << "zminpanels.size() = " << zminpanels.size() << std::endl;
+  std::cout << "zmaxpanels.size() = " << zmaxpanels.size() << std::endl;
+
 
   for( uint32_t fn = 0; fn < zminpanels.size(); fn++ )
   {
