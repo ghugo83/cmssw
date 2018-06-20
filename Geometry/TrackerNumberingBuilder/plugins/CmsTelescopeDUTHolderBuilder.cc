@@ -6,7 +6,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 //#include "Geometry/TrackerNumberingBuilder/plugins/CmsDetConstruction.h"
-#include "Geometry/TrackerNumberingBuilder/plugins/ActiveSensorBuilder.h"
+#include "Geometry/TrackerNumberingBuilder/plugins/CmsTelescopeActiveSensorBuilder.h"
 
 #include <bitset>  // TO DO: clean 
 
@@ -14,7 +14,7 @@ CmsTelescopeDUTHolderBuilder::CmsTelescopeDUTHolderBuilder() {}
 
 void CmsTelescopeDUTHolderBuilder::buildComponent( DDFilteredView& fv, GeometricDet* dutHolder, std::string attribute ) {
   //CmsDetConstruction myCmsDetBuilder;
-  ActiveSensorBuilder myActiveSensorBuilder;
+  CmsTelescopeActiveSensorBuilder myActiveSensorBuilder;
 
   GeometricDet* myDUT = new GeometricDet( &fv, theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( attribute, &fv )));
   switch( theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( attribute, &fv ))) {

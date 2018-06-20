@@ -5,14 +5,14 @@
 #include "DataFormats/DetId/interface/DetId.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-#include "Geometry/TrackerNumberingBuilder/plugins/ActiveSensorBuilder.h"
+#include "Geometry/TrackerNumberingBuilder/plugins/CmsTelescopeActiveSensorBuilder.h"
 
 #include <bitset>
 
 CmsTelescopePlaneBuilder::CmsTelescopePlaneBuilder() {}
 
 void CmsTelescopePlaneBuilder::buildComponent( DDFilteredView& fv, GeometricDet* plane, std::string attribute ) {
-  ActiveSensorBuilder myActiveSensorBuilder;
+  CmsTelescopeActiveSensorBuilder myActiveSensorBuilder;
 
   GeometricDet* myModule = new GeometricDet( &fv, theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( attribute, &fv )));
   switch( theCmsTrackerStringToEnum.type( ExtractStringFromDDD::getString( attribute, &fv ))) {

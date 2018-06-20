@@ -1,5 +1,5 @@
-#ifndef Geometry_TrackerNumberingBuilder_ActiveSensorBuilder_H
-# define Geometry_TrackerNumberingBuilder_ActiveSensorBuilder_H
+#ifndef Geometry_TrackerNumberingBuilder_CmsTelescopeActiveSensorBuilder_H
+# define Geometry_TrackerNumberingBuilder_CmsTelescopeActiveSensorBuilder_H
 
 #include "Geometry/TrackerNumberingBuilder/interface/GeometricDet.h"
 #include "Geometry/TrackerNumberingBuilder/plugins/ExtractStringFromDDD.h"
@@ -18,9 +18,9 @@
 /**
  * 
  */
-class ActiveSensorBuilder : public CmsTrackerLevelBuilder {
+class CmsTelescopeActiveSensorBuilder : public CmsTrackerLevelBuilder {
 public:
-  ActiveSensorBuilder();
+  CmsTelescopeActiveSensorBuilder();
 
 private:
   void buildComponent( DDFilteredView& , GeometricDet*, std::string ) override;

@@ -1,9 +1,9 @@
-#include "Geometry/TrackerNumberingBuilder/plugins/ActiveSensorBuilder.h"
+#include "Geometry/TrackerNumberingBuilder/plugins/CmsTelescopeActiveSensorBuilder.h"
 
 
-ActiveSensorBuilder::ActiveSensorBuilder() {}
+CmsTelescopeActiveSensorBuilder::CmsTelescopeActiveSensorBuilder() {}
 
-void ActiveSensorBuilder::buildComponent( DDFilteredView& fv, GeometricDet* parent, std::string attribute ) {
+void CmsTelescopeActiveSensorBuilder::buildComponent( DDFilteredView& fv, GeometricDet* parent, std::string attribute ) {
 
   GeometricDet* activeSensor  = new GeometricDet(&fv, theCmsTrackerStringToEnum.type(ExtractStringFromDDD::getString(attribute,&fv)));
   static const std::string isLower = "DUTInnerSensor";
@@ -24,7 +24,7 @@ void ActiveSensorBuilder::buildComponent( DDFilteredView& fv, GeometricDet* pare
   }
   
   else {
-    edm::LogError("ActiveSensorBuilder") << "Child is nor DUTInnerSensor nor DUTOuterSensor nor Phase1PixelSensor.";
+    edm::LogError("CmsTelescopeActiveSensorBuilder") << "Child is nor DUTInnerSensor nor DUTOuterSensor nor Phase1PixelSensor.";
   }
  
   activeSensor->setGeographicalID(DetId(temp));

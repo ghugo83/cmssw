@@ -6,7 +6,7 @@ import FWCore.ParameterSet.Config as cms
 from Configuration.Geometry.GeometryTrackerPhase2TestBeam_cff import *         # DDGeometry
 
 
-from Geometry.CommonDetUnit.globalTrackingGeometry_cfi import *               # IMPORTANT: ACTIVE THIS OR EQUIVALENT ONCE A CODE IS READY
+from Geometry.CommonDetUnit.globalTrackingGeometry_cfi import * 
 from RecoTracker.GeometryESProducer.TrackerRecoGeometryESProducer_cfi import *
 from Geometry.TrackerGeometryBuilder.trackerParameters_cfi import *
 from Geometry.TrackerNumberingBuilder.trackerTopology_cfi import *
