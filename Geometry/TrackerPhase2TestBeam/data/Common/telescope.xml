@@ -113,35 +113,6 @@
 <Translation x="[Phase2BeamTestConstants:InterPhase1BPIXModuleDeltaX]/2.0" y="[Phase2BeamTestConstants:InterPhase1BPIXModuleDeltaY]/2.0" z="0.0*mm"/>
 </PosPart>
 
-
-
-<!--
-<PosPart copyNumber="1">
-<rParent name="telescope:Arm"/>
-<rChild name="telescope:Plane"/>
-<rRotation name="Phase2BeamTestConstants:PlaneSkew"/>
-<Translation x="0.0*mm" y="0.0*mm" z="-3.0*[Phase2BeamTestConstants:InterPlaneDeltaZ]/2.0"/>
-</PosPart>
-<PosPart copyNumber="2">
-<rParent name="telescope:Arm"/>
-<rChild name="telescope:Plane"/>
-<rRotation name="Phase2BeamTestConstants:PlaneSkew"/>
-<Translation x="0.0*mm" y="0.0*mm" z="-1.0*[Phase2BeamTestConstants:InterPlaneDeltaZ]/2.0"/>
-</PosPart>
-<PosPart copyNumber="3">
-<rParent name="telescope:Arm"/>
-<rChild name="telescope:Plane"/>
-<rRotation name="Phase2BeamTestConstants:PlaneSkew"/>
-<Translation x="0.0*mm" y="0.0*mm" z="1.0*[Phase2BeamTestConstants:InterPlaneDeltaZ]/2.0"/>
-</PosPart>
-<PosPart copyNumber="4">
-<rParent name="telescope:Arm"/>
-<rChild name="telescope:Plane"/>
-<rRotation name="Phase2BeamTestConstants:PlaneSkew"/>
-<Translation x="0.0*mm" y="0.0*mm" z="3.0*[Phase2BeamTestConstants:InterPlaneDeltaZ]/2.0"/>
-</PosPart>
--->
-
 </PosPartSection>
 
 

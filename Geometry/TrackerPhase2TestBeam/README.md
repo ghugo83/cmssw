@@ -1,4 +1,5 @@
-!! Go on pixel_telescope_same_as_tracker_debug branch, Geometry/TrackerPhase2TestBeam/test to have more test examples working out of the box.
+GENSIM: Gabrielle Hugo.
+DIGI: Suchandra Dutta.
 
 ### Visualize DDGeometry on Fireworks
 

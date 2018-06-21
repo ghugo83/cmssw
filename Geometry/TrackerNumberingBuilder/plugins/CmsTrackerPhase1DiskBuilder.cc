@@ -71,7 +71,7 @@ CmsTrackerPhase1DiskBuilder::PhiPosNegSplit_innerOuter( std::vector< GeometricDe
   // now shift outer by one
 
   if (num_outer > 0) { std::rotate(theCompsInnerOuter.begin()+num_inner,theCompsInnerOuter.end()-1,theCompsInnerOuter.end()); }
-  std::rotate(theCompsInnerOuter.begin(),theCompsInnerOuter.begin()+num_inner-1,theCompsInnerOuter.begin()+num_inner);
+  if (num_inner > 0) { std::rotate(theCompsInnerOuter.begin(),theCompsInnerOuter.begin()+num_inner-1,theCompsInnerOuter.begin()+num_inner); }
   std::copy(theCompsInnerOuter.begin(), theCompsInnerOuter.end(), begin);
 }
 

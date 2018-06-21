@@ -1,7 +1,10 @@
-///////////////////////////////////////////////////////////////////////////////
-// File: DDTelescopePlanesAlgo.cc
-// Description:  
-///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+// DDTelescopePlanesAlgo
+// Description:  Places pixel telescope planes inside a given telescope arm.
+// The planes can be tilted (rotation around CMS_X) then skewed (rotation around CMS_Y).
+// The planes are all centered in (CMS_X,CMS_Y) = (0,0) and shifted along CMS_Z by deltaZ.
+// Author: Gabrielle Hugo
+//////////////////////////////////////////////////////////////////////////////////////////
 
 
 #include <cmath>
@@ -37,7 +40,7 @@ void DDTelescopePlanesAlgo::initialize(const DDNumericArguments & nArgs,
   deltaZ        = nArgs["deltaZ"];
   
   LogDebug("TrackerGeom") << "DDTelescopePlanesAlgo debug: Parameters for position"
-			  << "ing:: n " << n << " Phase 1 modules with deltaZ "
+			  << "ing:: n " << n << " telescope planes with deltaZ "
 			  << deltaZ << ", tiltAngle "
 			  << tiltAngle/CLHEP::deg << ", skew angle " 
 			  << skewAngle/CLHEP::deg;
@@ -54,11 +57,14 @@ void DDTelescopePlanesAlgo::initialize(const DDNumericArguments & nArgs,
 
 void DDTelescopePlanesAlgo::execute(DDCompactView& cpv) {
 
-  DDRotation prepaRot, tiltRot, skewRot, globalRot; // Identity
-  DDRotationMatrix prepaMatrix, tiltMatrix, skewMatrix, globalRotMatrix; // Identity matrix
+  DDRotation prepaRot, tiltRot, skewRot, globalRot;                      // Default-constructed to identity in SO(3).
+  DDRotationMatrix prepaMatrix, tiltMatrix, skewMatrix, globalRotMatrix; // Default-constructed to identity matrix.
   std::string rotstr = "RTelescopePlanesAlgo";
 
   // prepaMatrix calculus
+  // Rotation around CMS_Y of 90°, in the trigonometric sense.
+  // This is because the Phase 1 modules frame of reference is the following: width along X, length along Z, thickness along Y.
+  // After rotation, the Phase 1 module is placed with: width along Z, length along X, thickness along Y.
   std::string prepaRotstr = rotstr + "Prepa";
   prepaRot = DDRotation(DDName(prepaRotstr, idNameSpace));
   if (!prepaRot) {
@@ -69,9 +75,12 @@ void DDTelescopePlanesAlgo::execute(DDCompactView& cpv) {
     prepaRot = DDrot(DDName(prepaRotstr, idNameSpace), 
 		     180.*CLHEP::deg, 0., 90.*CLHEP::deg, 90.*CLHEP::deg, 90.*CLHEP::deg, 0.);
   }
-  prepaMatrix = *prepaRot.matrix();
+  prepaMatrix = *prepaRot.matrix();  // matrix of prepaRot
 
   // tiltMatrix calculus
+  // Rotation around CMS_X. 
+  // tiltAngle is counted in the trigonometric sense. tiltAngle = 0 on (XZ) plane. 
+  // titlAngle ‎∈ [0° 90°].
   std::string tiltRotstr = rotstr + "Tilt" + std::to_string(tiltAngle/CLHEP::deg);
   tiltRot = DDRotation(DDName(tiltRotstr, idNameSpace));
   if (!tiltRot) {
@@ -82,10 +91,13 @@ void DDTelescopePlanesAlgo::execute(DDCompactView& cpv) {
     tiltRot = DDrot(DDName(tiltRotstr, idNameSpace), 
 		    90.*CLHEP::deg, 0., 90.*CLHEP::deg - tiltAngle, 90.*CLHEP::deg, tiltAngle, 270.*CLHEP::deg);
   }
-  tiltMatrix = *tiltRot.matrix();
-  tiltMatrix *= prepaMatrix;
+  tiltMatrix = *tiltRot.matrix();   // matrix of tiltRot
+  tiltMatrix *= prepaMatrix;        // matrix of (tiltRot ◦ prepaRot)
 
   // skewMatrix calculus
+  // Rotation around CMS_Y. 
+  // skewAngle is counted in the trigonometric sense. skewAngle = 0 on (YZ) plane. 
+  // skewAngle ‎∈ [0° 90°].
   std::string skewRotstr = rotstr + "Skew" + std::to_string(skewAngle/CLHEP::deg);
   skewRot = DDRotation(DDName(skewRotstr, idNameSpace));
   if (!skewRot) {
@@ -96,8 +108,8 @@ void DDTelescopePlanesAlgo::execute(DDCompactView& cpv) {
     skewRot = DDrot(DDName(skewRotstr, idNameSpace), 
 		    90.*CLHEP::deg + skewAngle, 0., 90.*CLHEP::deg, 90.*CLHEP::deg, skewAngle, 0.);
   }
-  skewMatrix = *skewRot.matrix();
-  skewMatrix *= tiltMatrix;
+  skewMatrix = *skewRot.matrix();   // matrix of skewRot
+  skewMatrix *= tiltMatrix;         // matrix of (skewRot ◦ tiltRot ◦ prepaRot)
 
   // globalRot def
   std::string globalRotstr = rotstr + "Global";
@@ -105,12 +117,13 @@ void DDTelescopePlanesAlgo::execute(DDCompactView& cpv) {
   if (!globalRot) {
     LogDebug("TrackerGeom") << "DDTelescopePlanesAlgo test: Creating a new "
 			    << "rotation: " << globalRotstr;
-    globalRotMatrix = skewMatrix;
-    globalRot = DDrot(DDName(globalRotstr, idNameSpace), new DDRotationMatrix(globalRotMatrix));
+    globalRotMatrix = skewMatrix;   
+    // Can finally create globalRot. globalRot = skewRot ◦ tiltRot ◦ prepaRot
+    globalRot = DDrot(DDName(globalRotstr, idNameSpace), new DDRotationMatrix(globalRotMatrix)); 
   }
 
-  // Loops for all n modules
-  DDName mother = parent().name();
+  // Loops on all n telescope planes
+  DDName mother = parent().name();  // telescope arm
   DDName child(DDSplit(childName).first, DDSplit(childName).second);
   int    copy   = 1;
 
@@ -119,11 +132,11 @@ void DDTelescopePlanesAlgo::execute(DDCompactView& cpv) {
     // translation def
     double xpos = 0.;
     double ypos = 0.;
-    double zpos = (-1.5 + i) * deltaZ;
+    double zpos = (-(n-1.)/2. + i) * deltaZ;
     DDTranslation tran(xpos, ypos, zpos);
   
     // Positions child with respect to parent
-    cpv.position(child, mother, copy, tran, globalRot);
+    cpv.position(child, mother, copy, tran, globalRot); // Rotate child with globalRot, then translate it with tran
     LogDebug("TrackerGeom") << "DDTelescopePlanesAlgo test " << child << " number "
 			    << copy << " positioned in " << mother << " at "
 			    << tran  << " with " << globalRot;
