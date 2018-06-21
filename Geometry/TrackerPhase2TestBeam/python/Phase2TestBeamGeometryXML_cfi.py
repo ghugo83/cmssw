@@ -1,9 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
-# This config was generated automatically using generate2023Geometry.py
-# If you notice a mistake, please update the generating script, not just this config 
-
-# TO DO: update generate2023Geometry.py, or actually, create a different script.
+# NB: This was hand-made.
+# TO DO: update Configuration/Geometry/python/dict2023Geometry.py and create workflow?
 
 XMLIdealGeometryESSource = cms.ESSource("XMLIdealGeometryESSource",
     geomXMLFiles = cms.vstring(
@@ -34,7 +32,6 @@ XMLIdealGeometryESSource = cms.ESSource("XMLIdealGeometryESSource",
         'Geometry/TrackerPhase2TestBeam/data/Reco/pixelTelescopeRecoMaterial.xml',
         
         # DetId Scheme file
-        #'Geometry/TrackerPhase2TestBeam/data/Common/telescopeDetIdScheme.xml'
         'Geometry/TrackerCommonData/data/PhaseII/trackerParameters.xml'
       
     ),

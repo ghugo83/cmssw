@@ -1,5 +1,3 @@
-GENSIM: Gabrielle Hugo.
-DIGI: Suchandra Dutta.
 
 ### Visualize DDGeometry on Fireworks
 
