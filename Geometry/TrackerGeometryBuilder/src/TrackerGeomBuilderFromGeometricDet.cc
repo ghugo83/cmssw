@@ -95,12 +95,12 @@ TrackerGeomBuilderFromGeometricDet::build( const GeometricDet* gd, const PTracke
 		 BIG_PIX_PER_ROC_X,
 		 BIG_PIX_PER_ROC_Y);
     // Phase2 case
-        if(gdsubdetmap[i] == GeometricDet::PixelPhase2Barrel) 
+    if(gdsubdetmap[i] == GeometricDet::PixelPhase2Barrel) 
       buildPixel(dets[i],tracker,GeomDetEnumerators::SubDetector::P2PXB,
 		 true,
 		 BIG_PIX_PER_ROC_X,
 		 BIG_PIX_PER_ROC_Y);
-	//
+    //
     if(gdsubdetmap[i] == GeometricDet::PixelEndCap)
       buildPixel(dets[i],tracker,GeomDetEnumerators::SubDetector::PixelEndcap,
 		 false,
@@ -109,8 +109,8 @@ TrackerGeomBuilderFromGeometricDet::build( const GeometricDet* gd, const PTracke
     if(gdsubdetmap[i] == GeometricDet::PixelPhase1EndCap)
       buildPixel(dets[i],tracker,GeomDetEnumerators::SubDetector::P1PXEC,
 		 false,
-		 BIG_PIX_PER_ROC_X,
-		 BIG_PIX_PER_ROC_Y); 
+		 1,
+		 2); // TO DO: Call this directly from vPars!! Find a way to specify different vPars for Phase 1 and Phase 2 parts
     if(gdsubdetmap[i] == GeometricDet::PixelPhase2EndCap)
       buildPixel(dets[i],tracker,GeomDetEnumerators::SubDetector::P2PXEC,
 		 true,

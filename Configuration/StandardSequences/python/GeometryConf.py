@@ -32,4 +32,5 @@ GeometryConf={
     'Extended2023D19' : 'Extended2023D19,Extended2023D19Reco',
     'Extended2023D20' : 'Extended2023D20,Extended2023D20Reco',
     'Extended2023D21' : 'Extended2023D21,Extended2023D21Reco',
+    'Phase2TestBeam'  : 'TrackerPhase2TestBeam,TrackerPhase2TestBeamReco',
     }

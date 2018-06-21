@@ -61,6 +61,15 @@ CmsTrackerStringToEnum::Impl::Impl(){
   _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("TECRing",GeometricDet::ring));
   _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("TECGluedDet",GeometricDet::mergedDet));
   _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("TECDet",GeometricDet::DetUnit));
+  
+  _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("Telescope",GeometricDet::Tracker));
+  _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("DUTContainer",GeometricDet::OTPhase2Barrel));
+  _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("DUTLayer",GeometricDet::OTPhase2Layer));
+  _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("DUTHolder",GeometricDet::panel));
+  _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("DUT",GeometricDet::OTPhase2Stack));
+  _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("Arm",GeometricDet::PixelPhase1EndCap));
+  _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("Plane",GeometricDet::PixelPhase1Disk));
+  _map.insert(std::pair<std::string, GeometricDet::GeometricEnumType>("Phase1PixelFullSensor",GeometricDet::panel));
 
 
   //
