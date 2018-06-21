@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+
+<DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../DetectorDescription/Schema/DDLSchema.xsd">
+<SpecParSection label="pixelTelescopeTopology.xml">
+
+
+<!-- Telescope volume -->
+<SpecPar name="TelescopePar">
+<PartSelector path="//telescope:Telescope" />
+<Parameter name="TkDDDStructure" value="Telescope"/>   <!-- Equivalent to FullTracker -->
+</SpecPar>
+
+
+<!-- DUT Holder and DUT -->
+<SpecPar name="DUTContainerPar">
+<PartSelector path="//telescope:DUTContainer"/>
+<Parameter name="TkDDDStructure" value="DUTContainer"/>   <!-- Equivalent to Phase2OTBarrel -->
+</SpecPar>
+
+<SpecPar name="DUTLayerPar">
+<PartSelector path="//telescope:DUTLayer"/>
+<Parameter name="TkDDDStructure" value="DUTLayer"/>      <!-- Equivalent to Phase2OTBarrelLayer -->
+</SpecPar>
+
+<SpecPar name="DUTHolderPar">
+<PartSelector path="//telescope:DUTHolder"/>
+<Parameter name="TkDDDStructure" value="DUTHolder"/>     <!-- Equivalent to Phase2OTBarrelPanel  -->
+</SpecPar>
+
+<SpecPar name="DUTPar">
+<PartSelector path="//DUT:BModule1Layer6"/>
+<Parameter name="TkDDDStructure" value="DUT"/>           <!-- Equivalent to Phase2OTBarrelStack    -->
+</SpecPar>
+
+<SpecPar name="InnerSensor2SActivePar">
+<PartSelector path="//DUT:BModule1Layer6Lower2Sactive"/>
+<Parameter name="TkDDDStructure" value="PixelBarrelDet"/>     <!-- Equivalent to PixelBarrelDet -->
+<Parameter name="TrackerLowerDetectors" value="true"/>
+<!--<Parameter name="DUTInnerSensor" value="true"/>  -->                 
+<Parameter name="PixelROCRows" value="127"/>
+<Parameter name="PixelROCCols" value="1"/>
+<Parameter name="PixelROC_X" value="8"/>
+<Parameter name="PixelROC_Y" value="2"/>
+</SpecPar>
+
+<SpecPar name="OuterSensor2SActivePar">
+<PartSelector path="//DUT:BModule1Layer6Upper2Sactive"/>
+<Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
+<Parameter name="TrackerUpperDetectors" value="true"/>
+<!--<Parameter name="DUTOuterSensor" value="true"/> -->
+<Parameter name="PixelROCRows" value="127"/>
+<Parameter name="PixelROCCols" value="1"/>
+<Parameter name="PixelROC_X" value="8"/>
+<Parameter name="PixelROC_Y" value="2"/>
+</SpecPar>
+
+
+
+
+<!-- Telescope Arms, Planes and Phase 1 Pixels -->
+
+<SpecPar name="ArmPar">
+<PartSelector path="//telescope:Arm"/>
+<Parameter name="TkDDDStructure" value="Arm"/>             <!-- Equivalent to PixelPhase1EndcapSubDet -->
+</SpecPar>
+
+<SpecPar name="PlanePar">
+<PartSelector path="//telescope:Plane"/>
+<Parameter name="TkDDDStructure" value="Plane"/>            <!-- Equivalent to PixelPhase1EndcapDisk -->
+</SpecPar>
+
+<SpecPar name="Phase1PixelFullSensorPar">
+<PartSelector path="//Phase1BPIXLayer4Module:PixelBarrelSensorFull"/>
+<Parameter name="TkDDDStructure" value="Phase1PixelFullSensor"/>                <!-- Equivalent to PixelEndcapPanel -->
+</SpecPar>
+
+<!--
+<SpecPar name="Phase1PixelWaferPar">
+<PartSelector path="//Phase1BPIXLayer4Module:PixelBarrelSensorFull"/>
+<Parameter name="TkDDDStructure" value="Phase1PixelWafer"/> 
+</SpecPar>
+-->
+
+<SpecPar name="Phase1PixelSensorActivePar">
+<PartSelector path="//Phase1BPIXLayer4Module:PixelBarrelActiveFull3"/>              
+      <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>                <!-- Equivalent to PixelEndcapDet -->
+<!--      <Parameter name="Phase1PixelSensor" value="true"/>   -->
+      <Parameter name="PixelROCRows" value="80"/>
+      <Parameter name="PixelROCCols" value="52"/>
+      <Parameter name="PixelROC_X" value="2"/>
+      <Parameter name="PixelROC_Y" value="8"/>
+</SpecPar>
+
+
+</SpecParSection>
+</DDDefinition>
+
