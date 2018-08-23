@@ -30,8 +30,8 @@ XMLIdealGeometryESSource = cms.ESSource("XMLIdealGeometryESSource",
         'Geometry/PixelTelescope/data/Reco/pixelTelescopeRecoMaterial.xml',
         
         # DetId Scheme file
-        'Geometry/TrackerCommonData/data/PhaseI/trackerParameters.xml'    
-        #'Geometry/TrackerCommonData/data/PhaseII/trackerParameters.xml'  # Load this instead to load Phase 1 AND Phase 2 schemes.
+        #'Geometry/TrackerCommonData/data/PhaseI/trackerParameters.xml'    
+        'Geometry/TrackerCommonData/data/PhaseII/trackerParameters.xml'  # Load this instead to load Phase 1 AND Phase 2 schemes.
                                                                           # Warning: take care with Phase 1 BIG_PIX values, look at 
                                                                           # Geometry/TrackerGeometryBuilder/src/TrackerGeomBuilderFromGeometricDet.cc
 

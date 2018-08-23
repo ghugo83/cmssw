@@ -3,7 +3,8 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("NumberingTest")
 
 process.load("Configuration.Geometry.GeometryReco_cff")
-process.load("Geometry.CMSCommonData.cmsExtendedGeometryXML_cfi")
+#process.load("Geometry.CMSCommonData.cmsExtendedGeometry2023D21XML_cfi")
+process.load("Geometry.PixelTelescope.PixelTelescopeGeometryXML_cfi")
 process.trackerGeometry.applyAlignment = cms.bool(False)
 
 process.source = cms.Source("EmptySource")

@@ -203,6 +203,12 @@ void TrackerTopologyAnalyzer::analyze( const edm::Event &iEvent, const edm::Even
                 << geom->surface().position().z()    << " , "
                 << geom->surface().position().perp() << ")" << std::endl;
 
+      std::cout << "  (x, y) : ("
+                << geom->surface().position().x()  << " , "
+                << geom->surface().position().y() << ")" << std::endl;
+
+      std::cout << std::endl;
+ 
     }
   }
   std::cout << "Good: " << nOk << std::endl;

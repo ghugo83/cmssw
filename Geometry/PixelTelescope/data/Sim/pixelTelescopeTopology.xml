@@ -15,12 +15,12 @@
     <!-- TELESCOPE ARMS, PLANES AND PHASE 1 PIXELS -->
     <SpecPar name="ArmPar">
       <PartSelector path="//telescope:Arm"/>
-      <Parameter name="TkDDDStructure" value="PixelPhase1EndcapSubDet"/>
+      <Parameter name="TkDDDStructure" value="Phase2OTEndcap"/>
     </SpecPar>
 
     <SpecPar name="PlanePar">
       <PartSelector path="//telescope:Plane"/>
-      <Parameter name="TkDDDStructure" value="PixelPhase1EndcapDisk"/>
+      <Parameter name="TkDDDStructure" value="Phase2OTEndcapDisk"/>
     </SpecPar>
 
     <SpecPar name="Phase1PixelFullSensorPar">
