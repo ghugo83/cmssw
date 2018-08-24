@@ -39,6 +39,7 @@
     <Box name="DUTContainer" dx="260.0*mm" dy="180.0*mm" dz="73.0*mm"/>
     <Box name="DUTLayer" dx="260.0*mm" dy="180.0*mm" dz="73.0*mm"/>
     <Box name="DUTHolder" dx="260.0*mm" dy="160.0*mm" dz="20.0*mm"/>
+    <Box name="Endcap" dx="500.0*mm" dy="300.0*mm" dz="1000.0*mm"/>
     <Box name="Arm" dx="100.0*mm" dy="70.0*mm" dz="150.0*mm"/>
     <Box name="Plane" dx="[Phase1BPIXModuleWidth]" dy="2.*[Phase1BPIXModuleThickness]" dz="[Phase1BPIXModuleLength]/2.0"/>
   </SolidSection>
@@ -71,6 +72,10 @@
       <rSolid name="telescope:DUTHolder"/>
       <rMaterial name="materials:Air"/>
     </LogicalPart>
+    <LogicalPart name="Endcap" category="unspecified">
+      <rSolid name="telescope:Endcap"/>
+      <rMaterial name="materials:Air"/>
+    </LogicalPart>
     <LogicalPart name="Arm" category="unspecified">
       <rSolid name="telescope:Arm"/>
       <rMaterial name="materials:Air"/>
@@ -94,16 +99,23 @@
     <PosPart copyNumber="1">
       <rParent name="telescope:BeamArea"/>
       <rChild name="telescope:Telescope"/>
+      <Translation x="0.0*mm" y="0.0*mm" z="1500.0*mm"/>
+    </PosPart>
+
+    <!-- PLACE ENDCAP MOTHER VOLUME -->
+    <PosPart copyNumber="1">
+      <rParent name="telescope:Telescope"/>
+      <rChild name="telescope:Endcap"/>
     </PosPart>
 
     <!-- PLACE ARMS WITHIN TELESCOPE -->
     <PosPart copyNumber="1">
-      <rParent name="telescope:Telescope"/>
+      <rParent name="telescope:Endcap"/>
       <rChild name="telescope:Arm"/>
       <Translation x="0.0*mm" y="0.0*mm" z="[tuneParameters:InterArmDeltaZ]/2.0"/>
     </PosPart>
     <PosPart copyNumber="2">
-      <rParent name="telescope:Telescope"/>
+      <rParent name="telescope:Endcap"/>
       <rChild name="telescope:Arm"/>
       <Translation x="0.0*mm" y="0.0*mm" z="-[tuneParameters:InterArmDeltaZ]/2.0"/>
     </PosPart>
