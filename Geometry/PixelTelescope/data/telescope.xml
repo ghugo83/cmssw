@@ -17,6 +17,9 @@
   <!-- ROTATIONS -->
   <!-- Should not need to change this. -->
   <RotationSection label="telescope.xml">
+    <!-- ROTATE TELESCOPE OF 180 deg AROUND GLOBAL Y -->
+    <Rotation name="Y180" phiX="180.*deg" thetaX="90.*deg" phiY="90.*deg" thetaY="90.*deg" phiZ="0.*deg" thetaZ="180.*deg"/> <!-- Rotation of 180 deg around Y axis. -->
+
     <!-- DUT -->
     <Rotation name="Z90" phiX="90.*deg" thetaX="90.*deg" phiY="180.*deg" thetaY="90.*deg" phiZ="0.*deg" thetaZ="0.*deg"/> <!-- Rotation of 90 deg around Z axis. -->
 
@@ -94,6 +97,7 @@
     <PosPart copyNumber="1">
       <rParent name="telescope:BeamArea"/>
       <rChild name="telescope:Telescope"/>
+      <rRotation name="telescope:Y180"/>   
     </PosPart>
 
     <!-- PLACE ARMS WITHIN TELESCOPE -->
