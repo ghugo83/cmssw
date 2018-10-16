@@ -26,7 +26,7 @@ import os
 my_path = opt.inputDir
 my_extensions = ['root']
 file_names = ["file:"+os.path.join(my_path, fn) for fn in os.listdir(my_path)
-              if any(fn.endswith(ext) for ext in my_exten
+              if any(fn.endswith(ext) for ext in my_extensions)]
 
 process.load('Geometry.PixelTelescope.PixelTelescopeRecoGeometry_cfi')
 process.load('Configuration.StandardSequences.MagneticField_0T_cff')
@@ -145,7 +145,7 @@ process.TFileService = cms.Service("TFileService",
 )
 
 #process.DQMData = cms.EDAnalyzer('PixelTelescope', 
-process.DQMData = cms.EDAnalyzer('AnaNikkie', 
+process.DQMData = cms.EDAnalyzer('Ana3D', 
  	tracks = cms.untracked.InputTag('ctfWithMaterialTracks'),
 	PixelDigisLabel = cms.InputTag("siPixelDigis"),
 	PixelClustersLabel = cms.InputTag("siPixelClusters"),

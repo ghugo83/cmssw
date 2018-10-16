@@ -1,12 +1,16 @@
 import FWCore.ParameterSet.Config as cms
 
+
+from RecoTracker.TkTrackingRegions.GlobalTrackingRegion_cfi import *
+from RecoLocalTracker.SiStripClusterizer.SiStripClusterChargeCut_cfi import *
+
 from Configuration.StandardSequences.Eras import eras
 process = cms.Process('RECO',eras.Run2_25ns)
 
 import FWCore.ParameterSet.VarParsing as opts
 opt = opts.VarParsing ('analysis')
 
-opt.register('inputDir',  './',
+opt.register('inputDir',  '/afs/cern.ch/work/m/mersi/public/Chromie/RAW/run100208',
 	     opts.VarParsing.multiplicity.singleton, opts.VarParsing.varType.string,
 	     'Directory of input raw files')
 
@@ -20,13 +24,23 @@ opt.register('outputDQMFileName', 'PixelTelescope_BeamData_DQM.root',
 
 opt.parseArguments()
 
+ 
+#process.MessageLogger = cms.Service("MessageLogger",
+#        destinations = cms.untracked.vstring(                           #1
+#                'myOutputFile'                                          #2
+#        ),
+#        myOutputFile = cms.untracked.PSet(                              #3
+#                threshold = cms.untracked.string( 'INFO' )          #4
+#        ),
+#)        
+
 
 import os
 ##my_path = "/data/veszpv/project/TelescopeData/beam/run001055/"
 my_path = opt.inputDir
 my_extensions = ['root']
 file_names = ["file:"+os.path.join(my_path, fn) for fn in os.listdir(my_path)
-              if any(fn.endswith(ext) for ext in my_exten
+              if any(fn.endswith(ext) for ext in my_extensions)]
 
 process.load('Geometry.PixelTelescope.PixelTelescopeRecoGeometry_cfi')
 process.load('Configuration.StandardSequences.MagneticField_0T_cff')
@@ -145,7 +159,7 @@ process.TFileService = cms.Service("TFileService",
 )
 
 #process.DQMData = cms.EDAnalyzer('PixelTelescope', 
-process.DQMData = cms.EDAnalyzer('AnaNikkie', 
+process.DQMData = cms.EDAnalyzer('Ana3D', 
  	tracks = cms.untracked.InputTag('ctfWithMaterialTracks'),
 	PixelDigisLabel = cms.InputTag("siPixelDigis"),
 	PixelClustersLabel = cms.InputTag("siPixelClusters"),
@@ -154,7 +168,68 @@ process.DQMData = cms.EDAnalyzer('AnaNikkie',
 
 process.DQM = cms.Path(process.DQMData)
 
-##
+
+
+############## Track reconstruction ##############
+############## Track reconstruction ##############
+############## Track reconstruction ##############
+############## Track reconstruction ##############
+############## Track reconstruction ##############
+
+
+# Tracking configuration file fragment for P5 cosmic running
+#
+
+
+#process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
+
+#process.load('Geometry.PixelTelescope.PixelTelescopeDBConditions_cfi')
+#process.load('Geometry.PixelTelescope.PixelTelescopeRecoGeometry_cfi')
+
+process.hltESPTrackerRecoGeometryESProducer = cms.ESProducer("TrackerRecoGeometryESProducer",
+    appendToDataLabel = cms.string(''),
+    trackerGeometryLabel = cms.untracked.string('')
+)
+
+
+from RecoTracker.MeasurementDet.MeasurementTrackerESProducer_cff import *
+# TTRHBuilders
+from RecoTracker.TransientTrackingRecHit.TTRHBuilders_cff import *
+process.load('RecoTracker.TransientTrackingRecHit.TTRHBuilders_cff')
+
+#from RecoTracker.SpecialSeedGenerators.CombinatorialSeedGeneratorForCosmicsP5_cff import *
+process.load('RecoTracker.SpecialSeedGenerators.CombinatorialSeedGeneratorForCosmicsP5_cff')
+
+from RecoTracker.SpecialSeedGenerators.SimpleCosmicBONSeeder_cff import *
+from RecoTracker.TkSeedGenerator.GlobalCombinedSeeds_cff import *
+combinedP5SeedsForCTF = RecoTracker.TkSeedGenerator.GlobalCombinedSeeds_cfi.globalCombinedSeeds.clone()
+combinedP5SeedsForCTF.seedCollections = cms.VInputTag(
+    cms.InputTag('combinatorialcosmicseedfinderP5'),
+    cms.InputTag('simpleCosmicBONSeeds'),
+)
+#backward compatibility 2.2/3.1
+combinedP5SeedsForCTF.PairCollection = cms.InputTag('combinatorialcosmicseedfinderP5')
+combinedP5SeedsForCTF.TripletCollection = cms.InputTag('simpleCosmicBONSeeds')
+
+from RecoTracker.CkfPattern.CkfTrackCandidatesP5_cff import *
+ckfTrackCandidatesP5.src = cms.InputTag('combinedP5SeedsForCTF')
+#backward compatibility 2.2/3.1
+#ckfTrackCandidatesP5.SeedProducer = 'combinedP5SeedsForCTF'
+
+#import RecoTracker.TrackProducer.CTFFinalFitWithMaterial_cfi
+from RecoTracker.TrackProducer.CTFFinalFitWithMaterialP5_cff import *
+# Final Track Selector for CTF
+from RecoTracker.FinalTrackSelectors.CTFFinalTrackSelectorP5_cff import *
+
+
+#process.ctftracksP5 = cms.Sequence(combinatorialcosmicseedinglayersP5+combinatorialcosmicseedfinderP5*
+#			    ckfTrackCandidatesP5*ctfWithMaterialTracksCosmics*ctfWithMaterialTracksP5)
+			    
+			    
+process.ctftracksP5 = cms.Sequence(process.combinatorialcosmicseedinglayersP5)
+
+
+
 
 
 from Configuration.AlCa.GlobalTag import GlobalTag
@@ -162,6 +237,11 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2017_realistic', '
 
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.RECOSIMoutput_step = cms.EndPath(process.RECOSIMoutput)
+
+
+
+process.reconstruction = cms.Path(process.reconstruction_pixelOnly*process.ctftracksP5)
+
 
 process.schedule = cms.Schedule(process.reconstruction,process.DQM,process.endjob_step,process.RECOSIMoutput_step)
 
