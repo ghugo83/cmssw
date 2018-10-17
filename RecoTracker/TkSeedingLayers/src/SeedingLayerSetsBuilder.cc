@@ -38,6 +38,8 @@ SeedingLayerSetsBuilder::SeedingLayerId SeedingLayerSetsBuilder::nameToEnumId(co
     //
     // BPIX
     //
+    std::cout << __LINE__ << std::endl;
+    std::cout << name << std::endl;
     if ((index = name.find("BPix")) != string::npos) {
       subdet = GeomDetEnumerators::PixelBarrel;
       side = TrackerDetSide::Barrel;
