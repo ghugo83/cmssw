@@ -8,11 +8,10 @@
 #include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/Framework/interface/ESWatcher.h"
-#include "FWCore/Utilities/interface/EDGetToken.h"
+
 #include "Geometry/CommonDetUnit/interface/GeomDetEnumerators.h"
 #include "DataFormats/TrackerCommon/interface/TrackerDetSide.h"
-#include "DataFormats/TrackerRecHit2D/interface/FastTrackerRecHit.h"
-#include "DataFormats/TrackerRecHit2D/interface/FastTrackerRecHitCollection.h"
+
 #include <string>
 #include <vector>
 namespace edm { class Event; class EventSetup; class ConsumesCollector;}
@@ -28,7 +27,6 @@ public:
   using SeedingLayerId = std::tuple<GeomDetEnumerators::SubDetector, TrackerDetSide, int>;
 
   SeedingLayerSetsBuilder() = default;
-  SeedingLayerSetsBuilder(const edm::ParameterSet & cfg, edm::ConsumesCollector& iC, const edm::InputTag& fastsimHitTag); //FastSim specific constructor
   SeedingLayerSetsBuilder(const edm::ParameterSet & cfg, edm::ConsumesCollector& iC);
   SeedingLayerSetsBuilder(const edm::ParameterSet & cfg, edm::ConsumesCollector&& iC);
   ~SeedingLayerSetsBuilder();
@@ -43,8 +41,6 @@ public:
   const std::vector<SeedingLayerSetsHits::LayerSetIndex>& layerSetIndices() const { return theLayerSetIndices; }
 
   std::unique_ptr<SeedingLayerSetsHits> hits(const edm::Event& ev, const edm::EventSetup& es);
-  //new function for FastSim only
-  std::unique_ptr<SeedingLayerSetsHits> makeSeedingLayerSetsHitsforFastSim(const edm::Event& ev, const edm::EventSetup& es);
 
   static SeedingLayerId nameToEnumId(const std::string& name);
   static std::vector<std::vector<std::string> > layerNamesInSets(const std::vector<std::string> & namesPSet) ;
@@ -55,7 +51,7 @@ private:
 
   edm::ESWatcher<TrackerRecoGeometryRecord> geometryWatcher_;
   edm::ESWatcher<TransientRecHitRecord> trhWatcher_;
-  edm::EDGetTokenT<FastTrackerRecHitCollection> fastSimrecHitsToken_;
+
   struct LayerSpec { 
     LayerSpec(unsigned short index, const std::string& layerName, const edm::ParameterSet& cfgLayer, edm::ConsumesCollector& iC);
     ~LayerSpec() = default;
