@@ -113,6 +113,7 @@ trackerDict = {
             'Geometry/TrackerCommonData/data/PhaseII/TiltedTracker404/pixfwd.xml', 
             'Geometry/TrackerCommonData/data/PhaseII/TiltedTracker404/pixbar.xml', 
             'Geometry/TrackerCommonData/data/trackermaterial.xml',
+            'Geometry/TrackerCommonData/data/PhaseII/TiltedTracker404/otst.xml',
             'Geometry/TrackerCommonData/data/PhaseII/TiltedTracker404/tracker.xml',
             'Geometry/TrackerCommonData/data/PhaseII/TiltedTracker460/pixel.xml',
             'Geometry/TrackerCommonData/data/PhaseII/TiltedTracker404/trackerbar.xml',
@@ -128,7 +129,7 @@ trackerDict = {
         ],
         "sim" : [
             'from Geometry.TrackerNumberingBuilder.trackerNumberingGeometry_cfi import *',
-            'from SLHCUpgradeSimulations.Geometry.fakeConditions_phase2TkT7_cff import *',
+            'from SLHCUpgradeSimulations.Geometry.fakeConditions_phase2TkT6_cff import *',
         ],
         "reco" : [
             'from Geometry.CommonDetUnit.globalTrackingGeometry_cfi import *',
@@ -147,6 +148,7 @@ trackerDict = {
             'Geometry/TrackerCommonData/data/PhaseII/TiltedTracker404/pixfwd.xml', 
             'Geometry/TrackerCommonData/data/PhaseII/TiltedTracker404/pixbar.xml', 
             'Geometry/TrackerCommonData/data/trackermaterial.xml',
+            'Geometry/TrackerCommonData/data/PhaseII/TiltedTracker404/otst.xml',
             'Geometry/TrackerCommonData/data/PhaseII/TiltedTracker404/tracker.xml',
             'Geometry/TrackerCommonData/data/PhaseII/TiltedTracker461/pixel.xml',
             'Geometry/TrackerCommonData/data/PhaseII/TiltedTracker404/trackerbar.xml',
@@ -162,7 +164,7 @@ trackerDict = {
         ],
         "sim" : [
             'from Geometry.TrackerNumberingBuilder.trackerNumberingGeometry_cfi import *',
-            'from SLHCUpgradeSimulations.Geometry.fakeConditions_phase2TkT8_cff import *',
+            'from SLHCUpgradeSimulations.Geometry.fakeConditions_phase2TkT6_cff import *',
         ],
         "reco" : [
             'from Geometry.CommonDetUnit.globalTrackingGeometry_cfi import *',
