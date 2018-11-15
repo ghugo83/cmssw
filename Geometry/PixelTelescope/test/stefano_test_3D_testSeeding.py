@@ -14,7 +14,7 @@ opt.register('inputDir',  '/afs/cern.ch/work/m/mersi/public/Chromie/RAW/run10020
 	     opts.VarParsing.multiplicity.singleton, opts.VarParsing.varType.string,
 	     'Directory of input raw files')
 
-opt.register('outputFileName', 'PixelTelescope_BeamData_RAW.root',
+opt.register('outputFileName', 'PixelTelescope_BeamData_OUTPUT.root',
 	     opts.VarParsing.multiplicity.singleton, opts.VarParsing.varType.string,
 	     'Name of output reco file')
 
@@ -212,21 +212,35 @@ combinedP5SeedsForCTF.PairCollection = cms.InputTag('combinatorialcosmicseedfind
 combinedP5SeedsForCTF.TripletCollection = cms.InputTag('simpleCosmicBONSeeds')
 
 from RecoTracker.CkfPattern.CkfTrackCandidatesP5_cff import *
+# HEREEEEEEEEEE
+process.ckfTrackCandidatesP5 = ckfTrackCandidatesP5.clone()
+# HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE	    
+
 ckfTrackCandidatesP5.src = cms.InputTag('combinedP5SeedsForCTF')
 #backward compatibility 2.2/3.1
 #ckfTrackCandidatesP5.SeedProducer = 'combinedP5SeedsForCTF'
-
 #import RecoTracker.TrackProducer.CTFFinalFitWithMaterial_cfi
+
 from RecoTracker.TrackProducer.CTFFinalFitWithMaterialP5_cff import *
 # Final Track Selector for CTF
 from RecoTracker.FinalTrackSelectors.CTFFinalTrackSelectorP5_cff import *
+
+process.load("TrackingTools.TrackRefitter.ctfWithMaterialTrajectoriesP5_cff")
+process.load("RecoTracker.CkfPattern.GroupedCkfTrajectoryBuilderP5_cff")
+process.load("TrackingTools.TrajectoryCleaning.TrajectoryCleanerBySharedHits_cfi")
+process.load("RecoTracker.MeasurementDet.MeasurementTrackerEventProducer_cfi")
+process.load("RecoTracker.MeasurementDet.MeasurementTrackerESProducer_cfi")
 
 
 #process.ctftracksP5 = cms.Sequence(combinatorialcosmicseedinglayersP5+combinatorialcosmicseedfinderP5*
 #			    ckfTrackCandidatesP5*ctfWithMaterialTracksCosmics*ctfWithMaterialTracksP5)
 			    
-			    
-process.ctftracksP5 = cms.Sequence(process.combinatorialcosmicseedinglayersP5)
+# HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE	    
+process.ctftracksP5 = cms.Sequence(process.combinatorialcosmicseedingtripletsP5+process.combinatorialcosmicseedfinderP5*
+			    process.ckfTrackCandidatesP5)	
+# HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE	    
+
+#process.ctftracksP5 = cms.Sequence(process.combinatorialcosmicseedinglayersP5)
 
 
 
