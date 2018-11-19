@@ -7,6 +7,8 @@ trackerNumberingGeometry = cms.ESProducer('TrackerGeometricDetESModule',
   appendToDataLabel = cms.string('')
 )
 
+from Geometry.CommonDetUnit.globalTrackingGeometry_cfi import *
+
 trackerGeometry = cms.ESProducer('TrackerDigiGeometryESModule',
   appendToDataLabel = cms.string(''),
   fromDDD = cms.bool(True),
@@ -17,3 +19,11 @@ trackerGeometry = cms.ESProducer('TrackerDigiGeometryESModule',
 trackerTopology = cms.ESProducer('TrackerTopologyEP',
   appendToDataLabel = cms.string('')
 )
+
+trackerRecoGeometry = cms.ESProducer("TrackerRecoGeometryESProducer",
+    appendToDataLabel = cms.string(''),
+    trackerGeometryLabel = cms.untracked.string('')
+)
+#hltESPTrackerRecoGeometryESProducer
+#from RecoTracker.GeometryESProducer.TrackerRecoGeometryESProducer_cfi import *
+
