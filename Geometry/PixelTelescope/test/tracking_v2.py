@@ -14,7 +14,7 @@ opt.register('inputDir',  '/afs/cern.ch/work/m/mersi/public/Chromie/RAW/run10020
 	     opts.VarParsing.multiplicity.singleton, opts.VarParsing.varType.string,
 	     'Directory of input raw files')
 
-opt.register('outputFileName', 'PixelTelescope_BeamData_OUTPUT.root',
+opt.register('outputFileName', 'PixelTelescope_BeamData_OUTPUT_RECO.root',
 	     opts.VarParsing.multiplicity.singleton, opts.VarParsing.varType.string,
 	     'Name of output reco file')
 
@@ -169,12 +169,9 @@ process.DQMData = cms.EDAnalyzer('Ana3D',
 process.DQM = cms.Path(process.DQMData)
 
 
-
-############## Track reconstruction ##############
-############## Track reconstruction ##############
-############## Track reconstruction ##############
-############## Track reconstruction ##############
-############## Track reconstruction ##############
+###########################################################################################
+############################### Track reconstruction ######################################
+###########################################################################################
 
 
 # Tracking configuration file fragment for P5 cosmic running
@@ -182,13 +179,10 @@ process.DQM = cms.Path(process.DQMData)
 
 
 #process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
+#process.load("RecoTracker.Configuration.RecoTrackerP5_cff")
 #process.load('Geometry.PixelTelescope.PixelTelescopeDBConditions_cfi')
 #process.load('Geometry.PixelTelescope.PixelTelescopeRecoGeometry_cfi')
-#process.load("RecoTracker.Configuration.RecoTrackerP5_cff")
-process.hltESPTrackerRecoGeometryESProducer = cms.ESProducer("TrackerRecoGeometryESProducer",
-    appendToDataLabel = cms.string(''),
-    trackerGeometryLabel = cms.untracked.string('')
-)
+
 
 #process.load('RecoTracker.TkNavigation.CosmicsNavigationSchoolESProducer_cfi')
 process.load('RecoTracker.TkNavigation.TelescopeNavigationSchoolESProducer_cfi')
@@ -229,8 +223,7 @@ process.load("RecoTracker.MeasurementDet.MeasurementTrackerEventProducer_cfi")
 process.load("RecoTracker.MeasurementDet.MeasurementTrackerESProducer_cfi")
 
 process.ctfWithMaterialTracksCosmics.NavigationSchool = cms.string("TelescopeNavigationSchool")
-# process.ctfWithMaterialTracksCosmics.beamSpot = cms.InputTag("")
-
+#process.ctfWithMaterialTracksCosmics.beamSpot = cms.InputTag("")   NB: Beam spot is not valid, NEED TO FIX THIS. See https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFindingBeamSpot
 
 # Final Track Selector for CTF
 #from RecoTracker.FinalTrackSelectors.CTFFinalTrackSelectorP5_cff import *
@@ -300,18 +293,17 @@ process.RKTrajectoryFitter = cms.ESProducer("KFTrajectoryFitterESProducer",
 )
 
 
-#HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-#process.ctftracksP5 = cms.Sequence(process.combinatorialcosmicseedingtripletsP5+process.combinatorialcosmicseedfinderP5*process.MeasurementTrackerEvent*
-#			    process.ckfTrackCandidatesP5*process.ctfWithMaterialTracksCosmics*process.ctfWithMaterialTracksP5)
-# HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+###################################################################################################################
+# DEFINE SEQUENCE
 
 #process.ctftracksP5 = cms.Sequence(process.combinatorialcosmicseedinglayersP5)
 
 process.ctftracksP5 = cms.Sequence(process.combinatorialcosmicseedingtripletsP5+process.combinatorialcosmicseedfinderP5*process.MeasurementTrackerEvent*
 			    process.ckfTrackCandidatesP5*process.ctfWithMaterialTracksCosmics)
 			    
-			    
-
+#process.ctftracksP5 = cms.Sequence(process.combinatorialcosmicseedingtripletsP5+process.combinatorialcosmicseedfinderP5*process.MeasurementTrackerEvent*
+#			    process.ckfTrackCandidatesP5*process.ctfWithMaterialTracksCosmics*process.ctfWithMaterialTracksP5)			    
+###################################################################################################################
 
 
 
