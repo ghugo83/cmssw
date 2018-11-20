@@ -51,6 +51,10 @@
 #include "RecoLocalTracker/ClusterParameterEstimator/interface/PixelClusterParameterEstimator.h"
 #include "RecoLocalTracker/Records/interface/TkPixelCPERecord.h"
 
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
+#include "CondFormats/DataRecord/interface/BeamSpotObjectsRcd.h"
+#include "CondFormats/BeamSpotObjects/interface/BeamSpotObjects.h"
+
 #include <cstring>
 #include <string> 
 #include <TH2F.h>
@@ -220,6 +224,60 @@ Ana3D::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   iSetup.get<TkPixelCPERecord>().get("PixelCPEGeneric", cpEstimator);
   const PixelClusterParameterEstimator &cpe(*cpEstimator); 
   
+  // Get reconstructed tracks collection
+	edm::Handle<reco::TrackCollection> trackCollection;
+  iEvent.getByToken(tracksToken_,trackCollection  );
+  
+  // Get beam profile from EventSetup: works
+  edm::ESHandle< BeamSpotObjects > beamhandle;
+	iSetup.get<BeamSpotObjectsRcd>().get(beamhandle);
+	const BeamSpotObjects* mybeamspot = beamhandle.product();
+
+  // Get beam profile from Event: doesnt work
+  //reco::BeamSpot beamSpot;
+  //edm::Handle<reco::BeamSpot> beamSpotHandle;
+  //iEvent.getByLabel("pixel_telescope_beamspot_tag", beamSpotHandle); 
+  
+  
+  
+  
+   std::cout << "\nEvent ID = "<< iEvent.id() << std::endl ;
+
+ 
+ 
+  
+ 
+
+  //---------------------------------
+  // Analyze beam profile
+  //---------------------------------
+
+ // from EventSetup: works
+ std::cout << *mybeamspot << std::endl;
+ 
+ // from Event: doesnt work
+/*if ( beamSpotHandle.isValid() ) {
+    beamSpot = *beamSpotHandle;
+double x0 = beamSpot.x0();
+double y0 = beamSpot.y0();
+double z0 = beamSpot.z0();
+double dxdz = beamSpot.dxdz();
+double dydz = beamSpot.dydz();
+double sigmaz = beamSpot.sigmaZ();
+double BeamWidthX = beamSpot.BeamWidthX();
+double BeamWidthY = beamSpot.BeamWidthY();
+std::cout << "Debug beam spot profile: x0 = " 
+<< x0 << ", y0 = " << y0 << ", z0 = " << z0 
+<< ", dxdz = " << dxdz << ", dydz = " << dydz << ", sigmaz = " << sigmaz
+<< ", BeamWidthX = " << BeamWidthX << ", BeamWidthY = " << BeamWidthY
+<< std::endl;
+} 
+else { std::cout << "No beam spot available from EventSetup \n" << std::endl; }*/
+
+
+  
+  
+  
   //---------------------------------
   // loop on clusters
   //---------------------------------
@@ -262,6 +320,56 @@ Ana3D::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         cluster3DTree->Fill();
       } //end for clusters of the first detector
     } //end for first detectors
+    
+ 
+    
+
+  //---------------------------------
+  // loop on reconstructed tracks
+  //---------------------------------    
+    
+    const reco::TrackCollection tC = *(trackCollection.product());
+
+    std::cout << "Reconstructed "<< tC.size() << " tracks" << std::endl ;
+
+    int i=1;
+    for (reco::TrackCollection::const_iterator track=tC.begin(); track!=tC.end(); track++){
+      std::cout << "Track number "<< i << std::endl ;
+      std::cout << "\tmomentum: " << track->momentum()<< std::endl;
+      std::cout << "\tPT: " << track->pt()<< std::endl;
+      std::cout << "\tvertex: " << track->vertex()<< std::endl;
+      std::cout << "\timpact parameter: " << track->d0()<< std::endl;
+      std::cout << "\tcharge: " << track->charge()<< std::endl;
+      std::cout << "\tnormalizedChi2: " << track->normalizedChi2() << std::endl;
+
+      i++;
+      std::cout<<"\tFrom EXTRA : "<< std::endl;
+      std::cout<<"\t\touter PT "<< track->outerPt()<<std::endl;
+      std::cout << "\t direction: " << track->seedDirection() << std::endl;
+      if(!track->seedRef().isNull())
+	    std::cout << "\t direction from seedRef: " << track->seedRef()->direction() << std::endl;
+      //
+      // try and access Hits
+      //
+      std::cout <<"\t\tNumber of RecHits "<<track->recHitsSize()<<std::endl;      
+      for (trackingRecHit_iterator it = track->recHitsBegin();  it != track->recHitsEnd(); it++){
+	if ((*it)->isValid()){
+	  std::cout <<"\t\t\tRecHit on det "<<(*it)->geographicalId().rawId()<<std::endl;
+	  std::cout <<"\t\t\tRecHit in LP "<<(*it)->localPosition()<<std::endl;
+	  std::cout <<"\t\t\tRecHit in GP "<<tracker->idToDet((*it)->geographicalId())->surface().toGlobal((*it)->localPosition()) <<std::endl;
+	}else{
+	  std::cout <<"\t\t Invalid Hit On "<<(*it)->geographicalId().rawId()<<std::endl;
+	}
+      }
+      
+    }
+    
+    
+    
+    
+    
+    
+    
 }
 
 
