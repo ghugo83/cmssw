@@ -110,6 +110,8 @@ process.reconstruction = cms.Path(process.reconstruction_pixelOnly)
 
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+from Configuration.AlCa.GlobalTag import GlobalTag
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2017_realistic', '')    ##### Why would that global tag be ok??????
 
 process.load('Geometry.PixelTelescope.PixelTelescopeDBConditions_cfi')
 
@@ -159,8 +161,8 @@ process.TFileService = cms.Service("TFileService",
 )
 
 #process.DQMData = cms.EDAnalyzer('PixelTelescope', 
-process.DQMData = cms.EDAnalyzer('Ana3D', 
- 	tracks = cms.untracked.InputTag('ctfWithMaterialTracks'),
+process.DQMData = cms.EDAnalyzer('Ana3D',
+ 	tracks = cms.untracked.InputTag('ctfWithMaterialTracksCosmics'),
 	PixelDigisLabel = cms.InputTag("siPixelDigis"),
 	PixelClustersLabel = cms.InputTag("siPixelClusters"),
 	PixelHitsLabel = cms.InputTag("siPixelRecHits"),
@@ -222,8 +224,6 @@ process.load("TrackingTools.TrajectoryCleaning.TrajectoryCleanerBySharedHits_cfi
 process.load("RecoTracker.MeasurementDet.MeasurementTrackerEventProducer_cfi")
 process.load("RecoTracker.MeasurementDet.MeasurementTrackerESProducer_cfi")
 
-process.ctfWithMaterialTracksCosmics.NavigationSchool = cms.string("TelescopeNavigationSchool")
-#process.ctfWithMaterialTracksCosmics.beamSpot = cms.InputTag("")   NB: Beam spot is not valid, NEED TO FIX THIS. See https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFindingBeamSpot
 
 # Final Track Selector for CTF
 #from RecoTracker.FinalTrackSelectors.CTFFinalTrackSelectorP5_cff import *
@@ -277,10 +277,63 @@ process.combinatorialcosmicseedfinderP5.ClusterCollectionLabel = cms.InputTag(""
 process.MeasurementTrackerEvent.stripClusterProducer = ''
 
 
+
+
+#process.ctfWithMaterialTracksCosmics.NavigationSchool = cms.string("TelescopeNavigationSchool")
+#process.ctfWithMaterialTracksCosmics.beamSpot = cms.InputTag("pixel_telescope_beamspot_tag")   # NB: Beam spot is not valid, NEED TO FIX THIS. See https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFindingBeamSpot
+
+
+
+
+process.ctfWithMaterialTracksCosmics = cms.EDProducer("TrackProducer",
+    AlgorithmName = cms.string('ctf'),
+    Fitter = cms.string('FittingSmootherRKP5'),
+    GeometricInnerState = cms.bool(True),
+    MeasurementTracker = cms.string(''),
+    MeasurementTrackerEvent = cms.InputTag("MeasurementTrackerEvent"),
+    NavigationSchool = cms.string('TelescopeNavigationSchool'),
+    Propagator = cms.string('RungeKuttaTrackerPropagator'),
+    SimpleMagneticField = cms.string(''),
+    TTRHBuilder = cms.string('WithAngleAndTemplate'),
+    TrajectoryInEvent = cms.bool(False),
+    alias = cms.untracked.string('ctfWithMaterialTracks'),
+    beamSpot = cms.InputTag("pixel_telescope_beamspot_tag"),
+    clusterRemovalInfo = cms.InputTag(""),
+    src = cms.InputTag("ckfTrackCandidatesP5"),
+    useHitsSplitting = cms.bool(False),
+    useSimpleMF = cms.bool(False)
+)
+
+
+#process.ctfWithMaterialTracksP5 = cms.EDProducer("TrackProducer",
+#    AlgorithmName = cms.string('ctf'),
+#    Fitter = cms.string('FittingSmootherRKP5'),
+#    GeometricInnerState = cms.bool(True),
+#    MeasurementTracker = cms.string(''),
+#    MeasurementTrackerEvent = cms.InputTag("MeasurementTrackerEvent"),
+#    NavigationSchool = cms.string('TelescopeNavigationSchool'),
+#    Propagator = cms.string('RungeKuttaTrackerPropagator'),
+#    SimpleMagneticField = cms.string(''),
+ #   TTRHBuilder = cms.string('WithAngleAndTemplate'),
+ #   TrajectoryInEvent = cms.bool(False),
+#    alias = cms.untracked.string('ctfWithMaterialTracks'),
+#    beamSpot = cms.InputTag("offlineBeamSpot"),
+#    clusterRemovalInfo = cms.InputTag(""),
+ #   src = cms.InputTag("ctfWithMaterialTracksCosmics"),
+#    useHitsSplitting = cms.bool(False),
+ #   useSimpleMF = cms.bool(False)
+#)
+
+
+
+
+
+
+
+
 process.load("RecoTracker.TransientTrackingRecHit.TransientTrackingRecHitBuilderWithoutRefit_cfi")
 #process.RKTrajectoryFitter.RecoGeometry = cms.string("DummyDetLayerGeometry")
 process.RKTrajectorySmoother.RecoGeometry = cms.string("GlobalDetLayerGeometry")
-
 
 process.RKTrajectoryFitter = cms.ESProducer("KFTrajectoryFitterESProducer",
     ComponentName = cms.string('RKFitter'),
@@ -291,6 +344,79 @@ process.RKTrajectoryFitter = cms.ESProducer("KFTrajectoryFitterESProducer",
     appendToDataLabel = cms.string(''),
     minHits = cms.int32(3)
 )
+
+
+process.ckfBaseTrajectoryFilterP5.minimumNumberOfHits = 0
+process.ckfBaseTrajectoryFilterP5.minPt = 0.0001
+process.ckfBaseTrajectoryFilterP5.maxLostHits = 9999
+process.ckfBaseTrajectoryFilterP5.maxConsecLostHits = 8
+
+process.CkfBaseTrajectoryFilter_block = cms.PSet(
+    ComponentType = cms.string('CkfBaseTrajectoryFilter'),
+    chargeSignificance = cms.double(-1.0),
+    constantValueForLostHitsFractionFilter = cms.double(2.0),
+    extraNumberOfHitsBeforeTheFirstLoop = cms.int32(4),
+    maxCCCLostHits = cms.int32(9999),
+    maxConsecLostHits = cms.int32(8),
+    maxLostHits = cms.int32(999),
+    maxLostHitsFraction = cms.double(0.1),
+    maxNumberOfHits = cms.int32(100),
+    minGoodStripCharge = cms.PSet(
+        refToPSet_ = cms.string('SiStripClusterChargeCutNone')
+    ),
+    minHitsMinPt = cms.int32(3),
+    minNumberOfHitsForLoopers = cms.int32(13),
+    minNumberOfHitsPerLoop = cms.int32(4),
+    minPt = cms.double(0.001),
+    minimumNumberOfHits = cms.int32(0),
+    nSigmaMinPt = cms.double(5.0),
+    pixelSeedExtension = cms.bool(False),
+    seedExtension = cms.int32(0),
+    seedPairPenalty = cms.int32(0),
+    strictSeedExtension = cms.bool(False)
+)
+
+
+
+
+
+#import RecoTracker.FinalTrackSelectors.cosmictrackSelector_cfi
+#process.cosmictrackSelector = cms.EDProducer("CosmicTrackSelector",
+#                                     src = cms.InputTag("ctfWithMaterialTracksCosmics"),
+#                                     keepAllTracks = cms.bool(False), ## if set to true tracks failing this filter are kept in the output
+#                                     beamspot = cms.InputTag(""),
+#                                     #untracked bool copyTrajectories = true // when doing retracking before
+#                                     copyTrajectories = cms.untracked.bool(False),
+#                                     copyExtras = cms.untracked.bool(True), ## set to false on AOD
+#                                     qualityBit = cms.string(''), # set to '' or comment out if you don't want to set the bit                                     
+#                                     # parameters for adapted optimal cuts on chi2
+#                                     chi2n_par = cms.double(10.0),
+#                                     # Impact parameter absolute cuts.
+#                                     max_d0 = cms.double(110.),
+#                                     max_z0 = cms.double(300.),
+#                                     # track parameter cuts 
+#                                     max_eta = cms.double(2.0),
+#                                     min_pt = cms.double(1.0),
+                                     # Cut on numbers of valid hits
+#                                     min_nHit = cms.uint32(5),
+                                     # Cut on number of Pixel Hit 
+#                                     min_nPixelHit = cms.uint32(0),
+                                     # Cuts on numbers of layers with hits/3D hits/lost hits. 
+#                                     minNumberLayers = cms.uint32(0),
+#                                     minNumber3DLayers = cms.uint32(0),
+#                                    maxNumberLostLayers = cms.uint32(999)
+#                                     )
+
+process.ctfWithMaterialTracksP5 = process.ctfWithMaterialTracksCosmics.clone(
+    src = "ctfWithMaterialTracksCosmics"
+)
+
+### and an analyzer
+#process.trajCout = cms.EDAnalyzer('TrajectoryAnalyzer',
+#   trajectoryInput=cms.InputTag('ctfWithMaterialTracksCosmics')
+#)
+#process.trajCout = cms.EDAnalyzer('TrackValidator')
+#process.Ana = cms.Path(process.trajCout)
 
 
 ###################################################################################################################
@@ -307,17 +433,12 @@ process.ctftracksP5 = cms.Sequence(process.combinatorialcosmicseedingtripletsP5+
 
 
 
+process.reconstruction = cms.Path(process.reconstruction_pixelOnly*process.ctftracksP5)
 
 
-from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2017_realistic', '')
 
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.RECOSIMoutput_step = cms.EndPath(process.RECOSIMoutput)
-
-
-
-process.reconstruction = cms.Path(process.reconstruction_pixelOnly*process.ctftracksP5)
 
 
 process.schedule = cms.Schedule(process.reconstruction,process.DQM,process.endjob_step,process.RECOSIMoutput_step)
