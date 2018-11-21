@@ -173,7 +173,8 @@ TrackProducerBase<T>::getFromEvt(edm::Event& theEvent,edm::Handle<TrackCandidate
     //bs = *recoBeamSpotHandle;
   //else 
     //edm::LogWarning("TrackProducerBase") << " BeamSpot is not valid";
-bs = myBeamSpot_;			   
+bs = myBeamSpot_;
+if (bs.x0() < 40 ) { edm::LogWarning("TrackProducerBase") << " BeamSpot is not valid"; }				   
 }
 
 template <class T> void
@@ -193,7 +194,9 @@ TrackProducerBase<T>::getFromEvt(edm::Event& theEvent,edm::Handle<TrackView>& th
     //bs = *recoBeamSpotHandle;
   //else 
     //edm::LogWarning("TrackProducerBase") << " BeamSpot is not valid";
-bs = myBeamSpot_;			   
+bs = myBeamSpot_;
+if (bs.x0() < 40 ) { edm::LogWarning("TrackProducerBase") << " BeamSpot is not valid"; }
+			   
 }
 
 #include <TrackingTools/DetLayers/interface/DetLayer.h>
