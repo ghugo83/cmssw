@@ -272,11 +272,10 @@ Ana3D::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
  // from EventSetup: this works
  //std::cout << *mybeamspot << std::endl;
- 
- 
- 
- // from Event: this doesnt work
-/*if ( beamSpotHandle.isValid() ) {
+
+ /* 
+//  from Event: this doesnt work
+if ( beamSpotHandle.isValid() ) {
     beamSpot = *beamSpotHandle;
 double x0 = beamSpot.x0();
 double y0 = beamSpot.y0();
@@ -292,15 +291,22 @@ std::cout << "Debug beam spot profile: x0 = "
 << ", BeamWidthX = " << BeamWidthX << ", BeamWidthY = " << BeamWidthY
 << std::endl;
 } 
-else { std::cout << "No beam spot available from EventSetup \n" << std::endl; }*/
+else { std::cout << "No beam spot available from EventSetup \n" << std::endl; }
+*/
 
 
+  //---------------------------------
+  // loop on digis
+  //--------------------------------- 
+  std::cout << "pixeldigis.size() = " << pixeldigis.product()->size() << std::endl;
   
   
   
   //---------------------------------
   // loop on clusters
   //---------------------------------
+
+  std::cout << "pixelclusters.size() = " << pixelclusters.product()->size() << std::endl;
 
   // First loop on modules with a cluster
   for( edmNew::DetSetVector<SiPixelCluster>::const_iterator DSViter=pixelclusters->begin(); DSViter!=pixelclusters->end();DSViter++   ) {
@@ -342,15 +348,20 @@ else { std::cout << "No beam spot available from EventSetup \n" << std::endl; }*
     } //end for first detectors
     
  
+ 
+ 
+ 
+  //---------------------------------
+  // loop on rec hits
+  //--------------------------------- 
+  std::cout << "pixelhits.size() = " << pixelhits.product()->size() << std::endl;
+ 
    
    
   //---------------------------------
   // loop on seeds
   //---------------------------------    
-   std::cout << "trajectorySeeds.size() = " << trajectorySeeds.product()->size() << std::endl;
-   
-   
-   
+   std::cout << "trajectorySeeds.size() = " << trajectorySeeds.product()->size() << std::endl; 
    
    
    
