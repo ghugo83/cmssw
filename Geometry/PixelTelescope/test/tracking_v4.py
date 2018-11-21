@@ -162,13 +162,21 @@ process.TFileService = cms.Service("TFileService",
 
 #process.DQMData = cms.EDAnalyzer('PixelTelescope', 
 process.DQMData = cms.EDAnalyzer('Ana3D',
- 	tracks = cms.untracked.InputTag('ctfWithMaterialTracksCosmics'),
 	PixelDigisLabel = cms.InputTag("siPixelDigis"),
 	PixelClustersLabel = cms.InputTag("siPixelClusters"),
 	PixelHitsLabel = cms.InputTag("siPixelRecHits"),
+	SeedFinderLabel = cms.InputTag("combinatorialcosmicseedfinderP5"),
+	TrackCandidateLabel = cms.InputTag("ckfTrackCandidatesP5"),
+	tracks = cms.untracked.InputTag('ctfWithMaterialTracksCosmics'),
 )
 
 process.DQM = cms.Path(process.DQMData)
+
+
+
+
+
+
 
 
 ###########################################################################################
@@ -179,11 +187,6 @@ process.DQM = cms.Path(process.DQMData)
 # Tracking configuration file fragment for P5 cosmic running
 #
 
-
-#process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
-#process.load("RecoTracker.Configuration.RecoTrackerP5_cff")
-#process.load('Geometry.PixelTelescope.PixelTelescopeDBConditions_cfi')
-#process.load('Geometry.PixelTelescope.PixelTelescopeRecoGeometry_cfi')
 
 
 #process.load('RecoTracker.TkNavigation.CosmicsNavigationSchoolESProducer_cfi')
@@ -228,6 +231,15 @@ process.load("RecoTracker.MeasurementDet.MeasurementTrackerESProducer_cfi")
 # Final Track Selector for CTF
 #from RecoTracker.FinalTrackSelectors.CTFFinalTrackSelectorP5_cff import *
 
+
+
+
+
+
+###################################
+############## SEEDING ############
+###################################
+
 process.load("RecoTracker.SpecialSeedGenerators.CombinatorialSeedGeneratorForCosmicsP5_cff")
 process.combinatorialcosmicseedingtripletsP5 = cms.EDProducer("SeedingLayersEDProducer",
     MTIB = cms.PSet(
@@ -253,7 +265,8 @@ process.combinatorialcosmicseedingtripletsP5 = cms.EDProducer("SeedingLayersEDPr
     ),
 
     layerList = cms.vstring(
-        'FPix3_neg+FPix2_neg+FPix1_neg', 
+        'FPix4_neg+FPix3_neg+FPix2_neg', 
+        #'FPix1_pos+FPix2_pos+FPix3_pos',
     )
 )
 process.combinatorialcosmicseedingpairsTECnegP5.layerList = cms.vstring()
@@ -263,24 +276,18 @@ process.combinatorialcosmicseedingpairsTOBP5.layerList = cms.vstring()
 
 
 
-
-
-
-
-#process.combinatorialcosmicseedfinderP5.OrderedHitsFactoryPSets = cms.VPSet(
-#        cms.PSet(
-#            ComponentName = cms.string('GenericTripletGenerator'),
-#            LayerSrc = cms.InputTag("combinatorialcosmicseedingtripletsP5"),
-#            NavigationDirection = cms.string('outsideIn'),
-            #PropagationDirection = cms.string('alongMomentum') #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-#            PropagationDirection = cms.string('anyDirection')
-#        ),
-#    )
-#process.combinatorialcosmicseedfinderP5.TTRHBuilder = cms.string("WithoutRefit")
-#process.combinatorialcosmicseedfinderP5.MaxNumberOfPixelClusters = cms.uint32(300000)
-#process.combinatorialcosmicseedfinderP5.ClusterCollectionLabel = cms.InputTag("")
-
-
+process.RegionPSetBlock = cms.PSet(
+    RegionPSet = cms.PSet(
+            originHalfLength = cms.double(50.0),   #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+            originRadius = cms.double(50.0),
+            originXPos = cms.double(50.0),
+            originYPos = cms.double(0.0),
+            originZPos = cms.double(-100.0),
+            precise = cms.bool(False),
+            ptMin = cms.double(0.9),              #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+            useMultipleScattering = cms.bool(False)
+    )
+)
 
 
 
@@ -288,9 +295,39 @@ process.combinatorialcosmicseedingpairsTOBP5.layerList = cms.vstring()
 process.combinatorialcosmicseedfinderP5 = cms.EDProducer("CtfSpecialSeedGenerator",
     Charges = cms.vint32(-1),
     CheckHitsAreOnDifferentLayers = cms.bool(False),
-    ClusterCollectionLabel = cms.InputTag(""),
+    ClusterCollectionLabel = cms.InputTag("siPixelClusters"),
     DontCountDetsAboveNClusters = cms.uint32(20),
     ErrorRescaling = cms.double(50.0),
+
+    MaxNumberOfCosmicClusters = cms.uint32(300),
+    MaxNumberOfPixelClusters = cms.uint32(300000),
+    OrderedHitsFactoryPSets = cms.VPSet(cms.PSet(
+        ComponentName = cms.string('GenericTripletGenerator'),
+        LayerSrc = cms.InputTag("combinatorialcosmicseedingtripletsP5"),
+        maxTheta = cms.double(0.1),                             #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+        NavigationDirection = cms.string('alongMomentum'),       #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+        PropagationDirection = cms.string('anyDirection')    #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+    )),
+    PixelClusterCollectionLabel = cms.InputTag("siPixelClusters"),
+    RegionFactoryPSet = cms.PSet(
+        ComponentName = cms.string('GlobalRegionProducer'),
+        RegionPSet = cms.PSet(
+            originHalfLength = cms.double(50.0),   #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+            originRadius = cms.double(50.0),
+            originXPos = cms.double(50.0),
+            originYPos = cms.double(0.0),
+            originZPos = cms.double(-100.0),
+            precise = cms.bool(False),            #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+            ptMin = cms.double(0.9),              #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+            useMultipleScattering = cms.bool(False)
+        )
+    ),
+    SeedMomentum = cms.double(5.0),
+    SeedsFromNegativeY = cms.bool(False),          #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+    SeedsFromPositiveY = cms.bool(False),          #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+    SetMomentum = cms.bool(True),
+    TTRHBuilder = cms.string('WithoutRefit'),
+    UseScintillatorsConstraint = cms.bool(False),
     LowerScintillatorParameters = cms.PSet(
         GlobalX = cms.double(50.0),
         GlobalY = cms.double(0.0),
@@ -298,33 +335,6 @@ process.combinatorialcosmicseedfinderP5 = cms.EDProducer("CtfSpecialSeedGenerato
         LenghtInZ = cms.double(100.0),
         WidthInX = cms.double(100.0)
     ),
-    MaxNumberOfCosmicClusters = cms.uint32(300),
-    MaxNumberOfPixelClusters = cms.uint32(300000),
-    OrderedHitsFactoryPSets = cms.VPSet(cms.PSet(
-        ComponentName = cms.string('GenericTripletGenerator'),
-        LayerSrc = cms.InputTag("combinatorialcosmicseedingtripletsP5"),
-        NavigationDirection = cms.string('outsideIn'),       #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-        PropagationDirection = cms.string('anyDirection')    #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-    )),
-    PixelClusterCollectionLabel = cms.InputTag("siPixelClusters"),
-    RegionFactoryPSet = cms.PSet(
-        ComponentName = cms.string('GlobalRegionProducer'),
-        RegionPSet = cms.PSet(
-            originHalfLength = cms.double(5.0),   #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-            originRadius = cms.double(50.0),
-            originXPos = cms.double(50.0),
-            originYPos = cms.double(0.0),
-            originZPos = cms.double(-200.0),
-            precise = cms.bool(True),
-            ptMin = cms.double(99),              #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-            useMultipleScattering = cms.bool(False)
-        )
-    ),
-    SeedMomentum = cms.double(100.0),
-    SeedsFromNegativeY = cms.bool(False),          #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-    SeedsFromPositiveY = cms.bool(True),
-    SetMomentum = cms.bool(True),
-    TTRHBuilder = cms.string('WithoutRefit'),
     UpperScintillatorParameters = cms.PSet(
         GlobalX = cms.double(50.0),
         GlobalY = cms.double(0.0),
@@ -332,15 +342,23 @@ process.combinatorialcosmicseedfinderP5 = cms.EDProducer("CtfSpecialSeedGenerato
         LenghtInZ = cms.double(100.0),
         WidthInX = cms.double(100.0)
     ),
-    UseScintillatorsConstraint = cms.bool(False),
     doClusterCheck = cms.bool(True),
     maxSeeds = cms.int32(10000),
-    requireBOFF = cms.bool(True)
+    requireBOFF = cms.bool(False)          #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
 )
 
 
 
+import TrackingTools.MaterialEffects.MaterialPropagator_cfi
+MaterialPropagatorPtMin035 = TrackingTools.MaterialEffects.MaterialPropagator_cfi.MaterialPropagator.clone(
+    ComponentName = 'PropagatorWithMaterialPtMin035',
+    ptMin = 0.35
+)
 
+import RecoTracker.TkSeedGenerator.SeedFromConsecutiveHitsStraightLineCreator_cfi
+process.SeedCreatorPSet = RecoTracker.TkSeedGenerator.SeedFromConsecutiveHitsStraightLineCreator_cfi.SeedFromConsecutiveHitsStraightLineCreator.clone(
+    propagator = cms.string('PropagatorWithMaterialPtMin035')
+)
 
 
 
