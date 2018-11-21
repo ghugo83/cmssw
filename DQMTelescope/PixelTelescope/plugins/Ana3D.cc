@@ -55,6 +55,8 @@
 #include "CondFormats/DataRecord/interface/BeamSpotObjectsRcd.h"
 #include "CondFormats/BeamSpotObjects/interface/BeamSpotObjects.h"
 
+#include "DataFormats/TrackCandidate/interface/TrackCandidate.h"
+
 #include <cstring>
 #include <string> 
 #include <TH2F.h>
@@ -110,6 +112,9 @@ class Ana3D : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     edm::EDGetTokenT<edm::DetSetVector<PixelDigi> >         pixeldigiToken_ ;
     edm::EDGetTokenT<edmNew::DetSetVector<SiPixelCluster> > pixelclusterToken_ ;
     edm::EDGetTokenT<edmNew::DetSetVector<SiPixelRecHit> >  pixelhitToken_ ;
+    
+    edm::EDGetTokenT<std::vector<TrajectorySeed> >  seedFinderToken_;
+    edm::EDGetTokenT<std::vector<TrackCandidate> > trackCandidateToken_ ;
       
     std::vector<uint32_t > list_of_modules ;
     std::map<int, int> modulesNbr_to_idx ;
@@ -180,6 +185,11 @@ Ana3D::Ana3D(const edm::ParameterSet& iConfig)
     detId_to_moduleName.insert( std::pair<uint32_t, TString>(353114116, "M3239") ) ;
     detId_to_moduleName.insert( std::pair<uint32_t, TString>(353375236, "M3164") ) ;
     detId_to_moduleName.insert( std::pair<uint32_t, TString>(353376260, "M3173") ) ;
+    
+    seedFinderToken_      = consumes<std::vector<TrajectorySeed> > (iConfig.getParameter<edm::InputTag>("SeedFinderLabel")),
+    trackCandidateToken_  = consumes<std::vector<TrackCandidate> > (iConfig.getParameter<edm::InputTag>("TrackCandidateLabel"));
+    
+    
 }
 
 Ana3D::~Ana3D()
@@ -224,19 +234,27 @@ Ana3D::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   iSetup.get<TkPixelCPERecord>().get("PixelCPEGeneric", cpEstimator);
   const PixelClusterParameterEstimator &cpe(*cpEstimator); 
   
-  // Get reconstructed tracks collection
-	edm::Handle<reco::TrackCollection> trackCollection;
-  iEvent.getByToken(tracksToken_,trackCollection  );
-  
-  // Get beam profile from EventSetup: works
+  // Get hand-made reco beam profile from EventSetup: this works
   edm::ESHandle< BeamSpotObjects > beamhandle;
 	iSetup.get<BeamSpotObjectsRcd>().get(beamhandle);
 	const BeamSpotObjects* mybeamspot = beamhandle.product();
 
-  // Get beam profile from Event: doesnt work
+  // Get hand-made reco beam profile from Event: this doesnt work
   //reco::BeamSpot beamSpot;
   //edm::Handle<reco::BeamSpot> beamSpotHandle;
   //iEvent.getByLabel("pixel_telescope_beamspot_tag", beamSpotHandle); 
+  
+  // Get collection of seeds
+  edm::Handle< std::vector<TrajectorySeed> > trajectorySeeds;
+  iEvent.getByToken(seedFinderToken_, trajectorySeeds);
+  
+  // Get collection of tracks candidates
+  edm::Handle< std::vector<TrackCandidate> > trackCandidates;
+  iEvent.getByToken(trackCandidateToken_, trackCandidates);
+  
+  // Get reconstructed tracks collection
+	edm::Handle<reco::TrackCollection> trackCollection;
+  iEvent.getByToken(tracksToken_,trackCollection  );
   
   
   
@@ -252,10 +270,12 @@ Ana3D::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   // Analyze beam profile
   //---------------------------------
 
- // from EventSetup: works
- std::cout << *mybeamspot << std::endl;
+ // from EventSetup: this works
+ //std::cout << *mybeamspot << std::endl;
  
- // from Event: doesnt work
+ 
+ 
+ // from Event: this doesnt work
 /*if ( beamSpotHandle.isValid() ) {
     beamSpot = *beamSpotHandle;
 double x0 = beamSpot.x0();
@@ -305,7 +325,7 @@ else { std::cout << "No beam spot available from EventSetup \n" << std::endl; }*
       double x=0, y=0, z=0;
         x = gp.x();
         y = gp.y();
-	z = gp.z();
+	      z = gp.z();
 	
         // Let's fill in the tree
         tree_runNumber = myEvId.run();
@@ -315,13 +335,35 @@ else { std::cout << "No beam spot available from EventSetup \n" << std::endl; }*
         tree_cluster = iCluster++;	
         tree_x = x;
         tree_y = y;
-	tree_z = z;
+	      tree_z = z;
         tree_modName = detId_to_moduleName[detId];
         cluster3DTree->Fill();
       } //end for clusters of the first detector
     } //end for first detectors
     
  
+   
+   
+  //---------------------------------
+  // loop on seeds
+  //---------------------------------    
+   std::cout << "trajectorySeeds.size() = " << trajectorySeeds.product()->size() << std::endl;
+   
+   
+   
+   
+   
+   
+   
+   
+  //---------------------------------
+  // loop on tracks candidates
+  //---------------------------------    
+   std::cout << "trackCandidates.size() = " << trackCandidates.product()->size() << std::endl;
+    
+    
+    
+    
     
 
   //---------------------------------
