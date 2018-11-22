@@ -305,8 +305,8 @@ process.combinatorialcosmicseedfinderP5 = cms.EDProducer("CtfSpecialSeedGenerato
         ComponentName = cms.string('GenericTripletGenerator'),
         LayerSrc = cms.InputTag("combinatorialcosmicseedingtripletsP5"),
         maxTheta = cms.double(0.1),                             #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-        NavigationDirection = cms.string('alongMomentum'),       #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-        PropagationDirection = cms.string('anyDirection')    #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+        NavigationDirection = cms.string('outsideIn'),       #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+        PropagationDirection = cms.string('alongMomentum')    #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
     )),
     PixelClusterCollectionLabel = cms.InputTag("siPixelClusters"),
     RegionFactoryPSet = cms.PSet(
