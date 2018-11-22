@@ -127,3 +127,22 @@ LorentzAngleSimDBReader = cms.ESSource("PoolDBESSource",
 )
 es_prefer_LASim = cms.ESPrefer("PoolDBESSource","LorentzAngleSimDBReader")
 #-------------------------------------------------------
+
+#----------------------BEAM-----------------------------
+BeamSpotDBSource = cms.ESSource("PoolDBESSource",
+  BlobStreamerName = cms.untracked.string('TBufferBlobStreamingService'),
+  DBParameters = cms.PSet(
+    messageLevel = cms.untracked.int32(0),
+    authenticationPath = cms.untracked.string('')
+  ),
+  connect = cms.string('sqlite_file:pixel_telescope_beamspot.db'), #local DB
+  toGet = cms.VPSet(
+    cms.PSet(
+      record = cms.string('BeamSpotObjectsRcd'),
+      label = cms.untracked.string(''),
+      tag = cms.string('pixel_telescope_beamspot_tag'),
+    )
+  )
+)
+es_prefer_beamspot = cms.ESPrefer("PoolDBESSource","BeamSpotDBSource")
+#-------------------------------------------------------

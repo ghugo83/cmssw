@@ -162,10 +162,12 @@ process.TFileService = cms.Service("TFileService",
 
 #process.DQMData = cms.EDAnalyzer('PixelTelescope', 
 process.DQMData = cms.EDAnalyzer('Ana3D',
- 	tracks = cms.untracked.InputTag('ctfWithMaterialTracksCosmics'),
 	PixelDigisLabel = cms.InputTag("siPixelDigis"),
 	PixelClustersLabel = cms.InputTag("siPixelClusters"),
 	PixelHitsLabel = cms.InputTag("siPixelRecHits"),
+	SeedFinderLabel = cms.InputTag("combinatorialcosmicseedfinderP5"),
+	TrackCandidateLabel = cms.InputTag("ckfTrackCandidatesP5"),
+	tracks = cms.untracked.InputTag('ctfWithMaterialTracksCosmics'),
 )
 
 process.DQM = cms.Path(process.DQMData)
@@ -253,7 +255,7 @@ process.combinatorialcosmicseedingtripletsP5 = cms.EDProducer("SeedingLayersEDPr
     ),
 
     layerList = cms.vstring(
-        'FPix3_neg+FPix2_neg+FPix1_neg', 
+        'FPix4_neg+FPix3_neg+FPix2_neg', 
     )
 )
 process.combinatorialcosmicseedingpairsTECnegP5.layerList = cms.vstring()
@@ -281,6 +283,19 @@ process.combinatorialcosmicseedingpairsTOBP5.layerList = cms.vstring()
 #process.combinatorialcosmicseedfinderP5.ClusterCollectionLabel = cms.InputTag("")
 
 
+
+process.RegionPSetBlock = cms.PSet(
+    RegionPSet = cms.PSet(
+            originHalfLength = cms.double(5.0),   #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+            originRadius = cms.double(50.0),
+            originXPos = cms.double(50.0),
+            originYPos = cms.double(0.0),
+            originZPos = cms.double(-100.0),
+            precise = cms.bool(True),
+            ptMin = cms.double(0.9),              #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+            useMultipleScattering = cms.bool(False)
+    )
+)
 
 
 
@@ -316,11 +331,11 @@ process.combinatorialcosmicseedfinderP5 = cms.EDProducer("CtfSpecialSeedGenerato
             originYPos = cms.double(0.0),
             originZPos = cms.double(-200.0),
             precise = cms.bool(True),
-            ptMin = cms.double(99),              #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+            ptMin = cms.double(0.9),              #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
             useMultipleScattering = cms.bool(False)
         )
     ),
-    SeedMomentum = cms.double(100.0),
+    SeedMomentum = cms.double(5.0),
     SeedsFromNegativeY = cms.bool(False),          #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
     SeedsFromPositiveY = cms.bool(True),
     SetMomentum = cms.bool(True),
@@ -340,7 +355,16 @@ process.combinatorialcosmicseedfinderP5 = cms.EDProducer("CtfSpecialSeedGenerato
 
 
 
+import TrackingTools.MaterialEffects.MaterialPropagator_cfi
+MaterialPropagatorPtMin035 = TrackingTools.MaterialEffects.MaterialPropagator_cfi.MaterialPropagator.clone(
+    ComponentName = 'PropagatorWithMaterialPtMin035',
+    ptMin = 99
+    )
 
+import RecoTracker.TkSeedGenerator.SeedFromConsecutiveHitsStraightLineCreator_cfi
+#process.combinatorialcosmicseedingtripletsP5.SeedCreatorPSet = RecoTracker.TkSeedGenerator.SeedFromConsecutiveHitsStraightLineCreator_cfi.SeedFromConsecutiveHitsStraightLineCreator.clone(
+#    propagator = cms.string('PropagatorWithMaterialPtMin035')
+#)
 
 
 
