@@ -278,7 +278,7 @@ process.combinatorialcosmicseedingpairsTOBP5.layerList = cms.vstring()
 process.combinatorialcosmicseedfinderP5 = cms.EDProducer("CtfSpecialSeedGenerator",
     Charges = cms.vint32(-1),
     CheckHitsAreOnDifferentLayers = cms.bool(False),
-    ClusterCollectionLabel = cms.InputTag("siPixelClusters"),
+    ClusterCollectionLabel = cms.InputTag(""),
     DontCountDetsAboveNClusters = cms.uint32(20),
     ErrorRescaling = cms.double(50.0),
 
@@ -309,7 +309,7 @@ process.combinatorialcosmicseedfinderP5 = cms.EDProducer("CtfSpecialSeedGenerato
     SeedsFromNegativeY = cms.bool(False),          #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
     SeedsFromPositiveY = cms.bool(False),          #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
     SetMomentum = cms.bool(True),
-    TTRHBuilder = cms.string('WithoutRefit'),
+    TTRHBuilder = cms.string('WithTrackAngle'),
     UseScintillatorsConstraint = cms.bool(False),
     LowerScintillatorParameters = cms.PSet(
         GlobalX = cms.double(50.0),
