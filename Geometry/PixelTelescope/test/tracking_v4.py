@@ -247,8 +247,8 @@ process.combinatorialcosmicseedingtripletsP5 = cms.EDProducer("SeedingLayersEDPr
     ),
     FPix = cms.PSet( 
       hitErrorRPhi = cms.double( 0.0051 ),
-      TTRHBuilder = cms.string( "WithoutRefit" ),
-      #TTRHBuilder = cms.string( "WithTrackAngle" ),
+      #TTRHBuilder = cms.string( "WithoutRefit" ),
+      TTRHBuilder = cms.string( "WithTrackAngle" ),
       #TTRHBuilder = cms.string( "myTTRHBuilderWithoutAngle4MixedTriplets" ),
       useErrorsFromParam = cms.bool( True ),
       hitErrorRZ = cms.double( 0.0036 ),
@@ -258,8 +258,10 @@ process.combinatorialcosmicseedingtripletsP5 = cms.EDProducer("SeedingLayersEDPr
     ),
 
     layerList = cms.vstring(
+        'FPix3_neg+FPix2_neg+FPix1_neg', 
+        'FPix4_neg+FPix2_neg+FPix1_neg', 
+        'FPix4_neg+FPix3_neg+FPix1_neg', 
         'FPix4_neg+FPix3_neg+FPix2_neg', 
-        #'FPix1_pos+FPix2_pos+FPix3_pos',
     )
 )
 process.combinatorialcosmicseedingpairsTECnegP5.layerList = cms.vstring()
@@ -269,18 +271,6 @@ process.combinatorialcosmicseedingpairsTOBP5.layerList = cms.vstring()
 
 
 
-process.RegionPSetBlock = cms.PSet(
-    RegionPSet = cms.PSet(
-            originHalfLength = cms.double(50.0),   #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-            originRadius = cms.double(50.0),
-            originXPos = cms.double(50.0),
-            originYPos = cms.double(0.0),
-            originZPos = cms.double(-100.0),
-            precise = cms.bool(False),
-            ptMin = cms.double(0.9),              #TUNEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-            useMultipleScattering = cms.bool(False)
-    )
-)
 
 
 
