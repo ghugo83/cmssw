@@ -179,28 +179,48 @@ process.DQM = cms.Path(process.DQMData)
 
 
 
+
+
 ###########################################################################################
 ############################### Track reconstruction ######################################
 ###########################################################################################
-
-
-# Tracking configuration file fragment for P5 cosmic running
-#
+####### Tracking configuration file fragment for P5 cosmic running ########################
 
 
 
-#process.load('RecoTracker.TkNavigation.CosmicsNavigationSchoolESProducer_cfi')
-process.load('RecoTracker.TkNavigation.TelescopeNavigationSchoolESProducer_cfi')
+############################# MEASUREMENT AND PROPAGATION ###################################
+from RecoTracker.TransientTrackingRecHit.TTRHBuilders_cff import *
+process.load('RecoTracker.TransientTrackingRecHit.TTRHBuilders_cff')
+process.load("RecoTracker.TransientTrackingRecHit.TransientTrackingRecHitBuilderWithoutRefit_cfi")
 
 
 from RecoTracker.MeasurementDet.MeasurementTrackerESProducer_cff import *
-# TTRHBuilders
-from RecoTracker.TransientTrackingRecHit.TTRHBuilders_cff import *
-process.load('RecoTracker.TransientTrackingRecHit.TTRHBuilders_cff')
+process.load("RecoTracker.MeasurementDet.MeasurementTrackerEventProducer_cfi")
+process.load("RecoTracker.MeasurementDet.MeasurementTrackerESProducer_cfi")
 
+process.MeasurementTrackerEvent.stripClusterProducer = ''
+
+
+
+import TrackingTools.MaterialEffects.MaterialPropagator_cfi
+MaterialPropagatorPtMin035 = TrackingTools.MaterialEffects.MaterialPropagator_cfi.MaterialPropagator.clone(
+    ComponentName = 'PropagatorWithMaterialPtMin035',
+    ptMin = 0.35
+)
+
+import RecoTracker.TkSeedGenerator.SeedFromConsecutiveHitsStraightLineCreator_cfi
+process.SeedCreatorPSet = RecoTracker.TkSeedGenerator.SeedFromConsecutiveHitsStraightLineCreator_cfi.SeedFromConsecutiveHitsStraightLineCreator.clone(
+    propagator = cms.string('PropagatorWithMaterialPtMin035')
+)
+
+
+
+############################# SEEDING ###################################
+
+
+# obsolete stuff
 #from RecoTracker.SpecialSeedGenerators.CombinatorialSeedGeneratorForCosmicsP5_cff import *
 #process.load('RecoTracker.SpecialSeedGenerators.CombinatorialSeedGeneratorForCosmicsP5_cff')
-
 #from RecoTracker.SpecialSeedGenerators.SimpleCosmicBONSeeder_cff import *
 #from RecoTracker.TkSeedGenerator.GlobalCombinedSeeds_cff import *
 #combinedP5SeedsForCTF = RecoTracker.TkSeedGenerator.GlobalCombinedSeeds_cfi.globalCombinedSeeds.clone()
@@ -212,33 +232,6 @@ process.load('RecoTracker.TransientTrackingRecHit.TTRHBuilders_cff')
 #combinedP5SeedsForCTF.PairCollection = cms.InputTag('combinatorialcosmicseedfinderP5')
 #combinedP5SeedsForCTF.TripletCollection = cms.InputTag('simpleCosmicBONSeeds')
 
-from RecoTracker.CkfPattern.CkfTrackCandidatesP5_cff import *
-process.ckfTrackCandidatesP5 = ckfTrackCandidatesP5.clone()
-process.ckfTrackCandidatesP5.src = cms.InputTag('combinatorialcosmicseedfinderP5')
-process.ckfTrackCandidatesP5.NavigationSchool = cms.string("TelescopeNavigationSchool")
-#backward compatibility 2.2/3.1
-#ckfTrackCandidatesP5.SeedProducer = 'combinedP5SeedsForCTF'
-#import RecoTracker.TrackProducer.CTFFinalFitWithMaterial_cfi
-
-process.load("RecoTracker.TrackProducer.CTFFinalFitWithMaterialP5_cff")
-process.load("TrackingTools.TrackRefitter.ctfWithMaterialTrajectoriesP5_cff")
-process.load("RecoTracker.CkfPattern.GroupedCkfTrajectoryBuilderP5_cff")
-process.load("TrackingTools.TrajectoryCleaning.TrajectoryCleanerBySharedHits_cfi")
-process.load("RecoTracker.MeasurementDet.MeasurementTrackerEventProducer_cfi")
-process.load("RecoTracker.MeasurementDet.MeasurementTrackerESProducer_cfi")
-
-
-# Final Track Selector for CTF
-#from RecoTracker.FinalTrackSelectors.CTFFinalTrackSelectorP5_cff import *
-
-
-
-
-
-
-###################################
-############## SEEDING ############
-###################################
 
 process.load("RecoTracker.SpecialSeedGenerators.CombinatorialSeedGeneratorForCosmicsP5_cff")
 process.combinatorialcosmicseedingtripletsP5 = cms.EDProducer("SeedingLayersEDProducer",
@@ -349,41 +342,29 @@ process.combinatorialcosmicseedfinderP5 = cms.EDProducer("CtfSpecialSeedGenerato
 
 
 
-import TrackingTools.MaterialEffects.MaterialPropagator_cfi
-MaterialPropagatorPtMin035 = TrackingTools.MaterialEffects.MaterialPropagator_cfi.MaterialPropagator.clone(
-    ComponentName = 'PropagatorWithMaterialPtMin035',
-    ptMin = 0.35
-)
-
-import RecoTracker.TkSeedGenerator.SeedFromConsecutiveHitsStraightLineCreator_cfi
-process.SeedCreatorPSet = RecoTracker.TkSeedGenerator.SeedFromConsecutiveHitsStraightLineCreator_cfi.SeedFromConsecutiveHitsStraightLineCreator.clone(
-    propagator = cms.string('PropagatorWithMaterialPtMin035')
-)
 
 
+############################# TRACKS CANDIDATES ###################################
 
 
+#process.load('RecoTracker.TkNavigation.CosmicsNavigationSchoolESProducer_cfi')
+process.load('RecoTracker.TkNavigation.TelescopeNavigationSchoolESProducer_cfi')
 
 
-
-
+from RecoTracker.CkfPattern.CkfTrackCandidatesP5_cff import *
+process.ckfTrackCandidatesP5 = ckfTrackCandidatesP5.clone()
+process.ckfTrackCandidatesP5.src = cms.InputTag('combinatorialcosmicseedfinderP5')
+process.ckfTrackCandidatesP5.NavigationSchool = cms.string("TelescopeNavigationSchool")
+#backward compatibility 2.2/3.1
+#ckfTrackCandidatesP5.SeedProducer = 'combinedP5SeedsForCTF'
+#import RecoTracker.TrackProducer.CTFFinalFitWithMaterial_cfi
 
 
 
 
+############################# TRACKS PRODUCER ###################################
 
-
-
-process.MeasurementTrackerEvent.stripClusterProducer = ''
-
-
-
-
-#process.ctfWithMaterialTracksCosmics.NavigationSchool = cms.string("TelescopeNavigationSchool")
-#process.ctfWithMaterialTracksCosmics.beamSpot = cms.InputTag("pixel_telescope_beamspot_tag")   # NB: Beam spot is not valid, NEED TO FIX THIS. See https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFindingBeamSpot
-
-
-
+process.load("RecoTracker.TrackProducer.CTFFinalFitWithMaterialP5_cff")
 
 process.ctfWithMaterialTracksCosmics = cms.EDProducer("TrackProducer",
     AlgorithmName = cms.string('ctf'),
@@ -397,13 +378,17 @@ process.ctfWithMaterialTracksCosmics = cms.EDProducer("TrackProducer",
     TTRHBuilder = cms.string('WithAngleAndTemplate'),
     TrajectoryInEvent = cms.bool(False),
     alias = cms.untracked.string('ctfWithMaterialTracks'),
-    beamSpot = cms.InputTag("pixel_telescope_beamspot_tag"),
+    beamSpot = cms.InputTag("pixel_telescope_beamspot_tag"),  # NB: Beam spot is not valid, NEED TO FIX THIS. See https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFindingBeamSpot
     clusterRemovalInfo = cms.InputTag(""),
     src = cms.InputTag("ckfTrackCandidatesP5"),
     useHitsSplitting = cms.bool(False),
     useSimpleMF = cms.bool(False)
 )
 
+
+process.ctfWithMaterialTracksP5 = process.ctfWithMaterialTracksCosmics.clone(
+    src = "ctfWithMaterialTracksCosmics"
+)
 
 #process.ctfWithMaterialTracksP5 = cms.EDProducer("TrackProducer",
 #    AlgorithmName = cms.string('ctf'),
@@ -428,12 +413,10 @@ process.ctfWithMaterialTracksCosmics = cms.EDProducer("TrackProducer",
 
 
 
+############################# TRACKS FITTING ###################################
 
 
-
-process.load("RecoTracker.TransientTrackingRecHit.TransientTrackingRecHitBuilderWithoutRefit_cfi")
-#process.RKTrajectoryFitter.RecoGeometry = cms.string("DummyDetLayerGeometry")
-process.RKTrajectorySmoother.RecoGeometry = cms.string("GlobalDetLayerGeometry")
+#process.load("TrackingTools.TrackRefitter.ctfWithMaterialTrajectoriesP5_cff")
 
 process.RKTrajectoryFitter = cms.ESProducer("KFTrajectoryFitterESProducer",
     ComponentName = cms.string('RKFitter'),
@@ -445,6 +428,9 @@ process.RKTrajectoryFitter = cms.ESProducer("KFTrajectoryFitterESProducer",
     minHits = cms.int32(3)
 )
 
+process.RKTrajectorySmoother.RecoGeometry = cms.string("GlobalDetLayerGeometry")
+
+process.load("RecoTracker.CkfPattern.GroupedCkfTrajectoryBuilderP5_cff")
 
 process.ckfBaseTrajectoryFilterP5.minimumNumberOfHits = 0
 process.ckfBaseTrajectoryFilterP5.minPt = 0.0001
@@ -476,9 +462,11 @@ process.CkfBaseTrajectoryFilter_block = cms.PSet(
     strictSeedExtension = cms.bool(False)
 )
 
+process.load("TrackingTools.TrajectoryCleaning.TrajectoryCleanerBySharedHits_cfi")
 
 
 
+############################# TRACKS SELECTOR ###################################
 
 #import RecoTracker.FinalTrackSelectors.cosmictrackSelector_cfi
 #process.cosmictrackSelector = cms.EDProducer("CosmicTrackSelector",
@@ -507,10 +495,12 @@ process.CkfBaseTrajectoryFilter_block = cms.PSet(
 #                                    maxNumberLostLayers = cms.uint32(999)
 #                                     )
 
-process.ctfWithMaterialTracksP5 = process.ctfWithMaterialTracksCosmics.clone(
-    src = "ctfWithMaterialTracksCosmics"
-)
+# Final Track Selector for CTF
+#from RecoTracker.FinalTrackSelectors.CTFFinalTrackSelectorP5_cff import *
 
+
+
+############################# DEBUG ANALYZER ###################################
 ### and an analyzer
 #process.trajCout = cms.EDAnalyzer('TrajectoryAnalyzer',
 #   trajectoryInput=cms.InputTag('ctfWithMaterialTracksCosmics')
@@ -519,8 +509,9 @@ process.ctfWithMaterialTracksP5 = process.ctfWithMaterialTracksCosmics.clone(
 #process.Ana = cms.Path(process.trajCout)
 
 
-###################################################################################################################
-# DEFINE SEQUENCE
+
+
+########################################## DEFINE SEQUENCE ##########################################
 
 #process.ctftracksP5 = cms.Sequence(process.combinatorialcosmicseedinglayersP5)
 
@@ -529,14 +520,11 @@ process.ctftracksP5 = cms.Sequence(process.combinatorialcosmicseedingtripletsP5+
 			    
 #process.ctftracksP5 = cms.Sequence(process.combinatorialcosmicseedingtripletsP5+process.combinatorialcosmicseedfinderP5*process.MeasurementTrackerEvent*
 #			    process.ckfTrackCandidatesP5*process.ctfWithMaterialTracksCosmics*process.ctfWithMaterialTracksP5)			    
-###################################################################################################################
+
 
 
 
 process.reconstruction = cms.Path(process.reconstruction_pixelOnly*process.ctftracksP5)
-
-
-
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.RECOSIMoutput_step = cms.EndPath(process.RECOSIMoutput)
 
