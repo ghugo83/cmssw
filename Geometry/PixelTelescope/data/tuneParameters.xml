@@ -8,7 +8,7 @@
 
     <!-- TELESCOPE ARMS AND PLANES: -->
     <!-- ARM -->
-    <Constant name="InterArmDeltaZ" value="600.0*mm"/>  <!-- Total distance in Z between the centres of the 2 arms --> <!-- Was 350 mm -->
+    <Constant name="InterArmDeltaZ" value="496.0*mm"/>  <!-- Total distance in Z between the centres of the 2 arms --> <!-- Was 350 mm -->
 
     <!-- PLANE -->
     <Constant name="InterPlaneDeltaZ" value="50.0*mm"/> <!-- Total distance in Z between the centres of 2 consecutive planes -->
@@ -19,11 +19,22 @@
     <!-- simply uncomment 2 lines in DDTelescopePlanesAlgo as precisely described in plugins/DDTelescopePlanesAlgo.cc -->
 
     <!-- PHASE 1 MODULE -->                             
-    <Constant name="MovePhase1ModuleInPlaneAlongModuleWidth" value="[telescope:Phase1BPIXModuleWidth] - 7*mm"/>    
+    <Constant name="MovePhase1ModuleInPlaneAlongModuleWidth" value="[telescope:Phase1BPIXModuleWidth] - 8.3*mm"/>    
     <!-- Total distance between the centres of the two Phase 1 modules, along module width (module local X). -->
+    <!-- Calculated 8.3 mm overlap as follows: 
+    Measured 10.8 mm overlap, counting the full base plates in width (27 mm total width module instead of 24.5 mm).
+    Hence the overlap in between 24.5 mm wide module (which we have in the model) is 10.8 - 2.5 = 8.3 mm.
+    -->
 
-    <Constant name="MovePhase1ModuleInPlaneAlongModuleThickness" value="2*mm"/>
+    <Constant name="MovePhase1ModuleInPlaneAlongModuleThickness" value="1.585*mm"/>    
     <!-- Total distance between the centres of the two Phase 1 modules, along module thickness (module local Y). -->
+    <!-- Calculated as follows: 
+    Module thickness = 1.28 mm, hence module center is at 0.64 mm from module most external surface.  
+    Sensor has an offset of 0.1225 mm inwards (towards telescope plane).
+    Hence sensor center is at 0.64 - 0.1225 = 0.5175 mm from module most external surface.
+    There is a 0.55 mm gap between the 2 modules most external surfaces.
+    Hence the total distance between sensor centers is 2 * 0.5175 + 0.55 = 1.585 mm.
+    -->
 
 
 
