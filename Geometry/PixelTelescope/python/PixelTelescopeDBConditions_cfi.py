@@ -27,7 +27,7 @@ CablingMapDBReader = cms.ESSource("PoolDBESSource",
     messageLevel = cms.untracked.int32(0),
     authenticationPath = cms.untracked.string('')
   ),
-  connect = cms.string('sqlite_file:./pixeltelescope_cabling.db'), #local DB
+  connect = cms.string('sqlite_file:./pixeltelescope_v1_cabling.db'), #local DB
   toGet = cms.VPSet(
     cms.PSet(
       record = cms.string('SiPixelFedCablingMapRcd'),
