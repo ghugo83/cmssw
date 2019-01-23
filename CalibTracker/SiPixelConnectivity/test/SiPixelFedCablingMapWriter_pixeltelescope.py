@@ -8,7 +8,6 @@ process.load("Geometry.PixelTelescope.PixelTelescopeRecoGeometry_cfi")
 
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 from Configuration.AlCa.autoCond_condDBv2 import autoCond
-#process.GlobalTag.globaltag = autoCond['phase1_2017_realistic']
 process.GlobalTag.globaltag = autoCond['phase1_2017_design']
 
 process.source = cms.Source("EmptyIOVSource",
@@ -24,7 +23,7 @@ process.PoolDBOutputService = cms.Service("PoolDBOutputService",
      authenticationPath = cms.untracked.string('.')
     ),
     timetype = cms.untracked.string('runnumber'),
-    connect = cms.string("sqlite_file:pixeltelescope_fake_cabling.db"),
+    connect = cms.string("sqlite_file:pixeltelescope_v1_cabling.db"),
     #process.CondDBCommon,
     toPut = cms.VPSet(cms.PSet(
         record =  cms.string('SiPixelFedCablingMapRcd'),
@@ -44,7 +43,7 @@ process.MessageLogger = cms.Service("MessageLogger",
 
 process.mapwriter = cms.EDAnalyzer("SiPixelFedCablingMapWriter",
   record = cms.string('SiPixelFedCablingMapRcd'),
-  fileName = cms.untracked.string('pixelToLNK.ascii_pixeltelescope_fake')
+  fileName = cms.untracked.string('pixelToLNK.ascii_pixeltelescope_v1')
   #phase1 = cms.untracked.bool(True),
   #associator = cms.untracked.string('PixelToLNKAssociateFromAscii')
 )
