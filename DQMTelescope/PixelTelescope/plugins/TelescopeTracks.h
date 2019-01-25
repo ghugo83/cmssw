@@ -181,7 +181,7 @@ class TelescopeTracks {
     std::vector<double> getAssPlaneD(){return param_ass_d_;};
     std::vector<double> getAssPlaneX0(){return param_ass_x0_;};
     std::vector<double> getAssPlaneY0(){return param_ass_y0_;};
-    std::vector<double> getAssPlanez0(){return param_ass_z0_;};
+    std::vector<double> getAssPlaneZ0(){return param_ass_z0_;};
     
     void addModDetId(int thedetid){modDetId_.push_back(thedetid);};
     void cleanModDetId(){modDetId_.clear();};

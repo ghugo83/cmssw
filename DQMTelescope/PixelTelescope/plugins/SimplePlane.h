@@ -18,11 +18,15 @@ class SimplePlane {
   
   //point taken as reference for the plane :
   TVector3 Origin;
+
+
+  //angles of the plane:
+  double theta_plane, phi_plane;
   bool isRotated;
   
   int layerNum_;
   int detID1_;
-  int detID2_;
+//  int detID2_;
   
   TMatrixD *rotationX_, *rotationY_;
   TMatrixD *rotationInvX_, *rotationInvY_;
@@ -37,24 +41,24 @@ public:
       b=0;
       c=0;
       d=0;
+      theta_plane=0;
+      phi_plane=0;
     }
     
     
 
-//    SimplePlane(double z, int layerNum,  int detID1, int detID2){
-    SimplePlane(double x, double y, double z, int layerNum,  int detID1, int detID2){
+    SimplePlane(double x, double y, double z, double theta, double phi,  int layerNum,  int detID1){
       
       isRotated = false;
-//      Origin = TVector3 (0, 0, 0);
       Origin = TVector3 (x, y, z);
+      theta_plane=theta;
+      phi_plane=phi;
       a=0;
       b=0;
       c=1;
-//      d=-z;
       d=-1.*a*x-1.*b*y-1.*c*z;
       layerNum_ = layerNum;
       detID1_   = detID1;
-      detID2_   = detID2;
       
       rotationX_ = new TMatrixD(3, 3);
       rotationY_ = new TMatrixD(3, 3);
@@ -63,19 +67,10 @@ public:
       TArrayD dataRy(9);
 
       double pi=acos(-1);
-      double costheta = cos(-30*pi/180.);
-      double sintheta = sin(-30*pi/180.);
-      double cosphi = cos(20*pi/180.);
-      double sinphi = sin(20*pi/180.);
-
-/*
-      double costheta = cos(30*3.14159265/180.);
-      double sintheta = sin(30*3.14159265/180.);
-
-
-      double cosphi = cos(-20*3.14159265/180.);
-      double sinphi = sin(-20*3.14159265/180.);
-*/
+      double costheta = cos(theta*pi/180.);
+      double sintheta = sin(theta*pi/180.);
+      double cosphi = cos(phi*pi/180.);
+      double sinphi = sin(phi*pi/180.);
 
       //https://en.wikipedia.org/wiki/Rotation_matrix#Basic_rotations
 
@@ -120,7 +115,6 @@ public:
     
     int getLayerNum(){return layerNum_;};
     int getDetID1(){return detID1_;};
-    int getDetIDE(){return detID2_;};
     double getParamA() {return a;}
     double getParamB() {return b;}
     double getParamC() {return c;}

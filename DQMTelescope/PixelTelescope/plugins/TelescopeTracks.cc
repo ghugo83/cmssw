@@ -297,8 +297,10 @@ void TelescopeTracks::fitTrack(){
   min->SetFCN(SumDistance2);
   
   Double_t arglist[10];
-  arglist[0] = 3;
-  min->ExecuteCommand("SET PRINT",arglist,-1);
+//  arglist[0] = 3;
+//  min->ExecuteCommand("SET PRINT",arglist,-1);
+  arglist[0] = -1;
+  min->ExecuteCommand("SET PRINT",arglist,1);
   
   double pStart[6] = {1,1,1,1,1,1};
   min->SetParameter(0,"p0",pStart[0],0.01,0,0);

@@ -112,24 +112,33 @@ class SimpleTracking : public edm::one::EDAnalyzer<edm::one::SharedResources> {
     std::map< uint32_t, TH1F* > DQM_NumbOfClusters_per_Event;
     std::map< uint32_t, TH2F* > DQM_ClusterPosition ;
     //std::map< uint32_t, TH1F* > DQM_Hits_per_Pixel_per_Event ;
+    std::map< uint32_t, TH1F* > DQM_Chi2 ;
+    std::map< uint32_t, TH1F* > DQM2_Chi2 ;
+    std::map< uint32_t, TH1F* > DQM2_Sum2 ;
 
     // Correlation plots for the telescope
     std::map< std::pair<uint32_t, uint32_t>, TH2F*> DQM_Correlation_X ;
     std::map< std::pair<uint32_t, uint32_t>, TH2F*> DQM_Correlation_Y ;
     std::map< std::pair<uint32_t, uint32_t>, TH2F*> DQM_Correlation2_X ;
     std::map< std::pair<uint32_t, uint32_t>, TH2F*> DQM_Correlation2_Y ;
-/*
+
     std::map< std::pair<uint32_t, uint32_t>, TH2F*> DQM_Correlation3_X ;
     std::map< std::pair<uint32_t, uint32_t>, TH2F*> DQM_Correlation3_Y ;
-*/
+
     
     std::map< uint32_t, TH1F* > DQM_TrackPull_X ;    
     std::map< uint32_t, TH1F* > DQM_TrackPull_Y ;
     std::map< uint32_t, TH1F* > DQM_TrackPull2_X ;    
     std::map< uint32_t, TH1F* > DQM_TrackPull2_Y ;
 
+    std::map< uint32_t, TH1F* > DQM_TrackPull3_X ;    
+    std::map< uint32_t, TH1F* > DQM_TrackPull3_Y ;
+
     std::map< uint32_t, TH2F*> DQM_Corr_dX_X ;
     std::map< uint32_t, TH2F*> DQM_Corr_dY_Y ;
+
+    std::map< uint32_t, TH1F* > DQM2_TrackPull_X ;
+    std::map< uint32_t, TH1F* > DQM2_TrackPull_Y ;
     
     TH1F* DQM_NumbOfTracks_per_Event;   
     TH1F* distanceR_per_Track;   
@@ -140,6 +149,23 @@ class SimpleTracking : public edm::one::EDAnalyzer<edm::one::SharedResources> {
     TH2F* testModule;
     TH2F* testModule2;
     TH2F* testModuleLayer;
+
+
+    TH1F* DQM_TrackPull4_X_M3124;
+    TH1F* DQM_TrackPull4_Y_M3124;
+    TH1F* DQM_TrackPull5_X_M3124;
+    TH1F* DQM_TrackPull5_Y_M3124;
+    TH1F* DQM_TrackPull4_X_M3074;
+    TH1F* DQM_TrackPull4_Y_M3074;
+    TH1F* DQM_TrackPull5_X_M3074;
+    TH1F* DQM_TrackPull5_Y_M3074;
+
+    TH2F* DQM_dead_M3124;
+    TH2F* DQM_dead_M3074;
+    TH2F* DQM_2npeak_M3124;
+    TH2F* DQM_2npeak_M3074;
+    TH2F* DQM_1speak_M3124;
+    TH2F* DQM_1speak_M3074;
     // 3D Tree 
     TTree* cluster3DTree ;
 
@@ -177,8 +203,10 @@ class SimpleTracking : public edm::one::EDAnalyzer<edm::one::SharedResources> {
     Double_t   tree_trackParam5;
     Double_t   tree_chi2;
     Int_t      tree_npoints ;
+    Int_t      tree_npointsL ;
+    Int_t      tree_npointsR ;
     
-    
+    double xmove_par;
     
 
     // detId versus moduleName
@@ -202,7 +230,7 @@ class SimpleTracking : public edm::one::EDAnalyzer<edm::one::SharedResources> {
     bool checkCompatibility_X(float x1, float x2){if( fabs(x1-x2) > 0.5) return false; else return true;};
     bool checkCompatibility_Y(float y1, float y2){if( fabs(y1-y2) > 0.5) return false; else return true;};
     
-    std::pair<int, int> getNextLayer(int);
+//    std::pair<int, int> getNextLayer(int);
     void doSeeding(edm::Handle<edmNew::DetSetVector<SiPixelCluster> > , const TrackerGeometry *, 
     const PixelClusterParameterEstimator &, edm::ESHandle<TrackerGeometry> );
    
@@ -214,11 +242,15 @@ class SimpleTracking : public edm::one::EDAnalyzer<edm::one::SharedResources> {
     const PixelClusterParameterEstimator &, edm::ESHandle<TrackerGeometry> );
     
     void ApplyAlignment(int detId, double &xaligned, double &yaligned);
-    
+    void ApplyXmove(int detId, double &xaligned, double &yaligned);
+
+    void ComputeResiduals(int detId_to_study);    
+
     //std::cout << "ST1: voids, consts, etc. defined";
     
     //simple implementation of the geometry
-    std::vector<SimplePlane > theSimpleLayers;
+    std::vector<SimplePlane > theSimpleLayersR;
+    std::vector<SimplePlane > theSimpleLayersL;
     
    int noisy_det[1000];
    int noisy_barx[1000];
@@ -307,6 +339,7 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
   */
   // for run 100328
   // ideal case
+  /*
   theSimpleLayers.push_back( SimplePlane(50., 0., 17.3 + 5.0 + 5.0 + 5.0,   1, 353376260,  353375236) );
   theSimpleLayers.push_back( SimplePlane(50., 0., 17.3 + 5.0 + 5.0,         2, 353114116,  353113092) );
   theSimpleLayers.push_back( SimplePlane(50., 0., 17.3 + 5.0,               3, 352851972,  352850948) );
@@ -315,11 +348,35 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
   theSimpleLayers.push_back( SimplePlane(50., 0., -17.3 - 5.0,              6, 344462340,  344463364) );
   theSimpleLayers.push_back( SimplePlane(50., 0., -17.3 - 5.0 - 5.0,        7, 344724484,  344725508) );
   theSimpleLayers.push_back( SimplePlane(50., 0., -17.3 - 5.0 - 5.0 - 5.0,  8, 344986628,  344987652) );
+  */
+  // separation of the planes: now only 1 module per plane
+  theSimpleLayersR.push_back( SimplePlane(50., 0., 17.3 + 5.0 + 5.0 + 5.0,  -30., 20., 1,  353376260) );
+  theSimpleLayersR.push_back( SimplePlane(50., 0., 17.3 + 5.0 + 5.0,        -30., 20., 2,  353114116) );
+  theSimpleLayersR.push_back( SimplePlane(50., 0., 17.3 + 5.0,              -30., 20., 3,  352851972) );
+  theSimpleLayersR.push_back( SimplePlane(50., 0., 17.3,                    -30., 20., 4,  352589828) );
+  theSimpleLayersR.push_back( SimplePlane(50., 0., -17.3,                   -30., 20., 5,  344200196) );
+  theSimpleLayersR.push_back( SimplePlane(50., 0., -17.3 - 5.0,             -30., 20., 6,  344462340) );
+  theSimpleLayersR.push_back( SimplePlane(50., 0., -17.3 - 5.0 - 5.0,       -30., 20., 7,  344724484) );
+  theSimpleLayersR.push_back( SimplePlane(50., 0., -17.3 - 5.0 - 5.0 - 5.0, -30., 20., 8,  344986628) );
+
+  xmove_par = iConfig.getParameter<double>("xmove_param");
+  std::cout << " xmove_par " << xmove_par << std::endl;
+//  theSimpleLayersL.push_back( SimplePlane(50., 0., 17.3 + 5.0 + 5.0 + 5.0,  -30., 20., 1,  353375236) );
+  theSimpleLayersL.push_back( SimplePlane(50.+xmove_par, 0., 17.3 + 5.0 + 5.0 + 5.0,  -30., 20., 1,  353375236) );
+  theSimpleLayersL.push_back( SimplePlane(50., 0., 17.3 + 5.0 + 5.0,        -30., 20., 2,  353113092) );
+  theSimpleLayersL.push_back( SimplePlane(50., 0., 17.3 + 5.0,              -30., 20., 3,  352850948) );
+  theSimpleLayersL.push_back( SimplePlane(50., 0., 17.3,                    -30., 20., 4,  352588804) );
+  theSimpleLayersL.push_back( SimplePlane(50., 0., -17.3,                   -30., 20., 5,  344201220) );
+  theSimpleLayersL.push_back( SimplePlane(50., 0., -17.3 - 5.0,             -30., 20., 6,  344463364) );
+  theSimpleLayersL.push_back( SimplePlane(50., 0., -17.3 - 5.0 - 5.0,       -30., 20., 7,  344725508) );
+  theSimpleLayersL.push_back( SimplePlane(50., 0., -17.3 - 5.0 - 5.0 - 5.0, -30., 20., 8,  344987652) );
 
   //apply alignment
-  for(unsigned int i=0; i<theSimpleLayers.size(); i++) theSimpleLayers[i].applyAlignment();
+  for(unsigned int i=0; i<theSimpleLayersR.size(); i++) theSimpleLayersR[i].applyAlignment();
+  for(unsigned int i=0; i<theSimpleLayersL.size(); i++) theSimpleLayersL[i].applyAlignment();
   //apply rotation
-  for(unsigned int i=0; i<theSimpleLayers.size(); i++) theSimpleLayers[i].doRotation();
+  for(unsigned int i=0; i<theSimpleLayersR.size(); i++) theSimpleLayersR[i].doRotation();
+  for(unsigned int i=0; i<theSimpleLayersL.size(); i++) theSimpleLayersL[i].doRotation();
 
 
  // std::cout << "post doRotation " << std::endl;
@@ -388,6 +445,8 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
   TrackTree -> Branch ( "tree_trackParam5", &tree_trackParam5 ) ;
   TrackTree -> Branch ( "tree_chi2", &tree_chi2 ) ;
   TrackTree -> Branch ( "tree_npoints", &tree_npoints ) ;
+  TrackTree -> Branch ( "tree_npointsL", &tree_npointsL ) ;
+  TrackTree -> Branch ( "tree_npointsR", &tree_npointsR ) ;
   
   DQM_NumbOfTracks_per_Event = sub2.make<TH1F>(  "Number of tracks/event", "Count", 30, 0., 30.0  ) ;
   DQM_NumbOfTracks_per_Event -> GetXaxis ( ) -> SetTitle ( "Number of tracks / event " ) ;
@@ -409,6 +468,21 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
   testModule2 = sub2.make<TH2F>(  "Cluster Position on Module M3124", "Cluster Position on Module M3124 " , 100., -3.0, 3.0, 100., -3.0, 3.0  ) ;
   testModuleLayer = sub2.make<TH2F>(  "Cluster Position on Layer", "Cluster Position on Layer " , 100., -3.0, 3.0, 100., -3.0, 3.0  ) ;
   
+  DQM_TrackPull4_X_M3124 = sub2.make<TH1F>(  "DQM_TrackPull4_X_M3124",  "pull track X for M3124" , 500, -0.05, 0.05 );
+  DQM_TrackPull4_Y_M3124 = sub2.make<TH1F>(  "DQM_TrackPull4_Y_M3124",  "pull track Y for M3124" , 500, -0.05, 0.05 );
+  DQM_TrackPull5_X_M3124 = sub2.make<TH1F>(  "DQM_TrackPull5_X_M3124",  "pull track X for M3124" , 500, -0.05, 0.05 );
+  DQM_TrackPull5_Y_M3124 = sub2.make<TH1F>(  "DQM_TrackPull5_Y_M3124",  "pull track Y for M3124" , 500, -0.05, 0.05 );
+  DQM_TrackPull4_X_M3074 = sub2.make<TH1F>(  "DQM_TrackPull4_X_M3074",  "pull track X for M3074" , 500, -0.05, 0.05 );
+  DQM_TrackPull4_Y_M3074 = sub2.make<TH1F>(  "DQM_TrackPull4_Y_M3074",  "pull track Y for M3074" , 500, -0.05, 0.05 );
+  DQM_TrackPull5_X_M3074 = sub2.make<TH1F>(  "DQM_TrackPull5_X_M3074",  "pull track X for M3074" , 500, -0.05, 0.05 );
+  DQM_TrackPull5_Y_M3074 = sub2.make<TH1F>(  "DQM_TrackPull5_Y_M3074",  "pull track Y for M3074" , 500, -0.05, 0.05 );
+
+  DQM_dead_M3124 = sub2.make<TH2F>(  "Track_posX_dead_M3124",  "Track_posY_dead_M3124" , 100, -2., 0. , 100, -3.5,3.5);
+  DQM_dead_M3074 = sub2.make<TH2F>(  "Track_posX_dead_M3074",  "Track_posY_dead_M3074" , 100, -2., 0. , 100, -3.5,3.5);
+  DQM_2npeak_M3124 = sub2.make<TH2F>(  "Track_posX_2npeak_M3124",  "Track_posY_2npeak_M3124" , 100, -2., 0. , 100, -3.5,3.5);
+  DQM_2npeak_M3074 = sub2.make<TH2F>(  "Track_posX_2npeak_M3074",  "Track_posY_2npeak_M3074" , 100, -2., 0. , 100, -3.5,3.5);
+  DQM_1speak_M3124 = sub2.make<TH2F>(  "Track_posX_1speak_M3124",  "Track_posY_1speak_M3124" , 100, -2., 0. , 100, -3.5,3.5);
+  DQM_1speak_M3074 = sub2.make<TH2F>(  "Track_posX_1speak_M3074",  "Track_posY_1speak_M3074" , 100, -2., 0. , 100, -3.5,3.5);
   
   for ( std::map<int, TString>::iterator it = detId_to_moduleName.begin(); it != detId_to_moduleName.end(); it++ ) {
     
@@ -427,10 +501,14 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
 
       TH2F* DQM_Correlation2_X_tmp = sub3.make<TH2F>( ( "DQM_Correlation2_X_" + modulename + "_" + modulename0).Data(), ( "X-Correlation between " + modulename + " and " + modulename0 ).Data(), 88, 47.8, 52.2, 88, 47.8, 52.2 ) ;
       TH2F* DQM_Correlation2_Y_tmp = sub3.make<TH2F>( ( "DQM_Correlation2_Y_" + modulename + "_" + modulename0).Data(), ( "Y-Correlation between " + modulename + " and " + modulename0 ).Data(), 60, -3., 3., 60, -3., 3. ) ;
+
 /*
       TH2F* DQM_Correlation3_X_tmp = sub3.make<TH2F>( ( "DQM_Correlation3_X_" + modulename + "_" + modulename0).Data(), ( "dX between " + modulename0 + " and " + modulename + " vs X of " + modulename ).Data(), 860, -2., 2.3, 1000, -0.1, -0.1 ) ;
       TH2F* DQM_Correlation3_Y_tmp = sub3.make<TH2F>( ( "DQM_Correlation3_Y_" + modulename + "_" + modulename0).Data(), ( "dY between " + modulename0 + " and " + modulename + " vs Y of " + modulename   ).Data(), 1120, -2.8, 2.8, 1000, -0.1, 0.1 ) ;
 */
+      TH2F* DQM_Correlation3_X_tmp = sub3.make<TH2F>( ( "DQM_Correlation3_X_" + modulename + "_" + modulename0).Data(), ( "X-Correlation between " + modulename + " and " + modulename0 ).Data(), 160., 0., 160., 160., 0., 160. ) ;
+      TH2F* DQM_Correlation3_Y_tmp = sub3.make<TH2F>( ( "DQM_Correlation3_Y_" + modulename + "_" + modulename0).Data(), ( "Y-Correlation between " + modulename + " and " + modulename0 ).Data(), 416., 0., 416., 416., 0., 416. ) ;
+
 
       DQM_Correlation_X_tmp->GetXaxis()->SetTitle("x_" + modulename) ;
       DQM_Correlation_X_tmp->GetYaxis()->SetTitle("x_" + modulename0) ;
@@ -441,6 +519,11 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
       DQM_Correlation2_X_tmp->GetYaxis()->SetTitle("x_" + modulename0) ;
       DQM_Correlation2_Y_tmp->GetXaxis()->SetTitle("y_" + modulename) ;
       DQM_Correlation2_Y_tmp->GetYaxis()->SetTitle("y_" + modulename0) ;
+
+      DQM_Correlation3_X_tmp->GetXaxis()->SetTitle("x_" + modulename) ;
+      DQM_Correlation3_X_tmp->GetYaxis()->SetTitle("x_" + modulename0) ;
+      DQM_Correlation3_Y_tmp->GetXaxis()->SetTitle("y_" + modulename) ;
+      DQM_Correlation3_Y_tmp->GetYaxis()->SetTitle("y_" + modulename0) ;
 
 /*
       DQM_Correlation3_X_tmp->GetXaxis()->SetTitle("x_" + modulename) ;
@@ -456,10 +539,10 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
 
       DQM_Correlation2_X.insert ( std::pair < std::pair<uint32_t, uint32_t>, TH2F*>( modulePair, DQM_Correlation2_X_tmp ) ) ;
       DQM_Correlation2_Y.insert ( std::pair < std::pair<uint32_t, uint32_t>, TH2F*>( modulePair, DQM_Correlation2_Y_tmp ) ) ;
-/*
+
       DQM_Correlation3_X.insert ( std::pair < std::pair<uint32_t, uint32_t>, TH2F*>( modulePair, DQM_Correlation3_X_tmp ) ) ;
       DQM_Correlation3_Y.insert ( std::pair < std::pair<uint32_t, uint32_t>, TH2F*>( modulePair, DQM_Correlation3_Y_tmp ) ) ;
-*/
+
 
     }//end for j 
     
@@ -473,6 +556,10 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
     TH1F* DQM_ClusterSize_XY_tmp = sub2.make<TH1F>( ( "DQM_ClusterSize_XY_" + modulename ).Data(), ( "Cluster Size for "  + modulename ).Data(), 30, 0., 30. ) ;
     TH1F* DQM_NumbOfClusters_per_Event_tmp = sub2.make<TH1F>( ("DQM_NumbOfClusters_per_Event_" + modulename).Data(), ("number of clusters for "  + modulename).Data(), 30, 0., 30. );
     TH2F* DQM_ClusterPosition_tmp = sub2.make<TH2F>( ( "DQM_ClusterPosition_" + modulename ).Data(), ( "Cluster occupancy per col per row for " + modulename ).Data(), 416, 0. - 0.5, 416. - 0.5, 160, 0. - 0.5, 160. - 0.5 ); 
+    TH1F* DQM_Chi2_tmp = sub2.make<TH1F>( ( "DQM_Chi2_" + modulename ).Data(), ( "Chi2 for tracks passing by " + modulename).Data(), 100, 0., 20. );
+    TH1F* DQM2_Chi2_tmp = sub2.make<TH1F>( ( "DQM2_Chi2_" + modulename ).Data(), ( "Chi2 for tracks passing by " + modulename).Data(), 100, 0., 20. );
+    TH1F* DQM2_Sum2_tmp = sub2.make<TH1F>( ( "DQM2_Sum2_" + modulename ).Data(), ( "Sum2 for tracks passing by " + modulename).Data(), 100, 0., 0.05 );
+
 
 
 
@@ -487,6 +574,9 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
     DQM_NumbOfClusters_per_Event_tmp -> GetYaxis ( ) -> SetTitle ( "Count" ) ;
     //DQM_Hits_per_Pixel_per_Event_tmp -> GetXaxis ( ) -> SetTitle ( "Pixel" ) ;
     //DQM_Hits_per_Pixel_per_Event_tmp -> GetYaxis ( ) -> SetTitle ( "Total number of hits" ) ;
+    DQM_Chi2_tmp -> GetXaxis ( ) ->SetTitle ( "Chi2" ) ;
+    DQM2_Chi2_tmp -> GetXaxis ( ) ->SetTitle ( "Chi2" ) ;
+    DQM2_Sum2_tmp -> GetXaxis ( ) ->SetTitle ( "Sum2" ) ;
 
     DQM_ClusterCharge.insert ( std::pair< uint32_t, TH1F* >( it->first, DQM_ClusterCharge_tmp ) ) ;  
     DQM_ClusterSize_X.insert ( std::pair< uint32_t, TH1F* >( it->first, DQM_ClusterSize_X_tmp ) ) ;
@@ -495,6 +585,9 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
     DQM_NumbOfClusters_per_Event.insert ( std::pair< uint32_t, TH1F* >( it->first, DQM_NumbOfClusters_per_Event_tmp ) );
     DQM_ClusterPosition.insert ( std::pair< uint32_t, TH2F* >( it->first, DQM_ClusterPosition_tmp ) ) ;      
     //DQM_Hits_per_Pixel_per_Event.insert ( std::pair< uint32_t, TH1F* >( it->first, DQM_Hits_per_Pixel_per_Event_tmp ) ) ;
+    DQM_Chi2.insert ( std::pair< uint32_t, TH1F* >( it->first, DQM_Chi2_tmp ) ) ;  
+    DQM2_Chi2.insert ( std::pair< uint32_t, TH1F* >( it->first, DQM2_Chi2_tmp ) ) ;
+    DQM2_Sum2.insert ( std::pair< uint32_t, TH1F* >( it->first, DQM2_Sum2_tmp ) ) ;
     
     
 //    TH1F* DQM_TrackPull_X_tmp = sub2.make<TH1F>( ( "DQM_TrackPull_X_" + modulename ).Data(), ( "pull track X for " + modulename).Data(), 100, -0.1, 0.1 );
@@ -503,15 +596,30 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
     TH1F* DQM_TrackPull_Y_tmp = sub2.make<TH1F>( ( "DQM_TrackPull_Y_" + modulename ).Data(), ( "pull track Y for " + modulename).Data(), 500, -0.5, 0.5 );
     TH1F* DQM_TrackPull_X_tmp2 = sub2.make<TH1F>( ( "DQM_TrackPull2_X_" + modulename ).Data(), ( "pull track X for " + modulename).Data(), 500, -0.05, 0.05 );
     TH1F* DQM_TrackPull_Y_tmp2 = sub2.make<TH1F>( ( "DQM_TrackPull2_Y_" + modulename ).Data(), ( "pull track Y for " + modulename).Data(), 500, -0.05, 0.05 );
+
+    TH1F* DQM_TrackPull_X_tmp3 = sub2.make<TH1F>( ( "DQM_TrackPull3_X_" + modulename ).Data(), ( "pull track X for " + modulename).Data(), 500, -0.05, 0.05 );
+    TH1F* DQM_TrackPull_Y_tmp3 = sub2.make<TH1F>( ( "DQM_TrackPull3_Y_" + modulename ).Data(), ( "pull track Y for " + modulename).Data(), 500, -0.05, 0.05 );
+
     TH2F* DQM_Corr_dX_X_tmp = sub2.make<TH2F>( ( "DQM_Corr_dX_X_" + modulename ).Data(), ( "dXloc vs Xloc for " + modulename).Data(), 32, -1.6, 1.6, 500, -0.1, 0.1 ) ;
     TH2F* DQM_Corr_dY_Y_tmp = sub2.make<TH2F>( ( "DQM_Corr_dY_Y_" + modulename ).Data(), ( "dYloc vs Yloc for " + modulename).Data(), 64, -3.2, 3.2, 500, -0.1, 0.1 ) ;
  
+    TH1F* DQM2_TrackPull_X_tmp = sub2.make<TH1F>( ( "DQM2_TrackPull_X_" + modulename ).Data(), ( "pull track X for " + modulename).Data(), 500, -0.05, 0.05 );
+    TH1F* DQM2_TrackPull_Y_tmp = sub2.make<TH1F>( ( "DQM2_TrackPull_Y_" + modulename ).Data(), ( "pull track Y for " + modulename).Data(), 500, -0.05, 0.05 );
+
+
     DQM_TrackPull_X[it->first] = DQM_TrackPull_X_tmp;
     DQM_TrackPull_Y[it->first] = DQM_TrackPull_Y_tmp;
     DQM_TrackPull2_X[it->first] = DQM_TrackPull_X_tmp2;
     DQM_TrackPull2_Y[it->first] = DQM_TrackPull_Y_tmp2;
+
+    DQM_TrackPull3_X[it->first] = DQM_TrackPull_X_tmp3;
+    DQM_TrackPull3_Y[it->first] = DQM_TrackPull_Y_tmp3;
+
     DQM_Corr_dX_X[it->first] = DQM_Corr_dX_X_tmp;
     DQM_Corr_dY_Y[it->first] = DQM_Corr_dY_Y_tmp;
+
+    DQM2_TrackPull_X[it->first] = DQM2_TrackPull_X_tmp;
+    DQM2_TrackPull_Y[it->first] = DQM2_TrackPull_Y_tmp;
     
     //std::cout << "ST5: DQM plots made" << std::endl;
 
@@ -636,6 +744,17 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
 
       auto id2 = DetId(DSViter2->detId());
 
+      // test caro
+      int nclus_check1=0;
+      int nclus_check2=0;
+      for(edmNew::DetSet<SiPixelCluster>::const_iterator iter=begin;iter!=end;++iter) {
+           nclus_check1++;
+      }
+      for(edmNew::DetSet<SiPixelCluster>::const_iterator iter2=begin2;iter2!=end2;++iter2) {
+           nclus_check2++;
+      }
+      // 
+
       for(edmNew::DetSet<SiPixelCluster>::const_iterator iter=begin;iter!=end;++iter) {
 
         float x = iter->x();                   // barycenter x position
@@ -704,6 +823,16 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
           if ( itHistMap6 == DQM_Correlation3_Y.end() ) continue;
           if (fabs(xgp2-xgp1)<0.1 && fabs(ygp2-ygp1)<0.1) itHistMap6->second->Fill ( ygp1, ygp2-ygp1 ) ;
 */
+
+          if (nclus_check1==1 && nclus_check2==1) {
+           auto itHistMap5 = DQM_Correlation3_X.find(modulePair);
+           if ( itHistMap5 == DQM_Correlation3_X.end() ) continue;
+           itHistMap5->second->Fill ( row, row2 ) ;
+
+           auto itHistMap6 = DQM_Correlation3_Y.find(modulePair);
+           if ( itHistMap6 == DQM_Correlation3_Y.end() ) continue;
+           itHistMap6->second->Fill ( col, col2 ) ;
+          }
         }//end for clusters2
       }//end for cluster
     }//end for first detectors2
@@ -833,13 +962,27 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
 
       //Caro
       int ilayernumber=-1;
+      bool isleft=false;
+      bool isright=false;
       double x2=0,y2=0,z2=0;
       for (int il1=0; il1<8; il1++) {
-        if (int(detId) == LayersDefinition[il1].first || int(detId) == LayersDefinition[il1].second) ilayernumber=il1;
+//        if (int(detId) == LayersDefinition[il1].first || int(detId) == LayersDefinition[il1].second) ilayernumber=il1;
+        if (int(detId) == LayersDefinition[il1].first)  {
+              ilayernumber=il1;
+              isright=true;
+        }
+        else if (int(detId) == LayersDefinition[il1].second) {
+              ilayernumber=il1;
+              isleft=true;
+        }
+
       }
       if (ilayernumber>-1) {
         TVector3 gptemp(x,y,z); 
-        TVector3 lptemp = theSimpleLayers[ilayernumber].getLocalPointPosition(gptemp);
+        TVector3 lptemp;
+//        lptemp= theSimpleLayers[ilayernumber].getLocalPointPosition(gptemp);
+        if (isright) lptemp= theSimpleLayersR[ilayernumber].getLocalPointPosition(gptemp);
+        else if (isleft) lptemp= theSimpleLayersL[ilayernumber].getLocalPointPosition(gptemp);
 //       std::cout << "check layer " ;
 //       std::cout << ilayernumber << " getParamD() " << theSimpleLayers[ilayernumber].getParamD() 
 //        << " D/C " << theSimpleLayers[ilayernumber].getParamD()/theSimpleLayers[ilayernumber].getParamC() <<std::endl;
@@ -904,7 +1047,7 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
   doPatternReco( pixelclusters, tkgeom, cpe,  tracker);
 //  std::cout << "number of tracks " << theTeleTrackCollection.size() << std::endl;
   
-  DQM_NumbOfTracks_per_Event-> Fill (theTeleTrackCollection.size()) ;
+  DQM_NumbOfTracks_per_Event-> Fill(theTeleTrackCollection.size()) ;
   
   for(unsigned int itrack = 0; itrack< theTeleTrackCollection.size(); itrack++){
     
@@ -914,6 +1057,10 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
     std::vector<int > modulesID = theTeleTrackCollection[itrack].getModDetId();
     std::vector<TVector3 > theGP = theTeleTrackCollection[itrack].getGlobalPoints();
     std::vector<TVector3 > theLP = theTeleTrackCollection[itrack].getPseudoLocalPoints();
+    std::vector<double > plane_paramA = theTeleTrackCollection[itrack].getAssPlaneA();
+    std::vector<double > plane_paramB = theTeleTrackCollection[itrack].getAssPlaneB();
+    std::vector<double > plane_paramC = theTeleTrackCollection[itrack].getAssPlaneC();
+    std::vector<double > plane_paramD = theTeleTrackCollection[itrack].getAssPlaneD();
 //    if(theGP.size() < 6) continue; 
     if(theGP.size() < 4) continue;   // temporary check by Caroline
 //    if(theTeleTrackCollection[itrack].getChi2() > 3) continue;   // temporary check by Caroline
@@ -937,7 +1084,21 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
       tree_trackParam5=theTeleTrackCollection[itrack].getParameter(5);
       tree_chi2=theTeleTrackCollection[itrack].getChi2();
       tree_npoints=theGP.size();
+      tree_npointsL=0;
+      tree_npointsR=0;
+      for(unsigned int iHit=0; iHit < theGP.size(); iHit++){
+        for (int il1=0; il1<8; il1++) {
+          if (modulesID[iHit] == LayersDefinition[il1].first)  {
+              tree_npointsR++;
+          }
+          else if (modulesID[iHit] == LayersDefinition[il1].second) {
+              tree_npointsL++;
+          }
+        }
+      }
       TrackTree->Fill();
+      //
+
     for(unsigned int iHit=0; iHit < theGP.size(); iHit++){
 //      std::cout << "modulesID " << detId_to_moduleName[modulesID[iHit]] << std::endl;
       double xtemp, ytemp, ztemp;
@@ -945,24 +1106,116 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
 
       //theTeleTrackCollection[itrack].line(theGP[iHit].Z(), parFit, xtemp, ytemp, ztemp); 
       double planeqz[4]; 
+
+
+      bool isleft=false;
+      bool isright=false;
       int ilayernumber=-1;
       for (int il1=0; il1<8; il1++) {
-//        std::cout << "modulesID[iHit]" << modulesID[iHit] << " LayersDefinition " << LayersDefinition[il1].first << "   "  << LayersDefinition[il1].second << std::endl;
-        if (modulesID[iHit] == LayersDefinition[il1].first || modulesID[iHit] == LayersDefinition[il1].second) ilayernumber=il1;
+//        if (modulesID[iHit] == LayersDefinition[il1].first || modulesID[iHit] == LayersDefinition[il1].second) ilayernumber=il1;
+        if (modulesID[iHit] == LayersDefinition[il1].first)  {
+              ilayernumber=il1;
+              isright=true;
+        }
+        else if (modulesID[iHit] == LayersDefinition[il1].second) {
+              ilayernumber=il1;
+              isleft=true;
+        }
       }
+
       if (ilayernumber>-1) {
 //        std::cout << " GP on layer " << ilayernumber << std::endl;
-        planeqz[0]= theSimpleLayers[ilayernumber].getParamA();
-        planeqz[1]= theSimpleLayers[ilayernumber].getParamB(); 
-        planeqz[2]= theSimpleLayers[ilayernumber].getParamC(); 
-        planeqz[3]= theSimpleLayers[ilayernumber].getParamD(); 
+//
+//
+/*
+        if (isright) {
+         planeqz[0]= theSimpleLayersR[ilayernumber].getParamA();
+         planeqz[1]= theSimpleLayersR[ilayernumber].getParamB(); 
+         planeqz[2]= theSimpleLayersR[ilayernumber].getParamC(); 
+         planeqz[3]= theSimpleLayersR[ilayernumber].getParamD(); 
+        }
+        else if (isleft)  {
+         planeqz[0]= theSimpleLayersL[ilayernumber].getParamA();
+         planeqz[1]= theSimpleLayersL[ilayernumber].getParamB(); 
+         planeqz[2]= theSimpleLayersL[ilayernumber].getParamC(); 
+         planeqz[3]= theSimpleLayersL[ilayernumber].getParamD(); 
+        }
+*/
+        planeqz[0]= plane_paramA[iHit];
+        planeqz[1]= plane_paramB[iHit];
+        planeqz[2]= plane_paramC[iHit];
+        planeqz[3]= plane_paramD[iHit];
         theTeleTrackCollection[itrack].intersection(planeqz, parFit, xtemp, ytemp, ztemp);
         TVector3 gptemp(xtemp, ytemp, ztemp);
-        TVector3 lptemp = theSimpleLayers[ilayernumber].getLocalPointPosition(gptemp);
+        TVector3 lptemp;
+        if (isright) lptemp= theSimpleLayersR[ilayernumber].getLocalPointPosition(gptemp);
+        else if (isleft) lptemp= theSimpleLayersL[ilayernumber].getLocalPointPosition(gptemp);
         DQM_TrackPull_X[modulesID[iHit]]->Fill(lptemp.X() - theLP[iHit].X());
         DQM_TrackPull_Y[modulesID[iHit]]->Fill(lptemp.Y() - theLP[iHit].Y()); 
         DQM_TrackPull2_X[modulesID[iHit]]->Fill(lptemp.X() - theLP[iHit].X());
         DQM_TrackPull2_Y[modulesID[iHit]]->Fill(lptemp.Y() - theLP[iHit].Y()); 
+        DQM_Chi2[modulesID[iHit]]->Fill(theTeleTrackCollection[itrack].getChi2());
+
+
+        if (-0.6 < lptemp.X() && lptemp.X() < 0.2 && -1.1 < lptemp.Y() && lptemp.Y() < -0.3) {
+            // test central position of the beam
+            DQM_TrackPull3_X[modulesID[iHit]]->Fill(lptemp.X() - theLP[iHit].X());
+            DQM_TrackPull3_Y[modulesID[iHit]]->Fill(lptemp.Y() - theLP[iHit].Y());
+        }
+        if (modulesID[iHit] == 344201220) {  // M3124 on the left
+           // if inside dead zone :
+           float xlim1=0.   +2.24462e-02 +0.1;  // x2, y2 val + misaligned + margin
+           float xlim2=-0.8 +2.24462e-02 +0.1;
+           float ylim1=0.   +8.72844e-02 -0.1;
+           float ylim2=1.5  +8.72844e-02 +0.1;          
+           if ( (lptemp.X() < xlim1 && ylim1 < lptemp.Y() && lptemp.Y() <ylim2)  ||
+                (lptemp.X() < xlim2 && lptemp.Y() < ylim1) ) {
+             DQM_TrackPull5_X_M3124->Fill(lptemp.X() - theLP[iHit].X());
+             DQM_TrackPull5_Y_M3124->Fill(lptemp.Y() - theLP[iHit].Y());
+             DQM_dead_M3124->Fill(lptemp.X(), lptemp.Y());
+           }   
+           // if in active zone:
+           else {
+             DQM_TrackPull4_X_M3124->Fill(lptemp.X() - theLP[iHit].X());
+             DQM_TrackPull4_Y_M3124->Fill(lptemp.Y() - theLP[iHit].Y());
+           }
+           if (lptemp.Y() - theLP[iHit].Y() <-0.002) {
+              DQM_2npeak_M3124->Fill(lptemp.X(), lptemp.Y());
+           }
+           else {
+              DQM_1speak_M3124->Fill(lptemp.X(), lptemp.Y());
+           }
+        }
+        else if (modulesID[iHit] == 344987652) { // M3074 on the left
+           // if inside dead zone :
+           float xlim1=0.   -9.50454e-02 +0.1;
+           float xlim2=-0.8 -9.50454e-02 -0.1;
+           float ylim1=-2.5 -9.50454e-02 +0.1;
+           float ylim2=0.   +1.33751e-01 -0.1;
+           float ylim3=0.8  +1.33751e-01 +0.1;
+           float ylim4=1.6  +1.33751e-01 -0.1;
+           float ylim5=2.4  +1.33751e-01 +0.1;
+           if ( (lptemp.X() < xlim1 && lptemp.Y() <ylim1) ||
+                (xlim2 < lptemp.X() && lptemp.X() < xlim1 && ylim2< lptemp.Y() &&  lptemp.Y() <ylim3) ||
+                (xlim2 < lptemp.X() && lptemp.X() < xlim1 && ylim4< lptemp.Y() &&  lptemp.Y() <ylim5) ) { 
+             DQM_TrackPull5_X_M3074->Fill(lptemp.X() - theLP[iHit].X());
+             DQM_TrackPull5_Y_M3074->Fill(lptemp.Y() - theLP[iHit].Y());
+             DQM_dead_M3074->Fill(lptemp.X(), lptemp.Y());
+           }
+           // if in active zone:
+           else {
+             DQM_TrackPull4_X_M3074->Fill(lptemp.X() - theLP[iHit].X());
+             DQM_TrackPull4_Y_M3074->Fill(lptemp.Y() - theLP[iHit].Y());
+           }
+           if (lptemp.Y() - theLP[iHit].Y() >0.002) {
+              DQM_2npeak_M3074->Fill(lptemp.X(), lptemp.Y());
+           }
+           else {
+              DQM_1speak_M3074->Fill(lptemp.X(), lptemp.Y());
+           }
+           
+        }
+
         DQM_Corr_dX_X[modulesID[iHit]]->Fill(theLP[iHit].X(),lptemp.X() - theLP[iHit].X());
         DQM_Corr_dY_Y[modulesID[iHit]]->Fill(theLP[iHit].Y(),lptemp.Y() - theLP[iHit].Y());
       }
@@ -977,6 +1230,15 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
       //must add number of tracks per event
     }
   }
+
+  // compute the residuals without including the cluster in the track GP list.
+  for (unsigned int il1=0; il1<8; il1++) {
+    int idetR = LayersDefinition[il1].first;
+    ComputeResiduals(idetR);
+    int idetL = LayersDefinition[il1].second;
+    ComputeResiduals(idetL);
+  }
+  
   
   //std::cout << "ST12: PatternRECO done" << std::endl;
 
@@ -1041,6 +1303,7 @@ void SimpleTracking::fillDescriptions ( edm::ConfigurationDescriptions& descript
 // ==> what is the next layex compatible with the track
 //**********************************
 
+/* 
 std::pair<int, int> SimpleTracking::getNextLayer(int detid){
   
   //layer 3 : left 353376260, right  353375236 
@@ -1076,7 +1339,13 @@ std::pair<int, int> SimpleTracking::getNextLayer(int detid){
   //std::cout << "ST16: what is the next layer compatible with the track -> checked" << std::endl;
   
 }
+*/
 
+void SimpleTracking::ApplyXmove(int detId,  double &xaligned, double &yaligned) {
+       if (detId==353375236) {
+          xaligned+=xmove_par;
+       }
+}
 
 void SimpleTracking::ApplyAlignment(int detId, double &xaligned, double &yaligned) {
 
@@ -1294,6 +1563,7 @@ void SimpleTracking::doSeeding(edm::Handle<edmNew::DetSetVector<SiPixelCluster> 
           // end check 
 
           ApplyAlignment(int(detid2),x2,y2);
+          ApplyXmove(int(detid2),x2,y2);
 /*
 //        test Caro alignment
           if (int(detid2)==353114116) {
@@ -1328,21 +1598,44 @@ void SimpleTracking::doSeeding(edm::Handle<edmNew::DetSetVector<SiPixelCluster> 
 	    TVector3 clust_err(0.0029, 0.0043, 0.0029);  // to be checked 150microns/sqrt(12), 100microns/sqrt(12);
 	    
 	    theseed.addGlobalPoint(clust1); theseed.addGlobalPointErr(clust_err); theseed.addCluster(*itCluster); theseed.addModDetId(int(detid));
+
+            TVector3 locclust1;
+            if (int(detid) == 353376260) {
+             locclust1 = theSimpleLayersR[0].getLocalPointPosition(clust1);
+	     theseed.addPseudoLocalPoint(locclust1); theseed.addPseudoLocalPointErr(clust_err); theseed.addAssPlaneA(theSimpleLayersR[0].getParamA());
+             theseed.addAssPlaneB(theSimpleLayersR[0].getParamB()); theseed.addAssPlaneC(theSimpleLayersR[0].getParamC());
+             theseed.addAssPlaneD(theSimpleLayersR[0].getParamD());
+             theseed.addAssPlaneX0(theSimpleLayersR[0].getOriginX()); theseed.addAssPlaneY0(theSimpleLayersR[0].getOriginY()); 
+             theseed.addAssPlaneZ0(theSimpleLayersR[0].getOriginZ());
+            }
+            else if (int(detid) == 353375236) { 
+             locclust1 = theSimpleLayersL[0].getLocalPointPosition(clust1);
+	     theseed.addPseudoLocalPoint(locclust1); theseed.addPseudoLocalPointErr(clust_err); theseed.addAssPlaneA(theSimpleLayersL[0].getParamA());
+             theseed.addAssPlaneB(theSimpleLayersL[0].getParamB()); theseed.addAssPlaneC(theSimpleLayersL[0].getParamC());
+             theseed.addAssPlaneD(theSimpleLayersL[0].getParamD());
+             theseed.addAssPlaneX0(theSimpleLayersL[0].getOriginX()); theseed.addAssPlaneY0(theSimpleLayersL[0].getOriginY()); 
+             theseed.addAssPlaneZ0(theSimpleLayersL[0].getOriginZ());
+            }
+            
+
 	    theseed.addGlobalPoint(clust2); theseed.addGlobalPointErr(clust_err); theseed.addCluster(*itCluster2); theseed.addModDetId(int(detid2));
-
-            TVector3 locclust1 = theSimpleLayers[0].getLocalPointPosition(clust1);
-	    theseed.addPseudoLocalPoint(locclust1); theseed.addPseudoLocalPointErr(clust_err); theseed.addAssPlaneA(theSimpleLayers[0].getParamA());
-            theseed.addAssPlaneB(theSimpleLayers[0].getParamB()); theseed.addAssPlaneC(theSimpleLayers[0].getParamC());
-            theseed.addAssPlaneD(theSimpleLayers[0].getParamD());
-            theseed.addAssPlaneX0(theSimpleLayers[0].getOriginX()); theseed.addAssPlaneY0(theSimpleLayers[0].getOriginY()); 
-            theseed.addAssPlaneZ0(theSimpleLayers[0].getOriginZ());
-
-            TVector3 locclust2 = theSimpleLayers[1].getLocalPointPosition(clust2);
-	    theseed.addPseudoLocalPoint(locclust2); theseed.addPseudoLocalPointErr(clust_err); theseed.addAssPlaneA(theSimpleLayers[1].getParamA());
-            theseed.addAssPlaneB(theSimpleLayers[1].getParamB()); theseed.addAssPlaneC(theSimpleLayers[1].getParamC());
-            theseed.addAssPlaneD(theSimpleLayers[1].getParamD());
-            theseed.addAssPlaneX0(theSimpleLayers[1].getOriginX()); theseed.addAssPlaneY0(theSimpleLayers[1].getOriginY()); 
-            theseed.addAssPlaneZ0(theSimpleLayers[1].getOriginZ());
+            TVector3 locclust2;
+            if(int(detid2) ==353114116) { 
+             locclust2 = theSimpleLayersR[1].getLocalPointPosition(clust2);
+	     theseed.addPseudoLocalPoint(locclust2); theseed.addPseudoLocalPointErr(clust_err); theseed.addAssPlaneA(theSimpleLayersR[1].getParamA());
+             theseed.addAssPlaneB(theSimpleLayersR[1].getParamB()); theseed.addAssPlaneC(theSimpleLayersR[1].getParamC());
+             theseed.addAssPlaneD(theSimpleLayersR[1].getParamD());
+             theseed.addAssPlaneX0(theSimpleLayersR[1].getOriginX()); theseed.addAssPlaneY0(theSimpleLayersR[1].getOriginY()); 
+             theseed.addAssPlaneZ0(theSimpleLayersR[1].getOriginZ());
+            }
+            if(int(detid2) == 353113092) {
+             locclust2 = theSimpleLayersL[1].getLocalPointPosition(clust2);
+	     theseed.addPseudoLocalPoint(locclust2); theseed.addPseudoLocalPointErr(clust_err); theseed.addAssPlaneA(theSimpleLayersL[1].getParamA());
+             theseed.addAssPlaneB(theSimpleLayersL[1].getParamB()); theseed.addAssPlaneC(theSimpleLayersL[1].getParamC());
+             theseed.addAssPlaneD(theSimpleLayersL[1].getParamD());
+             theseed.addAssPlaneX0(theSimpleLayersL[1].getOriginX()); theseed.addAssPlaneY0(theSimpleLayersL[1].getOriginY()); 
+             theseed.addAssPlaneZ0(theSimpleLayersL[1].getOriginZ());
+            }
 
 //	    std::cout << "in fit tracks" << std::endl;
 	    theseed.fitTrack();
@@ -1353,20 +1646,36 @@ void SimpleTracking::doSeeding(edm::Handle<edmNew::DetSetVector<SiPixelCluster> 
 	    double parFit[6] = {theseed.getParameter(0), theseed.getParameter(1), theseed.getParameter(2), theseed.getParameter(3), theseed.getParameter(4), theseed.getParameter(5)};
 //	    theseed.line(z, parFit, xtemp, ytemp, ztemp);
 	    double planeq0[4];
-            planeq0[0]= theSimpleLayers[0].getParamA();
-            planeq0[1]= theSimpleLayers[0].getParamB();
-            planeq0[2]= theSimpleLayers[0].getParamC();
-            planeq0[3]= theSimpleLayers[0].getParamD();
+            if (int(detid) == 353376260) {
+             planeq0[0]= theSimpleLayersR[0].getParamA();
+             planeq0[1]= theSimpleLayersR[0].getParamB();
+             planeq0[2]= theSimpleLayersR[0].getParamC();
+             planeq0[3]= theSimpleLayersR[0].getParamD();
+            }
+            else if (int(detid) == 353375236) { 
+             planeq0[0]= theSimpleLayersL[0].getParamA();
+             planeq0[1]= theSimpleLayersL[0].getParamB();
+             planeq0[2]= theSimpleLayersL[0].getParamC();
+             planeq0[3]= theSimpleLayersL[0].getParamD();
+            }
 	    theseed.intersection(planeq0, parFit, xtemp, ytemp, ztemp);
 //	    std::cout << "  check the fit " << xtemp << " " << ytemp << "  " << ztemp << std::endl;
 //	    std::cout << "  to be compared with " << x  << " " << y  << "  " << z  << std::endl;
 //	    std::cout << "-------------" << std::endl;
 //	    theseed.line(z2, parFit, xtemp, ytemp, ztemp);
 	    double planeq1[4];
-            planeq1[0]= theSimpleLayers[1].getParamA();
-            planeq1[1]= theSimpleLayers[1].getParamB();
-            planeq1[2]= theSimpleLayers[1].getParamC();
-            planeq1[3]= theSimpleLayers[1].getParamD();
+            if(int(detid2) ==353114116) { 
+             planeq1[0]= theSimpleLayersR[1].getParamA();
+             planeq1[1]= theSimpleLayersR[1].getParamB();
+             planeq1[2]= theSimpleLayersR[1].getParamC();
+             planeq1[3]= theSimpleLayersR[1].getParamD();
+            }
+            if(int(detid2) == 353113092) {
+             planeq1[0]= theSimpleLayersL[1].getParamA();
+             planeq1[1]= theSimpleLayersL[1].getParamB();
+             planeq1[2]= theSimpleLayersL[1].getParamC();
+             planeq1[3]= theSimpleLayersL[1].getParamD();
+            }
 	    theseed.intersection(planeq1, parFit, xtemp, ytemp, ztemp);
 //	    std::cout << "  check the fit 2 " << xtemp << " " << ytemp << "  " << ztemp << std::endl;
 //	    std::cout << "  to be compared with " << x2  << " " << y2  << "  " << z2  << std::endl; // ??
@@ -1400,34 +1709,39 @@ void SimpleTracking::doPatternReco(edm::Handle<edmNew::DetSetVector<SiPixelClust
     
     
     for(int ilayer = 2; ilayer <8; ilayer++){
-//    for(int ilayer = 2; ilayer <6; ilayer++){
  
-//      if (ilayer==4) continue;   
-//      if (ilayer==5) continue;   
+      if (ilayer==6) continue;     // just noise in M3009 on the right side, and M3057 is dead module on the left side
 
       for( edmNew::DetSetVector<SiPixelCluster>::const_iterator DSViter=pixelclusters->begin(); DSViter!=pixelclusters->end();DSViter++   ) {
 
-      edmNew::DetSet<SiPixelCluster>::const_iterator begin=DSViter->begin();
-      edmNew::DetSet<SiPixelCluster>::const_iterator end  =DSViter->end();
+       edmNew::DetSet<SiPixelCluster>::const_iterator begin=DSViter->begin();
+       edmNew::DetSet<SiPixelCluster>::const_iterator end  =DSViter->end();
         
-      auto detid = DetId(DSViter->detId());
+       auto detid = DetId(DSViter->detId());
  
            
-      //if(int(detid) != LayersDefinition[ilayer+1].first && int(detid) != LayersDefinition[ilayer+1].second) continue;
-//      if( int(detid) != LayersDefinition[ilayer+1].second) continue;
-      if( int(detid) != LayersDefinition[ilayer].first && int(detid) != LayersDefinition[ilayer].second) continue;
+       if( int(detid) != LayersDefinition[ilayer].first && int(detid) != LayersDefinition[ilayer].second) continue;
+
+       bool isleft=false;
+       bool isright=false;
+       if (int(detid) == LayersDefinition[ilayer].first)  {
+              isright=true;
+       }
+       else if (int(detid) == LayersDefinition[ilayer].second) {
+              isleft=true;
+       }
+
+
        
-        TVector3 closestClust;
-        TVector3 closestClust2;
-	SiPixelCluster closustSiPixelCulster;
-	int ncluster = 0;
-	int closestR = 1000;
-//	TVector3 clust_err(0.5, 0.5, 0.5);
-//	TVector3 clust_err(0.016, 0.016, 0.016);  // to be checked
-//        TVector3 clust_err(0.0043, 0.0029, 0.0029);  // to be checked 150microns/sqrt(12), 100microns/sqrt(12);
-	TVector3 clust_err(0.0029, 0.0043, 0.0029);  // to be checked 150microns/sqrt(12), 100microns/sqrt(12);
-        // Then loop on the clusters of the module
-        for ( edmNew::DetSet<SiPixelCluster>::const_iterator itCluster=begin; itCluster!=end; ++itCluster ) {
+       TVector3 closestClust;
+       TVector3 closestClust2;
+       SiPixelCluster closustSiPixelCulster;
+//       int ncluster = 0;
+       int closestR = 1000;
+       TVector3 clust_err(0.0029, 0.0043, 0.0029);  // to be checked 150microns/sqrt(12), 100microns/sqrt(12);
+
+       // Then loop on the clusters of the module
+       for ( edmNew::DetSet<SiPixelCluster>::const_iterator itCluster=begin; itCluster!=end; ++itCluster ) {
 
           const PixelGeomDetUnit *pixdet = (const PixelGeomDetUnit*) tkgeom->idToDetUnit(detid);
           LocalPoint lp(-9999., -9999., -9999.);
@@ -1459,60 +1773,20 @@ void SimpleTracking::doPatternReco(edm::Handle<edmNew::DetSetVector<SiPixelClust
 
 
           ApplyAlignment(int(detid),x3,y3);
-/*
-//        test Caro alignment
-          if (int(detid)==352851972) {
-           x3-=2.47805e-02;
-           y3-=-6.97738e-03;
-          }
-          else if (int(detid)==352850948) {
-           x3-=1.85113e-02;
-           y3-=-9.17572e-03;
-          }
-          else if (int(detid)==352589828) {
-           x3-=5.50173e-02;
-           y3-=-3.05621e-02;
-          }
-          else if (int(detid)==352588804) {
-           x3-=6.73395e-02;
-           y3-=-3.06608e-02;
-          }
-          else if (int(detid)==344200196) {
-           x3-=-2.77220e-02;
-           y3-=-9.31173e-02;
-          }
-          else if (int(detid)==344201220) {
-           x3-=-2.24462e-02;
-           y3-=-8.72844e-02;
-          }
-          else if (int(detid)==344462340) {
-           x3-=7.14737e-03;
-           y3-=-1.09290e-01;
-          }
-          else if (int(detid)==344724484) {
-           x3-=-7.60673e-02;
-           y3-=-1.20672e-01;
-          }
-          else if (int(detid)==344986628) {
-           x3-=7.71767e-02;
-           y3-=-1.20759e-01;
-          }
-          else if (int(detid)==344987652) {
-           x3-=9.50454e-02;
-           y3-=-1.33751e-01;
-          }
-*/
-
-
-
-//        end test alignment
-
+          ApplyXmove(int(detid),x3,y3);
 
 //	  if ((x3 < -0.3) && (x3 > 0.1)) continue;
 //	  if ((y3 < -1.1) && (y3 > 0.0)) continue;
 
 	  TVector3 clust(x3,   y3,  z3);
-          TVector3 locclust = theSimpleLayers[ilayer].getLocalPointPosition(clust);
+          TVector3 locclust;
+          if (isright) {
+           locclust= theSimpleLayersR[ilayer].getLocalPointPosition(clust);
+          }
+          else if (isleft)  {
+           locclust= theSimpleLayersL[ilayer].getLocalPointPosition(clust);
+          }
+
 
 
 
@@ -1521,37 +1795,37 @@ void SimpleTracking::doPatternReco(edm::Handle<edmNew::DetSetVector<SiPixelClust
 	  double parFit[6] = {theTeleTrackCollection[itrack].getParameter(0), theTeleTrackCollection[itrack].getParameter(1), theTeleTrackCollection[itrack].getParameter(2), theTeleTrackCollection[itrack].getParameter(3), theTeleTrackCollection[itrack].getParameter(4), theTeleTrackCollection[itrack].getParameter(5)};
 //	  theTeleTrackCollection[itrack].line(z3, parFit, xtemp, ytemp, ztemp);
           double planeq[4];
-          planeq[0]= theSimpleLayers[ilayer].getParamA();
-          planeq[1]= theSimpleLayers[ilayer].getParamB();
-          planeq[2]= theSimpleLayers[ilayer].getParamC();
-          planeq[3]= theSimpleLayers[ilayer].getParamD();
+          if (isright) {
+           planeq[0]= theSimpleLayersR[ilayer].getParamA();
+           planeq[1]= theSimpleLayersR[ilayer].getParamB();
+           planeq[2]= theSimpleLayersR[ilayer].getParamC();
+           planeq[3]= theSimpleLayersR[ilayer].getParamD();
+          }
+          else if (isleft)  {
+           planeq[0]= theSimpleLayersL[ilayer].getParamA();
+           planeq[1]= theSimpleLayersL[ilayer].getParamB();
+           planeq[2]= theSimpleLayersL[ilayer].getParamC();
+           planeq[3]= theSimpleLayersL[ilayer].getParamD();
+          }
           theTeleTrackCollection[itrack].intersection(planeq, parFit, xtemp, ytemp, ztemp);
-       /// Local Caro
+          /// Local Caro
           TVector3 gptemp(xtemp, ytemp, ztemp);
-          TVector3 pseudoloc = theSimpleLayers[ilayer].getLocalPointPosition(gptemp);
+          TVector3 pseudoloc;
+          if (isright) {
+            pseudoloc = theSimpleLayersR[ilayer].getLocalPointPosition(gptemp);
+          }
+          else if (isleft)  {
+            pseudoloc = theSimpleLayersL[ilayer].getLocalPointPosition(gptemp);
+          }
+
 
 //        original formula
 //	  distanceR = pow( pow(xtemp - x3 , 2)+ pow(ytemp - y3, 2) , 0.5);
-//        Caroline: Go to distance in 3D 
-//	  distanceR = pow( pow(xtemp - x3 , 2)+ pow(ytemp - y3, 2) + pow(ztemp - z3, 2), 0.5);
 //	  Caroline: Go to distance in 2D plane of the telescope
           distanceR = pow( pow(pseudoloc.X() - locclust.X() , 2)+ pow(pseudoloc.Y() - locclust.Y(), 2),  0.5);
-	  double deltaXprim = xtemp - x3;  
-	  double deltaYprim = ytemp - y3;  
 	  deltaX = pseudoloc.X() - locclust.X();
-	  deltaY = pseudoloc.X() - locclust.Y();
-/*
- 	  std::cout << "distanceR = " <<distanceR << std::endl;
-	  std::cout << "xtemp = " <<xtemp <<  "  pseudoloc " << pseudoloc.X() << std::endl;
-	  std::cout << "x = " <<x3 << "  locclust " << locclust.X()  << std::endl;
-	  std::cout << "ytemp = " <<ytemp << "  pseudoloc " << pseudoloc.Y() << std::endl;
-	  std::cout << "y = " <<y3 << "  locclust " << locclust.Y() << std::endl;
-*/
-//	  std::cout << "ztemp = " <<ztemp << std::endl;
-//	  std::cout << "z = " <<z3 << std::endl;
-//	  if(fabs(deltaX) < 0.1 &&  fabs(deltaY ) < 0.1 && (ncluster == 0 || closestR > distanceR  ) ){
-//	  if(ncluster == 0 || closestR > distanceR  ){
-//	  if(fabs(deltaXprim) < 1. &&  fabs(deltaYprim ) < 1. && closestR > distanceR){
+	  deltaY = pseudoloc.Y() - locclust.Y();
+
 	  if(fabs(deltaX) < 0.3 &&  fabs(deltaY) < 0.3 && closestR > distanceR){
             // limit the region where to find a close cluster
             closestR=distanceR;
@@ -1561,36 +1835,149 @@ void SimpleTracking::doPatternReco(edm::Handle<edmNew::DetSetVector<SiPixelClust
 	    closestClust2 = locclust;
 	    closustSiPixelCulster=*itCluster;
 	  }
-	  ncluster++;
-	}
+//	  ncluster++;
+       }  // end loop on cluster
 	
-        if (closestR<1000) {
+       if (closestR<1000) {
           // don't add the point (0,0,0) if no close cluster has been found
   	  theTeleTrackCollection[itrack].addGlobalPoint(closestClust); theTeleTrackCollection[itrack].addGlobalPointErr(clust_err); theTeleTrackCollection[itrack].addCluster(closustSiPixelCulster); theTeleTrackCollection[itrack].addModDetId(int(detid));
 	  theTeleTrackCollection[itrack].addPseudoLocalPoint(closestClust2); 
           theTeleTrackCollection[itrack].addPseudoLocalPointErr(clust_err); 
-          theTeleTrackCollection[itrack].addAssPlaneA(theSimpleLayers[ilayer].getParamA());
-          theTeleTrackCollection[itrack].addAssPlaneB(theSimpleLayers[ilayer].getParamB()); 
-          theTeleTrackCollection[itrack].addAssPlaneC(theSimpleLayers[ilayer].getParamC());
-          theTeleTrackCollection[itrack].addAssPlaneD(theSimpleLayers[ilayer].getParamD());
-          theTeleTrackCollection[itrack].addAssPlaneX0(theSimpleLayers[ilayer].getOriginX()); 
-          theTeleTrackCollection[itrack].addAssPlaneY0(theSimpleLayers[ilayer].getOriginY()); 
-          theTeleTrackCollection[itrack].addAssPlaneZ0(theSimpleLayers[ilayer].getOriginZ());
+          if (isright) {
+          theTeleTrackCollection[itrack].addAssPlaneA(theSimpleLayersR[ilayer].getParamA());
+          theTeleTrackCollection[itrack].addAssPlaneB(theSimpleLayersR[ilayer].getParamB()); 
+          theTeleTrackCollection[itrack].addAssPlaneC(theSimpleLayersR[ilayer].getParamC());
+          theTeleTrackCollection[itrack].addAssPlaneD(theSimpleLayersR[ilayer].getParamD());
+          theTeleTrackCollection[itrack].addAssPlaneX0(theSimpleLayersR[ilayer].getOriginX()); 
+          theTeleTrackCollection[itrack].addAssPlaneY0(theSimpleLayersR[ilayer].getOriginY()); 
+          theTeleTrackCollection[itrack].addAssPlaneZ0(theSimpleLayersR[ilayer].getOriginZ());
+          }
+          else if (isleft) {
+          theTeleTrackCollection[itrack].addAssPlaneA(theSimpleLayersL[ilayer].getParamA());
+          theTeleTrackCollection[itrack].addAssPlaneB(theSimpleLayersL[ilayer].getParamB()); 
+          theTeleTrackCollection[itrack].addAssPlaneC(theSimpleLayersL[ilayer].getParamC());
+          theTeleTrackCollection[itrack].addAssPlaneD(theSimpleLayersL[ilayer].getParamD());
+          theTeleTrackCollection[itrack].addAssPlaneX0(theSimpleLayersL[ilayer].getOriginX()); 
+          theTeleTrackCollection[itrack].addAssPlaneY0(theSimpleLayersL[ilayer].getOriginY()); 
+          theTeleTrackCollection[itrack].addAssPlaneZ0(theSimpleLayersL[ilayer].getOriginZ());
+          }
   	  theTeleTrackCollection[itrack].fitTrack();
-        }
+       }
 	
-      }
-    }
+      } // end loop on DSV
+    }  // end loop on Layer
 
     distanceR_per_Track-> Fill (distanceR) ;
     deltaX_per_Track-> Fill (deltaX) ;
     deltaY_per_Track-> Fill (deltaY) ;
-  }
+  } // end loop on TrackCollection
 
-  //std::cout << "ST18: end: from pair of clusters search for consecutive compatible clusters with delta(X) and delta(Y) compatibile within 0.5 cm" << std::endl;
  
 }
 
+
+void SimpleTracking::ComputeResiduals(int detId_to_study){
+// goal of this function: compute the residual for a point after having removed it from the track extrapolation
+ 
+//    std::vector<TelescopeTracks> theModTeleTrackCollection;
+
+    // create a new track without the point from detId_to_study included
+    for(unsigned int itrack = 0; itrack< theTeleTrackCollection.size(); itrack++){
+      std::vector<int > modulesID = theTeleTrackCollection[itrack].getModDetId();
+      std::vector<TVector3 > theGP = theTeleTrackCollection[itrack].getGlobalPoints();
+      std::vector<TVector3 > theLP = theTeleTrackCollection[itrack].getPseudoLocalPoints();
+      std::vector<double > plane_paramA = theTeleTrackCollection[itrack].getAssPlaneA();
+      std::vector<double > plane_paramB = theTeleTrackCollection[itrack].getAssPlaneB();
+      std::vector<double > plane_paramC = theTeleTrackCollection[itrack].getAssPlaneC();
+      std::vector<double > plane_paramD = theTeleTrackCollection[itrack].getAssPlaneD();
+      std::vector<double > plane_x0 = theTeleTrackCollection[itrack].getAssPlaneX0();
+      std::vector<double > plane_y0 = theTeleTrackCollection[itrack].getAssPlaneY0();
+      std::vector<double > plane_z0 = theTeleTrackCollection[itrack].getAssPlaneZ0();
+      std::vector<SiPixelCluster> clu_list = theTeleTrackCollection[itrack].getclusterList();
+      std::vector<TVector3> glob_pos = theTeleTrackCollection[itrack].getGlobalPoints();
+      std::vector<TVector3> glob_er = theTeleTrackCollection[itrack].getGlobalPointsErr();
+      std::vector<TVector3> pseudo_pos = theTeleTrackCollection[itrack].getPseudoLocalPoints();
+      std::vector<TVector3> pseudo_er = theTeleTrackCollection[itrack].getPseudoLocalPointsErr();
+      TVector3 theGP_to_study;
+      TVector3 theLP_to_study;
+      TelescopeTracks theModTeleTrack;
+      bool found_cluster_to_study=false;
+      int counter_theModTeleTrack=0;
+      double planeq0[4];
+      for(unsigned int iHit=0; iHit < modulesID.size(); iHit++){
+        if (detId_to_study==modulesID[iHit]) {
+           // the module to study
+           theGP_to_study=theGP[iHit];
+           theLP_to_study=theLP[iHit];
+           planeq0[0]= plane_paramA[iHit];
+           planeq0[1]= plane_paramB[iHit];
+           planeq0[2]= plane_paramC[iHit];
+           planeq0[3]= plane_paramD[iHit];
+           found_cluster_to_study=true;
+        }
+        else {
+           // to be included in the theModTeleTrackCollection
+  	  theModTeleTrack.addGlobalPoint(glob_pos[iHit]); 
+          theModTeleTrack.addGlobalPointErr(glob_er[iHit]); 
+          theModTeleTrack.addCluster(clu_list[iHit]); 
+          theModTeleTrack.addModDetId(modulesID[iHit]);
+	  theModTeleTrack.addPseudoLocalPoint(pseudo_pos[iHit]); 
+          theModTeleTrack.addPseudoLocalPointErr(pseudo_er[iHit]); 
+          theModTeleTrack.addAssPlaneA(plane_paramA[iHit]);
+          theModTeleTrack.addAssPlaneB(plane_paramB[iHit]);
+          theModTeleTrack.addAssPlaneC(plane_paramC[iHit]);
+          theModTeleTrack.addAssPlaneD(plane_paramD[iHit]);
+          theModTeleTrack.addAssPlaneX0(plane_x0[iHit]);
+          theModTeleTrack.addAssPlaneY0(plane_y0[iHit]);
+          theModTeleTrack.addAssPlaneZ0(plane_z0[iHit]);
+          counter_theModTeleTrack++;
+        }
+      }
+      if (!found_cluster_to_study) continue;
+      if (counter_theModTeleTrack<3) continue;
+      theModTeleTrack.fitTrack();
+//      theModTeleTrackCollection.push_back(theModTeleTrack);
+
+      // compute of the residual for theGP_to_study
+      double xtemp, ytemp, ztemp;
+      double parFit[6] = {theModTeleTrack.getParameter(0), theModTeleTrack.getParameter(1), theModTeleTrack.getParameter(2), theModTeleTrack.getParameter(3), theModTeleTrack.getParameter(4), theModTeleTrack.getParameter(5)};
+      theModTeleTrack.intersection(planeq0, parFit, xtemp, ytemp, ztemp);
+      TVector3 gptemp(xtemp, ytemp, ztemp);
+      int ilayernumber=-1;
+      bool isleft=false;
+      bool isright=false;
+//      bool flagpos=false;
+      for (int il1=0; il1<8; il1++) {
+        if (detId_to_study == LayersDefinition[il1].first)  {
+              ilayernumber=il1;
+              isright=true;
+//              flagpos=theModTeleTrack.isInModOnTheRight(gptemp);
+        }
+        else if (detId_to_study == LayersDefinition[il1].second) {
+              ilayernumber=il1;
+              isleft=true;
+//              flagpos=theModTeleTrack.isInModOnTheLeft(gptemp);
+        }
+
+      }
+//      if (flagpos) {
+      DQM2_Chi2[detId_to_study]->Fill(theModTeleTrack.getChi2());
+      // xtemp = global coordinates
+      // --> transformation into LP 
+      TVector3 lptemp;
+      if (isright) lptemp= theSimpleLayersR[ilayernumber].getLocalPointPosition(gptemp);
+      else if (isleft) lptemp= theSimpleLayersL[ilayernumber].getLocalPointPosition(gptemp);
+      // store the info
+      DQM2_TrackPull_X[detId_to_study]->Fill(lptemp.X() - theLP_to_study.X());
+      DQM2_TrackPull_Y[detId_to_study]->Fill(lptemp.Y() - theLP_to_study.Y()); 
+      double Sum2study= (lptemp.X() - theLP_to_study.X())*(lptemp.X() - theLP_to_study.X())
+                       + (lptemp.Y() - theLP_to_study.Y())*(lptemp.Y() - theLP_to_study.Y());
+      DQM2_Sum2[detId_to_study]->Fill(Sum2study);
+//      } // end if flagpos
+    }
+
+
+}
 
 
 //define this as a plug-in
