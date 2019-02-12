@@ -10,11 +10,11 @@ opt.register('inputDir',  '/opt/sbg/data/safe1/cms/ccollard/TrackerTelescope/ui6
 	     opts.VarParsing.multiplicity.singleton, opts.VarParsing.varType.string,
 	     'Directory of input raw files')
 
-opt.register('outputFileName', 'PixelTelescope_BeamData_RAW_caro.root',
+opt.register('outputFileName', 'PixelTelescope_BeamData_RAW_hometrk.root',
 	     opts.VarParsing.multiplicity.singleton, opts.VarParsing.varType.string,
 	     'Name of output reco file')
 
-opt.register('outputDQMFileName', 'PixelTelescope_BeamData_DQM_caro.root',
+opt.register('outputDQMFileName', 'PixelTelescope_BeamData_DQM_hometrk.root',
 	     opts.VarParsing.multiplicity.singleton, opts.VarParsing.varType.string,
 	     'Name of output dqm file')
 
@@ -22,7 +22,6 @@ opt.parseArguments()
 
 
 import os
-##my_path = "/data/veszpv/project/TelescopeData/beam/run001055/"
 my_path = opt.inputDir
 my_extensions = ['root']
 file_names = ["file:"+os.path.join(my_path, fn) for fn in os.listdir(my_path)
@@ -146,7 +145,6 @@ process.TFileService = cms.Service("TFileService",
 )
 
 process.DQMData = cms.EDAnalyzer('SimpleTracking', 
-#process.DQMData = cms.EDAnalyzer('AnaNikkie', 
  	tracks = cms.untracked.InputTag('ctfWithMaterialTracks'),
 	PixelDigisLabel = cms.InputTag("siPixelDigis"),
 	PixelClustersLabel = cms.InputTag("siPixelClusters"),

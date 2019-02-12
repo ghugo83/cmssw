@@ -34,6 +34,8 @@ class TelescopeTracks {
     std::vector<double>   param_ass_x0_;
     std::vector<double>   param_ass_y0_;
     std::vector<double>   param_ass_z0_;
+    std::vector<double>   param_ass_theta_;
+    std::vector<double>   param_ass_phi_;
     double normChi2_;
     double chi2_;
     
@@ -52,38 +54,6 @@ class TelescopeTracks {
 	xOnPlane_= -1000;
 	yOnPlane_= -1000;
 	zOnPlane_= -1000;
-	
-	
-/*
-	rotationX = new TMatrixD(3, 3);
-	rotationY = new TMatrixD(3, 3);
-	
-	TArrayD dataRx(9);
-	TArrayD dataRy(9);
-	
-//	double costheta = cos(30*3.14159265/180.);
-//	double sintheta = sin(30*3.14159265/180.);
-	double costheta = cos(-30*3.14159265/180.);
-	double sintheta = sin(-30*3.14159265/180.);
-	
-	
-	double cosphi = cos(20*3.14159265/180.);
-	double sinphi = sin(20*3.14159265/180.);
-	
-	dataRx[0] = 1; dataRx[1] = 0;        dataRx[2] = 0;
-	dataRx[3] = 0; dataRx[4] = costheta; dataRx[5] = -1*sintheta;
-	dataRx[6] = 0; dataRx[7] = sintheta; dataRx[8] = costheta;
-	
-	rotationX->SetMatrixArray(dataRx.GetArray());
-	
-	dataRy[0] = cosphi; dataRy[1] = 0; dataRy[2] = sinphi;
-	dataRy[3] = 0;      dataRy[4] = 1; dataRy[5] = 0;
-	dataRy[6] = -1.*sinphi; dataRy[7] = 0; dataRy[8] = cosphi;
-	
-	rotationY->SetMatrixArray(dataRy.GetArray());
-	
-*/	
-	
 	
 	
     } 
@@ -135,7 +105,6 @@ class TelescopeTracks {
     void setTrackParam(int, double);
     
     double getParameter(int );
-//    void propagateToPlane(std::vector<double> );
     
     double getXonPlane(){return xOnPlane_; };
     double getYonPlane(){return yOnPlane_; };
@@ -168,6 +137,8 @@ class TelescopeTracks {
     void addAssPlaneX0(double x0){param_ass_x0_.push_back(x0);};
     void addAssPlaneY0(double y0){param_ass_y0_.push_back(y0);};
     void addAssPlaneZ0(double z0){param_ass_z0_.push_back(z0);};
+    void addAssPlaneTheta(double theta){param_ass_theta_.push_back(theta);};
+    void addAssPlanePhi(double phi){param_ass_phi_.push_back(phi);};
     void cleanAssPlaneA(){param_ass_a_.clear();};
     void cleanAssPlaneB(){param_ass_b_.clear();};
     void cleanAssPlaneC(){param_ass_c_.clear();};
@@ -175,6 +146,8 @@ class TelescopeTracks {
     void cleanAssPlaneX0(){param_ass_x0_.clear();};
     void cleanAssPlaneY0(){param_ass_y0_.clear();};
     void cleanAssPlaneZ0(){param_ass_z0_.clear();};
+    void cleanAssPlaneTheta(){param_ass_theta_.clear();};
+    void cleanAssPlanePhi(){param_ass_phi_.clear();};
     std::vector<double> getAssPlaneA(){return param_ass_a_;};
     std::vector<double> getAssPlaneB(){return param_ass_b_;};
     std::vector<double> getAssPlaneC(){return param_ass_c_;};
@@ -182,6 +155,8 @@ class TelescopeTracks {
     std::vector<double> getAssPlaneX0(){return param_ass_x0_;};
     std::vector<double> getAssPlaneY0(){return param_ass_y0_;};
     std::vector<double> getAssPlaneZ0(){return param_ass_z0_;};
+    std::vector<double> getAssPlaneTheta(){return param_ass_theta_;};
+    std::vector<double> getAssPlanePhi(){return param_ass_phi_;};
     
     void addModDetId(int thedetid){modDetId_.push_back(thedetid);};
     void cleanModDetId(){modDetId_.clear();};

@@ -19,7 +19,6 @@ void SimplePlane::doRotation(){
    a=TMatrixDColumn(planeVec, 0)[0];
    b=TMatrixDColumn(planeVec, 0)[1];
    c=TMatrixDColumn(planeVec, 0)[2];
-//   d*=c; 
    d=-1.*a*Origin.X()-1.*b*Origin.Y()-1.*c*Origin.Z();
   
    isRotated = true;
@@ -87,13 +86,6 @@ TVector3 SimplePlane::getLocalPointPosition(TVector3 globalPos){
   
   TArrayD dataPlaneVec(3);
   
-/*
-  dataPlaneVec[0] = globalPos.X();
-  dataPlaneVec[1] = globalPos.Y();
-//  dataPlaneVec[2] = globalPos.Z();
-  if (c!=0.) dataPlaneVec[2] = globalPos.Z()+d/c;
-  else dataPlaneVec[2] =0;
-*/
   dataPlaneVec[0] = globalPos.X()-Origin.X();
   dataPlaneVec[1] = globalPos.Y()-Origin.Y();
   dataPlaneVec[2] = globalPos.Z()-Origin.Z();
@@ -125,20 +117,12 @@ TVector3 SimplePlane::getLocalTrackPosition(double *par){
 
   TArrayD dataPlaneVec(3);
   
-/*
-  dataPlaneVec[0] = globalPos.X();
-  dataPlaneVec[1] = globalPos.Y();
-//  dataPlaneVec[2] = globalPos.Z();
-  if (c!=0.) dataPlaneVec[2] = globalPos.Z()+d/c;
-  else dataPlaneVec[2] =0;
-*/
   dataPlaneVec[0] = globalPos.X()-Origin.X();
   dataPlaneVec[1] = globalPos.Y()-Origin.Y();
   dataPlaneVec[2] = globalPos.Z()-Origin.Z();
   
   TMatrixD planeVec(3, 1);
   planeVec.SetMatrixArray(dataPlaneVec.GetArray());
-//  planeVec = (*rotationY_)*(*rotationX_)*planeVec;
   planeVec = (*rotationInvX_)*(*rotationInvY_)*planeVec;
    
   TVector3 localpos(TMatrixDColumn(planeVec, 0)[0], TMatrixDColumn(planeVec, 0)[1], TMatrixDColumn(planeVec, 0)[2]);

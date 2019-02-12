@@ -122,6 +122,8 @@ public:
     double getOriginX() {return Origin.X();}
     double getOriginY() {return Origin.Y();}
     double getOriginZ() {return Origin.Z();}
+    double getTheta() {return theta_plane;}
+    double getPhi()   {return phi_plane;}
     
     void doRotation();
     void applyAlignment();

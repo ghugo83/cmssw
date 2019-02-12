@@ -56,31 +56,40 @@ void SumDistance2(int &, double *, double & sum, double * par, int ) {
      double * x0param= obj3->GetX();
      double * y0param= obj3->GetY();
      double * z0param= obj3->GetEX();
+     lnk = (TObjOptLink*)lnk->Next();
+     TGraphErrors *obj4 = (TGraphErrors*) lnk->GetObject();;
+     double * thetaparam= obj4->GetX();
+     double * phiparam= obj4->GetY();
 
 //     std::cout << " in SumDistance " << x[0] << "  "  << y[0]  << "  " << aparam[0] << "  " << bparam[0] <<"  " << cparam[0] <<"  " << dparam[0] <<std::endl; 
     
      sum = 0;
-//    assert(gr != 0);
-     TMatrixD *rotationInvX_0 = new TMatrixD(3, 3);
-     TMatrixD *rotationInvY_0 = new TMatrixD(3, 3);
-     TArrayD dataIRx0(9);
-     TArrayD dataIRy0(9);
-     // reverse matrices
      double pi=acos(-1);
-     double costheta2 = cos(30*pi/180.);
-     double sintheta2 = sin(30*pi/180.);
-     double cosphi2 = cos(-20*pi/180.);
-     double sinphi2 = sin(-20*pi/180.);
-     dataIRx0[0] = 1; dataIRx0[1] = 0;         dataIRx0[2] = 0;
-     dataIRx0[3] = 0; dataIRx0[4] = costheta2; dataIRx0[5] = -1*sintheta2;
-     dataIRx0[6] = 0; dataIRx0[7] = sintheta2; dataIRx0[8] = costheta2;
-     rotationInvX_0->SetMatrixArray(dataIRx0.GetArray());
-     dataIRy0[0] = cosphi2; dataIRy0[1] = 0; dataIRy0[2] = sinphi2;
-     dataIRy0[3] = 0;       dataIRy0[4] = 1; dataIRy0[5] = 0;
-     dataIRy0[6] = -1.*sinphi2; dataIRy0[7] = 0; dataIRy0[8] = cosphi2;
-     rotationInvY_0->SetMatrixArray(dataIRy0.GetArray());
-
      for (int i  = 0; i < npoints; ++i) { 
+        // reverse matrices
+        TMatrixD *rotationInvX_0 = new TMatrixD(3, 3);
+        TMatrixD *rotationInvY_0 = new TMatrixD(3, 3);
+        TArrayD dataIRx0(9);
+        TArrayD dataIRy0(9);
+        /*
+        double costheta2 = cos(30*pi/180.);
+        double sintheta2 = sin(30*pi/180.);
+        double cosphi2 = cos(-20*pi/180.);
+        double sinphi2 = sin(-20*pi/180.);
+        */
+        double costheta2 = cos(-1.*thetaparam[i]*pi/180.);
+        double sintheta2 = sin(-1.*thetaparam[i]*pi/180.);
+        double cosphi2 = cos(-1.*phiparam[i]*pi/180.);
+        double sinphi2 = sin(-1.*phiparam[i]*pi/180.);
+        dataIRx0[0] = 1; dataIRx0[1] = 0;         dataIRx0[2] = 0;
+        dataIRx0[3] = 0; dataIRx0[4] = costheta2; dataIRx0[5] = -1*sintheta2;
+        dataIRx0[6] = 0; dataIRx0[7] = sintheta2; dataIRx0[8] = costheta2;
+        rotationInvX_0->SetMatrixArray(dataIRx0.GetArray());
+        dataIRy0[0] = cosphi2; dataIRy0[1] = 0; dataIRy0[2] = sinphi2;
+        dataIRy0[3] = 0;       dataIRy0[4] = 1; dataIRy0[5] = 0;
+        dataIRy0[6] = -1.*sinphi2; dataIRy0[7] = 0; dataIRy0[8] = cosphi2;
+        rotationInvY_0->SetMatrixArray(dataIRy0.GetArray());
+
 //     	double d = distance2(x[i],y[i],z[i],par); 
 
         // intersection of the track with the telescope plane
@@ -92,37 +101,29 @@ void SumDistance2(int &, double *, double & sum, double * par, int ) {
         // after a translation to z=0
 
         TArrayD dataPlaneVec(3);
-/*
-        dataPlaneVec[0] = globx;
-        dataPlaneVec[1] = globy;
-//        dataPlaneVec[2] = globz;
-        if (cparam[i]!=0) dataPlaneVec[2] = globz+dparam[i]/cparam[i];
-        else dataPlaneVec[2] = 0;
-*/
         dataPlaneVec[0] = globx-x0param[i];
         dataPlaneVec[1] = globy-y0param[i];
         dataPlaneVec[2] = globz-z0param[i];
         TMatrixD planeVec0(3, 1);
         planeVec0.SetMatrixArray(dataPlaneVec.GetArray());
-//        planeVec0 = (*rotationInvY_0)*(*rotationInvX_0)*planeVec0;
         planeVec0 = (*rotationInvX_0)*(*rotationInvY_0)*planeVec0;
         //TVector3 localpos(TMatrixDColumn(planeVec, 0)[0], TMatrixDColumn(planeVec, 0)[1], TMatrixDColumn(planeVec, 0)[2]);
         double xtemp=TMatrixDColumn(planeVec0, 0)[0];
         double ytemp=TMatrixDColumn(planeVec0, 0)[1];
 
         // distance in the telescope plane
-//        double d = pow((x[i]-xtemp)*(x[i]-xtemp) + (y[i]-ytemp)*(y[i]-ytemp),0.5);
+//      double d = pow((x[i]-xtemp)*(x[i]-xtemp) + (y[i]-ytemp)*(y[i]-ytemp),0.5);
         double d = (x[i]-xtemp)*(x[i]-xtemp)/(xerr[i]*xerr[i]) + (y[i]-ytemp)*(y[i]-ytemp)/(yerr[i]*yerr[i]);
 	sum += d;
 	//if (first) std::cout << "point " << i << "\t" << x[i] << "\t"  << y[i] << "\t" << z[i] << "\t"  << std::sqrt(d) << std::endl; 
+        delete rotationInvX_0;
+        delete rotationInvY_0;
      }
      // how to determine correctly the number of degrees of freedom ?
      sum /=npoints;
 
      //first = false;
      //std::cout << "sum " << sum << std::endl;
-     delete rotationInvX_0;
-     delete rotationInvY_0;
 }
 
 
@@ -188,43 +189,6 @@ double TelescopeTracks::getParameter(int ipara){
   
 }
 
-/*
-void TelescopeTracks::propagateToPlane(std::vector<double> planeParam) {
-  
-  if(planeParam.size() !=4) std::cout << "not the right number of parameters for the plane, should be 4 " << std::endl; 
-  
-  //double a = planeParam[0];
-  //double b = planeParam[1];
-  //double c = planeParam[2];
-
-  double thetaX = 30*3.14159/180;
-  double thetaY = -20*3.14159/180;
-  double a = -sin(thetaY);
-  double b = sin(thetaX)*cos(thetaY);
-  double c = cos(thetaX)*cos(thetaY);
-  double di = -1;
-  double d = -1;
-  if (iLayer == 0) {di = 14.0 + 10.9 + 12.3 + 5.0;}
-  else if (iLayer == 1) {di = 14.0 + 10.9 + 12.3;}
-  else if (iLayer == 2) {di = 14.0 + 10.9;}
-  else if (iLayer == 3) {di = 14.0;}
-  else if (iLayer == 4) {di = -20.5;}
-  else if (iLayer == 5) {di = -20.5 - 5.0;}
-  else if (iLayer == 6) {di = -20.5 - 5.0 - 13.5;}
-  else if (iLayer == 7) {di = -20.5 - 5.0 - 13.5 - 10.2;}
-  
-  d = c*di;
-
-  //double d = 0; //zC = const.
-  double t = (-a*p0_ - b*p2_- c*p4_ + d)/(a*p1_ + b*p3_ + c*p5_);
-  
-  xOnPlane_ = p0_+t*p1_;
-  yOnPlane_ = p2_+t*p3_;
-  zOnPlane_ = p4_+t*p5_;
-  
-   
-}
-*/
 
 void TelescopeTracks::intersection(double *planeq, double *p, double &x, double &y, double &z) { 
   // a parameteric line is define from 6 parameters but 4 are independent
@@ -259,27 +223,23 @@ void TelescopeTracks::fitTrack(){
   
   std::vector<double> track;
   
-//  const int nCluster = globalPoints.size();
   const int nCluster = pseudolocalPoints.size();
 
   TMultiGraph* gr = new TMultiGraph();
   TGraphErrors* gr1pos = new TGraphErrors();
   TGraphErrors* grab= new TGraphErrors();
   TGraphErrors* grcd= new TGraphErrors();
-//  double p0[4] = {10,20,1,2};
+  TGraphErrors* gref= new TGraphErrors();
   
-  
-  
-//  std::cout << "debug Caro fitTrack " << nCluster << std::endl;   
+//  std::cout << "debug fitTrack " << nCluster << std::endl;   
   for(int icls=0; icls<nCluster; icls++){
-//    gr->SetPoint(icls, globalPoints[icls].X(),     globalPoints[icls].Y(),     globalPoints[icls].Z()      );
-//    gr->SetPointError(icls, globalPoints_err[icls].X(), globalPoints_err[icls].Y(), globalPoints_err[icls].Z()  );
     gr1pos->SetPoint(icls, pseudolocalPoints[icls].X(),     pseudolocalPoints[icls].Y());
     gr1pos->SetPointError(icls, pseudolocalPoints_err[icls].X(), pseudolocalPoints_err[icls].Y());
     grab->SetPoint(icls,param_ass_a_[icls],param_ass_b_[icls]);
     grab->SetPointError(icls,param_ass_c_[icls],param_ass_d_[icls]);
     grcd->SetPoint(icls,param_ass_x0_[icls],param_ass_y0_[icls]);
     grcd->SetPointError(icls,param_ass_z0_[icls],param_ass_z0_[icls]);
+    gref->SetPoint(icls,param_ass_theta_[icls],param_ass_phi_[icls]);
 //    std::cout << " x " << globalPoints[icls].X() << "   "  << pseudolocalPoints[icls].X() << std::endl; 
 //    std::cout << " y " << globalPoints[icls].Y() << "   "  << pseudolocalPoints[icls].Y() << std::endl; 
 //    std::cout << " abcd " << param_ass_a_[icls] << "   " << param_ass_b_[icls] << "   "  << param_ass_c_[icls] << "   "  << param_ass_d_[icls] << std::endl;
@@ -288,6 +248,7 @@ void TelescopeTracks::fitTrack(){
   gr->Add(gr1pos);
   gr->Add(grab);
   gr->Add(grcd);
+  gr->Add(gref);
   
   
   TVirtualFitter *min = TVirtualFitter::Fitter(0,4);
@@ -352,9 +313,7 @@ void TelescopeTracks::fitTrack(){
   std::cout << "Link TgraphError a 0 ok ? " << std::endl;
 */
   delete gr;
-//  std::cout << "gr delete ok ? " << std::endl;
   gr=0;
-//  std::cout << "gr a 0 ok ? " << std::endl;
 }
 
 
