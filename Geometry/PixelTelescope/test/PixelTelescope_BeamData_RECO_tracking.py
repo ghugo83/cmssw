@@ -6,15 +6,19 @@ process = cms.Process('RECO',eras.Run2_25ns)
 import FWCore.ParameterSet.VarParsing as opts
 opt = opts.VarParsing ('analysis')
 
-opt.register('inputDir',  '/opt/sbg/data/safe1/cms/ccollard/TrackerTelescope/ui6/PixelGeomV2/CMSSW_10_1_11/src/Geometry/PixelTelescope/test/RAW',
+#opt.register('inputDir',  '/opt/sbg/data/safe1/cms/ccollard/TrackerTelescope/ui6/PixelGeomV2/CMSSW_10_1_11/src/Geometry/PixelTelescope/test/RAW',
+#opt.register('inputDir',  '/eos/cms/store/group/dpg_tracker_upgrade/BeamTestTelescope/2018-TELESCOPE-COMMISSIONING/raw/run100299/',
+opt.register('inputDir',  './',
 	     opts.VarParsing.multiplicity.singleton, opts.VarParsing.varType.string,
 	     'Directory of input raw files')
 
-opt.register('outputFileName', 'PixelTelescope_BeamData_RAW_hometrk.root',
+#opt.register('outputFileName', './PixelTelescope_BeamData_RAW_hometrk.root',
+opt.register('outputFileName', './',
 	     opts.VarParsing.multiplicity.singleton, opts.VarParsing.varType.string,
 	     'Name of output reco file')
 
-opt.register('outputDQMFileName', 'PixelTelescope_BeamData_DQM_hometrk.root',
+#opt.register('outputDQMFileName', './PixelTelescope_BeamData_DQM_hometrk.root',
+opt.register('outputDQMFileName', './',
 	     opts.VarParsing.multiplicity.singleton, opts.VarParsing.varType.string,
 	     'Name of output dqm file')
 
