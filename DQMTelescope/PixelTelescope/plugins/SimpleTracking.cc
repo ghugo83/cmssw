@@ -4,10 +4,10 @@
 // class SimpleTracking SimpleTracking.cc DQMTelescope/SimpleTracking/plugins/SimpleTracking.cc
 
 // Original Author:  Jeremy Andrea
-//         Created:  03.08.2018
+//      Created:  03.08.2018
+//      Updated by:  Caroline Collard
 //      Updated by:  Nikkie Deelen
 //      Updated by:  Patrick Asenov
-//      Updated by:  Caroline Collard
 
 // system include files
 #include <memory>
@@ -180,7 +180,7 @@ class SimpleTracking : public edm::one::EDAnalyzer<edm::one::SharedResources> {
     Double_t   tree_ybary ;
     Double_t   tree_zbary ;
     TString    tree_modName ;
-    Long64_t   tree_maxEntries = 1000000 ;
+    Long64_t   tree_maxEntries = 100000000 ;
     
     // 3D Tree 
     TTree* TrackTree ;
@@ -517,8 +517,8 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
     TH2F* DQM_Corr_dX_X_tmp = sub2.make<TH2F>( ( "DQM_Corr_dX_X_" + modulename ).Data(), ( "dXloc vs Xloc for " + modulename).Data(), 32, -1.6, 1.6, 500, -0.1, 0.1 ) ;
     TH2F* DQM_Corr_dY_Y_tmp = sub2.make<TH2F>( ( "DQM_Corr_dY_Y_" + modulename ).Data(), ( "dYloc vs Yloc for " + modulename).Data(), 64, -3.2, 3.2, 500, -0.1, 0.1 ) ;
  
-    TH1F* DQM2_TrackPull_X_tmp = sub2.make<TH1F>( ( "DQM2_TrackPull_X_" + modulename ).Data(), ( "pull track X for " + modulename).Data(), 500, -0.05, 0.05 );
-    TH1F* DQM2_TrackPull_Y_tmp = sub2.make<TH1F>( ( "DQM2_TrackPull_Y_" + modulename ).Data(), ( "pull track Y for " + modulename).Data(), 500, -0.05, 0.05 );
+    TH1F* DQM2_TrackPull_X_tmp = sub2.make<TH1F>( ( "DQM2_TrackPull_X_" + modulename ).Data(), ( "pull track X for " + modulename).Data(), 500, -0.5, 0.5 );
+    TH1F* DQM2_TrackPull_Y_tmp = sub2.make<TH1F>( ( "DQM2_TrackPull_Y_" + modulename ).Data(), ( "pull track Y for " + modulename).Data(), 500, -0.5, 0.5 );
 
     DQM_TrackPull_X[it->first] = DQM_TrackPull_X_tmp;
     DQM_TrackPull_Y[it->first] = DQM_TrackPull_Y_tmp;
@@ -965,6 +965,7 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
         }
       }
       TrackTree->Fill();
+      //totalTree->Fill();
 
 
     for(unsigned int iHit=0; iHit < theGP.size(); iHit++){
@@ -1105,7 +1106,8 @@ void SimpleTracking::beginJob ( ) {
 
   // load the noisy channel list
    std::ifstream file_noisy;
-   file_noisy.open("/opt/sbg/data/safe1/cms/ccollard/TrackerTelescope/ui6/PixelGeomV2/CMSSW_10_1_11/src/Geometry/PixelTelescope/test/noisy_list.txt");
+   //file_noisy.open("/opt/sbg/data/safe1/cms/ccollard/TrackerTelescope/ui6/PixelGeomV2/CMSSW_10_1_11/src/Geometry/PixelTelescope/test/noisy_list.txt");
+   file_noisy.open("/src/Geometry/PixelTelescope/test/noisy_list.txt");
    inoisy=0;
    if (!file_noisy) { std::cerr << "cannot open file  noisy_list.txt " << std::endl; }
    else

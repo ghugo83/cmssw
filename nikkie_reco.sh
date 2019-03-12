@@ -11,6 +11,15 @@ RAW_DATA_RECO="/eos/cms/store/group/dpg_tracker_upgrade/BeamTestTelescope/2018-T
 OUTFILE="/eos/cms/store/group/dpg_tracker_upgrade/BeamTestTelescope/2019-NIKKIES_ANALYSIS-DONT_TOUCH/reco_run_${runNumber}.root"
 OUT_DQM="/eos/cms/store/group/dpg_tracker_upgrade/BeamTestTelescope/2019-NIKKIES_ANALYSIS-DONT_TOUCH/dqm_run_${runNumber}.root"
 
+cd $RAW_DATA_RECO
+
+if [ -f *complete ]; then
+  echo "File found!"
+  echo "Nikkie needs to remove the run_complete file :)"
+  #rm *complete
+  exit 1  
+fi
+
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 
 pwd
