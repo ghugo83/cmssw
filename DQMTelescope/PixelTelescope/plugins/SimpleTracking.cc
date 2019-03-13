@@ -162,39 +162,55 @@ class SimpleTracking : public edm::one::EDAnalyzer<edm::one::SharedResources> {
     // 3D Tree 
     TTree* cluster3DTree ;
 
-    Int_t      tree_runNumber ;
-    Int_t      tree_lumiSection ;
-    Int_t      tree_event ;
-    Int_t      tree_detId ;
-    Int_t      tree_cluster ;
-    Double_t   tree_x ;
-    Double_t   tree_y ;
-    Double_t   tree_z ;
-    Double_t   tree_x2 ;
-    Double_t   tree_y2 ;
-    Double_t   tree_z2 ;
-    Double_t   tree_xloc ;
-    Double_t   tree_yloc ;
-    Double_t   tree_zloc ;
-    Double_t   tree_xbary ;
-    Double_t   tree_ybary ;
-    Double_t   tree_zbary ;
+    Int_t      tree_runNumber;
+    Int_t      tree_lumiSection;
+    Int_t      tree_event;
+    Int_t      tree_detId;
+    Int_t      tree_nclusters;
+    Double_t   tree_clusterSize;
+    Double_t   tree_clusterSizeX;
+    Double_t   tree_clusterSizeY;
+    Double_t   tree_x;
+    Double_t   tree_y;
+    Double_t   tree_z;
+    Double_t   tree_x2;
+    Double_t   tree_y2;
+    Double_t   tree_z2;
+    Double_t   tree_xloc;
+    Double_t   tree_yloc;
+    Double_t   tree_zloc;
+    Double_t   tree_xbary;
+    Double_t   tree_ybary;
+    Double_t   tree_zbary;
+    Double_t   tree_charge;
     TString    tree_modName ;
     Long64_t   tree_maxEntries = 100000000 ;
     
     // 3D Tree 
     TTree* TrackTree ;
-    Int_t      tree_trackevent ;
+    Int_t      tree_trackevent;
     Double_t   tree_trackParam0;
     Double_t   tree_trackParam1;
     Double_t   tree_trackParam2;
     Double_t   tree_trackParam3;
     Double_t   tree_trackParam4;
     Double_t   tree_trackParam5;
+    Double_t   tree_kx;
+    Double_t   tree_ky;
     Double_t   tree_chi2;
-    Int_t      tree_npoints ;
-    Int_t      tree_npointsL ;
-    Int_t      tree_npointsR ;
+    Int_t      tree_npoints;
+    Int_t      tree_npointsL;
+    Int_t      tree_npointsR;
+
+    // Residuals tree
+    TTree* residualsTree;
+    Double_t   tree_eventN;
+    Double_t   tree_detId2;
+    Double_t   tree_biasedResidualX;
+    Double_t   tree_biasedResidualY;
+    Double_t   tree_unbiasedResidualX;
+    Double_t   tree_unbiasedResidualY;
+
 
     // detId versus moduleName and other definitions
     std::map<int , TString> detId_to_moduleName ;
@@ -220,7 +236,7 @@ class SimpleTracking : public edm::one::EDAnalyzer<edm::one::SharedResources> {
     void ApplyAlignment(int detId, double &xaligned, double &yaligned);
     void ApplyXmove(int detId, double &xaligned, double &yaligned);
 
-    void ComputeResiduals(int detId_to_study);    
+    void ComputeResiduals(int detId_to_study, int eventNumber, double brX, double brY);    
      
     // information about noisy clusters used in home-made tracking
     int noisy_det[1000];
@@ -338,6 +354,7 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
 
   cluster3DTree = sub1.make<TTree>("cluster3DTree", "3D Cluster Tree");
   TrackTree = sub1.make<TTree>("TrackTree", "parameters of reco tracks");
+  residualsTree = sub1.make<TTree>("residualsTree","Tree with residuals after tracking");
   
   TFileDirectory sub2 = sub1.mkdir( "dqmPlots" ) ;
   TFileDirectory sub3 = sub1.mkdir( "correlationPlots" ) ;  
@@ -348,7 +365,10 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
   cluster3DTree -> Branch ( "event", &tree_event ) ;
   cluster3DTree -> Branch ( "detId", &tree_detId ) ;
   cluster3DTree -> Branch ( "modName", &tree_modName ) ;
-  cluster3DTree -> Branch ( "cluster", &tree_cluster ) ;
+  cluster3DTree -> Branch ( "nclusters", &tree_nclusters ) ;
+  cluster3DTree -> Branch ( "clusterSize", &tree_clusterSize ) ;
+  cluster3DTree -> Branch ( "clusterSizeX", &tree_clusterSizeX ) ;
+  cluster3DTree -> Branch ( "clusterSizeY", &tree_clusterSizeY ) ;
   cluster3DTree -> Branch ( "x", &tree_x ) ;
   cluster3DTree -> Branch ( "y", &tree_y ) ;
   cluster3DTree -> Branch ( "z", &tree_z ) ;
@@ -361,6 +381,7 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
   cluster3DTree -> Branch ( "xbary", &tree_xbary ) ;
   cluster3DTree -> Branch ( "ybary", &tree_ybary ) ;
   cluster3DTree -> Branch ( "zbary", &tree_zbary ) ;
+  cluster3DTree -> Branch ( "clusterCharge", &tree_charge ) ;
   cluster3DTree -> SetCircular ( tree_maxEntries ) ;
   
   //std::cout << "ST3: Branch addresses set" << std::endl;
@@ -371,10 +392,19 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
   TrackTree -> Branch ( "tree_trackParam3", &tree_trackParam3 ) ;
   TrackTree -> Branch ( "tree_trackParam4", &tree_trackParam4 ) ;
   TrackTree -> Branch ( "tree_trackParam5", &tree_trackParam5 ) ;
+  TrackTree -> Branch ( "tree_kX", &tree_kx ) ;
+  TrackTree -> Branch ( "tree_kY", &tree_ky ) ;
   TrackTree -> Branch ( "tree_chi2", &tree_chi2 ) ;
   TrackTree -> Branch ( "tree_npoints", &tree_npoints ) ;
   TrackTree -> Branch ( "tree_npointsL", &tree_npointsL ) ;
   TrackTree -> Branch ( "tree_npointsR", &tree_npointsR ) ;
+
+  residualsTree -> Branch ( "eventNumber", &tree_eventN );
+  residualsTree -> Branch ( "detectorID", &tree_detId2 );
+  residualsTree -> Branch ( "biasedResidualX", &tree_biasedResidualX );
+  residualsTree -> Branch ( "biasedResidualY", &tree_biasedResidualY );
+  residualsTree -> Branch ( "unbiasedResidualX", &tree_unbiasedResidualX );
+  residualsTree -> Branch ( "unbiasedResidualY", &tree_unbiasedResidualY );
   
   DQM_NumbOfSeeds_per_Event = sub2.make<TH1F>( "DQM_NumbOfSeeds_per_Event", "Number of seeds/event",  30, 0., 30.0  ) ;
   DQM_NumbOfSeeds_per_Event -> GetXaxis ( ) -> SetTitle ( "Number of seeds / event " ) ;
@@ -821,7 +851,11 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
       tree_lumiSection = myEvId.luminosityBlock();
       tree_event = myEvId.event();
       tree_detId = detId;
-      tree_cluster = iCluster++;	
+      tree_nclusters = iCluster++;
+      tree_clusterSize = itCluster->size();
+      tree_clusterSizeX = itCluster->sizeX();
+      tree_clusterSizeY = itCluster->sizeY();	
+      tree_charge = itCluster->charge();
       tree_x = x;
       tree_y = y;
       tree_z = z;
@@ -918,6 +952,8 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
   if (iclu_count>=4) DQM_NumbOfSeeds_4cl_per_Event-> Fill(theTeleTrackCollection.size()) ;
   int icount_trk=0;
   
+  double biasedResiX=0, biasedResiY=0;
+
   // loop over the tracks
   for(unsigned int itrack = 0; itrack< theTeleTrackCollection.size(); itrack++){
     
@@ -929,7 +965,7 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
     std::vector<double > plane_paramC = theTeleTrackCollection[itrack].getAssPlaneC();
     std::vector<double > plane_paramD = theTeleTrackCollection[itrack].getAssPlaneD();
 
-    if(theGP.size() < 4) continue;   // remove too short tracks
+//    if(theGP.size() < 4) continue;   // remove too short tracks
     icount_trk++;
 //    if(theTeleTrackCollection[itrack].getChi2() > 3) continue;   // temporary check by Caroline
 //    std::cout << "********** new track ******* " << std::endl;
@@ -950,6 +986,8 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
       tree_trackParam3=theTeleTrackCollection[itrack].getParameter(3);
       tree_trackParam4=theTeleTrackCollection[itrack].getParameter(4);
       tree_trackParam5=theTeleTrackCollection[itrack].getParameter(5);
+      tree_kx=tree_trackParam1/tree_trackParam5;
+      tree_ky=tree_trackParam3/tree_trackParam5;
       tree_chi2=theTeleTrackCollection[itrack].getChi2();
       tree_npoints=theGP.size();
       tree_npointsL=0;
@@ -964,8 +1002,8 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
           }
         }
       }
-      TrackTree->Fill();
-      //totalTree->Fill();
+    TrackTree->Fill();
+    //totalTree->Fill();
 
 
     for(unsigned int iHit=0; iHit < theGP.size(); iHit++){
@@ -1007,6 +1045,9 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
         DQM_TrackPull2_X[modulesID[iHit]]->Fill(lptemp.X() - theLP[iHit].X());
         DQM_TrackPull2_Y[modulesID[iHit]]->Fill(lptemp.Y() - theLP[iHit].Y()); 
         DQM_Chi2[modulesID[iHit]]->Fill(theTeleTrackCollection[itrack].getChi2());
+
+        biasedResiX=lptemp.X() - theLP[iHit].X();
+	biasedResiY=lptemp.Y() - theLP[iHit].Y();
 
         if (-0.6 < lptemp.X() && lptemp.X() < 0.2 && -1.1 < lptemp.Y() && lptemp.Y() < -0.3) {
             // test central position of the beam
@@ -1083,13 +1124,13 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
       //must add number of tracks per event
     }
   }
-  
+
   // compute the residuals without including the cluster in the track GP list.
   for (unsigned int il1=0; il1<8; il1++) {
     int idetR = LayersDefinition[il1].first;
-    ComputeResiduals(idetR);
+    ComputeResiduals(idetR, myEvId.event(), biasedResiX, biasedResiY);
     int idetL = LayersDefinition[il1].second;
-    ComputeResiduals(idetL);
+    ComputeResiduals(idetL, myEvId.event(), biasedResiX, biasedResiY);
   }
   
   DQM_NumbOfTracks_per_Event->Fill(icount_trk);
@@ -1107,7 +1148,7 @@ void SimpleTracking::beginJob ( ) {
   // load the noisy channel list
    std::ifstream file_noisy;
    //file_noisy.open("/opt/sbg/data/safe1/cms/ccollard/TrackerTelescope/ui6/PixelGeomV2/CMSSW_10_1_11/src/Geometry/PixelTelescope/test/noisy_list.txt");
-   file_noisy.open("/src/Geometry/PixelTelescope/test/noisy_list.txt");
+   file_noisy.open("/eos/cms/store/group/dpg_tracker_upgrade/BeamTestTelescope/2018-TELESCOPE-COMMISSIONING/noisy_list.txt");
    inoisy=0;
    if (!file_noisy) { std::cerr << "cannot open file  noisy_list.txt " << std::endl; }
    else
@@ -1517,7 +1558,7 @@ void SimpleTracking::doPatternReco(edm::Handle<edmNew::DetSetVector<SiPixelClust
     
     for(int ilayer = 2; ilayer <8; ilayer++){
  
-      if (ilayer==6) continue;     // just noise in M3009 on the right side, and M3057 is dead module on the left side
+      //if (ilayer==6) continue;     // just noise in M3009 on the right side, and M3057 is dead module on the left side
 
       for( edmNew::DetSetVector<SiPixelCluster>::const_iterator DSViter=pixelclusters->begin(); DSViter!=pixelclusters->end();DSViter++   ) {
 
@@ -1692,7 +1733,7 @@ void SimpleTracking::doPatternReco(edm::Handle<edmNew::DetSetVector<SiPixelClust
 // from the track extrapolation
 //*************************************************************
 
-void SimpleTracking::ComputeResiduals(int detId_to_study){
+void SimpleTracking::ComputeResiduals(int detId_to_study, int eventNumber, double brX, double brY){
 // goal of this function: compute the residual for a point after having removed it from the track extrapolation
  
     // create a new track without the point from detId_to_study included
@@ -1783,6 +1824,16 @@ void SimpleTracking::ComputeResiduals(int detId_to_study){
       // store the info
       DQM2_TrackPull_X[detId_to_study]->Fill(lptemp.X() - theLP_to_study.X());
       DQM2_TrackPull_Y[detId_to_study]->Fill(lptemp.Y() - theLP_to_study.Y()); 
+      // Fill the tree
+      tree_eventN = eventNumber;
+      tree_detId2 = detId_to_study;
+      tree_biasedResidualX = brX;
+      tree_biasedResidualY = brY;
+      tree_unbiasedResidualX = lptemp.X() - theLP_to_study.X() ;
+      tree_unbiasedResidualY = lptemp.Y() - theLP_to_study.Y() ;
+      
+      residualsTree->Fill();
+
       double Sum2study= (lptemp.X() - theLP_to_study.X())*(lptemp.X() - theLP_to_study.X())
                        + (lptemp.Y() - theLP_to_study.Y())*(lptemp.Y() - theLP_to_study.Y());
       DQM2_Sum2[detId_to_study]->Fill(Sum2study);
