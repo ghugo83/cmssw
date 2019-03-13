@@ -7,13 +7,10 @@
 #include "Math/Vector3D.h"
 #include "TMath.h"
 
-
-
 ///////////////////////////////////////////////////////
 /////////// external function definition //////////////
 /////////// needed for the fit           //////////////
 ///////////////////////////////////////////////////////
-
 
 using namespace ROOT::Math;
 
@@ -126,15 +123,9 @@ void SumDistance2(int &, double *, double & sum, double * par, int ) {
      //std::cout << "sum " << sum << std::endl;
 }
 
-
-
-
 ///////////////////////////////////////////////////////////
 /////////// def of members of Telescopetrack //////////////
 ///////////////////////////////////////////////////////////
-
-
-
 
 void TelescopeTracks::setTrackParam(int ipara, double value){
 
@@ -144,24 +135,18 @@ void TelescopeTracks::setTrackParam(int ipara, double value){
   else if(ipara == 3)  p3_= value;
   else if(ipara == 4)  p4_= value;
   else if(ipara == 5)  p5_= value;
-  
 
 }
 
-
 void TelescopeTracks::addCluster(SiPixelCluster theCluster){ clusterList_.push_back(theCluster);}
-
 
 void TelescopeTracks::cleanClusterList(){ clusterList_.clear(); }
 
-
 std::vector<SiPixelCluster> TelescopeTracks::getclusterList(){ return clusterList_;}
-
 
 void     	      TelescopeTracks::addGlobalPoint(TVector3 gp ){globalPoints.push_back(gp); }
 void 		      TelescopeTracks::cleanGlobalPoints(){ globalPoints.clear(); }
-std::vector<TVector3> TelescopeTracks::getGlobalPoints(){ return globalPoints;}
-    
+std::vector<TVector3> TelescopeTracks::getGlobalPoints(){ return globalPoints;} 
     
 void        	      TelescopeTracks::addGlobalPointErr(TVector3 gp ){globalPoints_err.push_back(gp); }
 void                  TelescopeTracks::cleanGlobalPointsErr(){ globalPoints_err.clear(); }
@@ -170,13 +155,12 @@ std::vector<TVector3> TelescopeTracks::getGlobalPointsErr(){ return globalPoints
 void     	      TelescopeTracks::addPseudoLocalPoint(TVector3 gp ){pseudolocalPoints.push_back(gp); }
 void 		      TelescopeTracks::cleanPseudoLocalPoints(){ pseudolocalPoints.clear(); }
 std::vector<TVector3> TelescopeTracks::getPseudoLocalPoints(){ return pseudolocalPoints;}
-    
-    
+     
 void        	      TelescopeTracks::addPseudoLocalPointErr(TVector3 gp ){pseudolocalPoints_err.push_back(gp); }
 void                  TelescopeTracks::cleanPseudoLocalPointsErr(){ pseudolocalPoints_err.clear(); }
 std::vector<TVector3> TelescopeTracks::getPseudoLocalPointsErr(){ return pseudolocalPoints_err;}
     
-    
+
 double TelescopeTracks::getParameter(int ipara){
 
   if(ipara == 0) return p0_;
@@ -188,7 +172,6 @@ double TelescopeTracks::getParameter(int ipara){
   else return -10000;
   
 }
-
 
 void TelescopeTracks::intersection(double *planeq, double *p, double &x, double &y, double &z) { 
   // a parameteric line is define from 6 parameters but 4 are independent
@@ -208,7 +191,6 @@ void TelescopeTracks::intersection(double *planeq, double *p, double &x, double 
   z = p[4] + p[5]*t;  
 }
 
-
 void TelescopeTracks::line(double t, double *p, double &x, double &y, double &z) { 
   // a parameteric line is define from 6 parameters but 4 are independent
   // x0,y0,z0,z1,y1,z1 which are the coordinates of two points on the line
@@ -217,7 +199,6 @@ void TelescopeTracks::line(double t, double *p, double &x, double &y, double &z)
   y = p[2] + p[3]*t;
   z = p[4] + p[5]*t;  
 }
-
 
 void TelescopeTracks::fitTrack(){
   
@@ -250,9 +231,7 @@ void TelescopeTracks::fitTrack(){
   gr->Add(grcd);
   gr->Add(gref);
   
-  
   TVirtualFitter *min = TVirtualFitter::Fitter(0,4);
-  
 
   min->SetObjectFit(gr);
   min->SetFCN(SumDistance2);

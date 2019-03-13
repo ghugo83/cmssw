@@ -4,11 +4,10 @@
 // class SimpleTracking SimpleTracking.cc DQMTelescope/SimpleTracking/plugins/SimpleTracking.cc
 
 // Original Author:  Jeremy Andrea
-//         Created:  03.08.2018
+//      Created:  03.08.2018
+//      Updated by:  Caroline Collard
 //      Updated by:  Nikkie Deelen
 //      Updated by:  Patrick Asenov
-//      Updated by:  Caroline Collard
-
 
 // system include files
 #include <memory>
@@ -50,9 +49,6 @@
 #include "DQMTelescope/PixelTelescope/plugins/TelescopeTracks.h"
 #include "DQMTelescope/PixelTelescope/plugins/SimplePlane.h"
 
-
-
-
 #include <cstring>
 #include <string> 
 #include <TH2F.h>
@@ -73,15 +69,8 @@
 // class declaration
 //
 
-
-
 using reco::TrackCollection ;
 using namespace ROOT::Math;
-
-
-
-
-
 
 class SimpleTracking : public edm::one::EDAnalyzer<edm::one::SharedResources> {
   public:
@@ -125,7 +114,6 @@ class SimpleTracking : public edm::one::EDAnalyzer<edm::one::SharedResources> {
     std::map< std::pair<uint32_t, uint32_t>, TH2F*> DQM_Correlation3_X ;
     std::map< std::pair<uint32_t, uint32_t>, TH2F*> DQM_Correlation3_Y ;
 
-    
     std::map< uint32_t, TH1F* > DQM_TrackPull_X ;    
     std::map< uint32_t, TH1F* > DQM_TrackPull_Y ;
     std::map< uint32_t, TH1F* > DQM_TrackPull2_X ;    
@@ -150,11 +138,10 @@ class SimpleTracking : public edm::one::EDAnalyzer<edm::one::SharedResources> {
     TH1F* deltaX_per_Track;
     TH1F* deltaY_per_Track;
 
-    TH2F* testTrack;
-    TH2F* testModule;
-    TH2F* testModule2;
-    TH2F* testModuleLayer;
-
+    //TH2F* testTrack;
+    //TH2F* testModule;
+    //TH2F* testModule2;
+    //TH2F* testModuleLayer;
 
     TH1F* DQM_TrackPull4_X_M3124;
     TH1F* DQM_TrackPull4_Y_M3124;
@@ -193,8 +180,7 @@ class SimpleTracking : public edm::one::EDAnalyzer<edm::one::SharedResources> {
     Double_t   tree_ybary ;
     Double_t   tree_zbary ;
     TString    tree_modName ;
-    Long64_t   tree_maxEntries = 1000000 ;
-    
+    Long64_t   tree_maxEntries = 100000000 ;
     
     // 3D Tree 
     TTree* TrackTree ;
@@ -209,8 +195,6 @@ class SimpleTracking : public edm::one::EDAnalyzer<edm::one::SharedResources> {
     Int_t      tree_npoints ;
     Int_t      tree_npointsL ;
     Int_t      tree_npointsR ;
-    
-    
 
     // detId versus moduleName and other definitions
     std::map<int , TString> detId_to_moduleName ;
@@ -237,7 +221,6 @@ class SimpleTracking : public edm::one::EDAnalyzer<edm::one::SharedResources> {
     void ApplyXmove(int detId, double &xaligned, double &yaligned);
 
     void ComputeResiduals(int detId_to_study);    
-
      
     // information about noisy clusters used in home-made tracking
     int noisy_det[1000];
@@ -271,7 +254,6 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
   detId_to_moduleName.insert( std::pair<uint32_t, TString>(353375236, "M3164") ) ;
   detId_to_moduleName.insert( std::pair<uint32_t, TString>(353376260, "M3173") ) ;
 
-   
   // Module name to detID
   moduleName_to_detID.insert( std::pair<TString, uint32_t>("M3090", 344200196) ) ;
   moduleName_to_detID.insert( std::pair<TString, uint32_t>("M3124", 344201220) ) ;
@@ -308,7 +290,6 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
   //layer -1 : left  344724484 , right 344725508 
   //Layer -0 : left 344986628 , right  344987652 
   
-
   // geometry: definition of the telescope plane for home-made tracking
   // for run 100208 -- old version of SimplePlane initialization
   /*
@@ -352,7 +333,6 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
   //apply rotation
   for(unsigned int i=0; i<theSimpleLayersR.size(); i++) theSimpleLayersR[i].doRotation();
   for(unsigned int i=0; i<theSimpleLayersL.size(); i++) theSimpleLayersL[i].doRotation();
-
 
   TFileDirectory sub1 = fs->mkdir(  "run100000" ); // This does not make sense yet
 
@@ -427,11 +407,6 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
   deltaY_per_Track -> GetXaxis ( ) -> SetTitle ( "deltaY (cm)" ) ;
   deltaY_per_Track -> GetYaxis ( ) -> SetTitle ( "Count" ) ;
   
-  testTrack  = sub2.make<TH2F>(  "Track Position on DUT", "Track Position on DUT" , 100., -3.0, 3.0, 100., -3.0, 3.0  ) ;
-  testModule = sub2.make<TH2F>(  "Cluster Position on Module M3074", "Cluster Position on Module M3090 " , 100., -3.0, 3.0, 100., -3.0, 3.0  ) ;
-  testModule2 = sub2.make<TH2F>(  "Cluster Position on Module M3124", "Cluster Position on Module M3124 " , 100., -3.0, 3.0, 100., -3.0, 3.0  ) ;
-  testModuleLayer = sub2.make<TH2F>(  "Cluster Position on Layer", "Cluster Position on Layer " , 100., -3.0, 3.0, 100., -3.0, 3.0  ) ;
-  
   DQM_TrackPull4_X_M3124 = sub2.make<TH1F>(  "DQM_TrackPull4_X_M3124",  "pull track X for M3124" , 500, -0.05, 0.05 );
   DQM_TrackPull4_Y_M3124 = sub2.make<TH1F>(  "DQM_TrackPull4_Y_M3124",  "pull track Y for M3124" , 500, -0.05, 0.05 );
   DQM_TrackPull5_X_M3124 = sub2.make<TH1F>(  "DQM_TrackPull5_X_M3124",  "pull track X for M3124" , 500, -0.05, 0.05 );
@@ -496,10 +471,8 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
       DQM_Correlation3_X.insert ( std::pair < std::pair<uint32_t, uint32_t>, TH2F*>( modulePair, DQM_Correlation3_X_tmp ) ) ;
       DQM_Correlation3_Y.insert ( std::pair < std::pair<uint32_t, uint32_t>, TH2F*>( modulePair, DQM_Correlation3_Y_tmp ) ) ;
 
-
     }//end for j 
     
-
     // Make the DQM plots
     TH1F* DQM_ClusterCharge_tmp = sub2.make<TH1F>( ( "DQM_ClusterCharge_" + modulename ).Data(), ( "Cluster charge for " + modulename).Data(), 100, 0., 100000. );
     TH1F* DQM_ClusterSize_X_tmp = sub2.make<TH1F>( ( "DQM_ClusterSize_X_" + modulename ).Data(), ( "X cluster size for " + modulename).Data(), 30, 0., 30. );
@@ -544,9 +517,8 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
     TH2F* DQM_Corr_dX_X_tmp = sub2.make<TH2F>( ( "DQM_Corr_dX_X_" + modulename ).Data(), ( "dXloc vs Xloc for " + modulename).Data(), 32, -1.6, 1.6, 500, -0.1, 0.1 ) ;
     TH2F* DQM_Corr_dY_Y_tmp = sub2.make<TH2F>( ( "DQM_Corr_dY_Y_" + modulename ).Data(), ( "dYloc vs Yloc for " + modulename).Data(), 64, -3.2, 3.2, 500, -0.1, 0.1 ) ;
  
-    TH1F* DQM2_TrackPull_X_tmp = sub2.make<TH1F>( ( "DQM2_TrackPull_X_" + modulename ).Data(), ( "pull track X for " + modulename).Data(), 500, -0.05, 0.05 );
-    TH1F* DQM2_TrackPull_Y_tmp = sub2.make<TH1F>( ( "DQM2_TrackPull_Y_" + modulename ).Data(), ( "pull track Y for " + modulename).Data(), 500, -0.05, 0.05 );
-
+    TH1F* DQM2_TrackPull_X_tmp = sub2.make<TH1F>( ( "DQM2_TrackPull_X_" + modulename ).Data(), ( "pull track X for " + modulename).Data(), 500, -0.5, 0.5 );
+    TH1F* DQM2_TrackPull_Y_tmp = sub2.make<TH1F>( ( "DQM2_TrackPull_Y_" + modulename ).Data(), ( "pull track Y for " + modulename).Data(), 500, -0.5, 0.5 );
 
     DQM_TrackPull_X[it->first] = DQM_TrackPull_X_tmp;
     DQM_TrackPull_Y[it->first] = DQM_TrackPull_Y_tmp;
@@ -562,14 +534,11 @@ SimpleTracking::SimpleTracking( const edm::ParameterSet& iConfig ) : tracksToken
     DQM2_TrackPull_X[it->first] = DQM2_TrackPull_X_tmp;
     DQM2_TrackPull_Y[it->first] = DQM2_TrackPull_Y_tmp;
     
-    
-
   }//end for it
   
   pixeldigiToken_    = consumes<edm::DetSetVector<PixelDigi> >        (iConfig.getParameter<edm::InputTag>("PixelDigisLabel"))   ;
   pixelclusterToken_ = consumes<edmNew::DetSetVector<SiPixelCluster> >(iConfig.getParameter<edm::InputTag>("PixelClustersLabel"));
   pixelhitToken_     = consumes<edmNew::DetSetVector<SiPixelRecHit> > (iConfig.getParameter<edm::InputTag>("PixelHitsLabel"))    ;
-  
   
 }//end SimpleTracking()
 
@@ -618,7 +587,6 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
   //loop on digis
   //---------------------------------
 
-
   for( edm::DetSetVector<PixelDigi>::const_iterator DSViter=pixeldigis->begin(); DSViter!=pixeldigis->end(); DSViter++   ) { 
     
     edm::DetSet<PixelDigi>::const_iterator begin=DSViter->begin();
@@ -648,10 +616,8 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
 
     }//end for Digis   
 
-
   }//end for Detectors
   
-
   //---------------------------------
   // Loop over the clusters
   //---------------------------------
@@ -679,7 +645,6 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
       for(edmNew::DetSet<SiPixelCluster>::const_iterator iter2=begin2;iter2!=end2;++iter2) {
            nclus_check2++;
       }
-      // 
 
       for(edmNew::DetSet<SiPixelCluster>::const_iterator iter=begin;iter!=end;++iter) {
 
@@ -696,7 +661,6 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
         double xgp1=0, ygp1=0;
         xgp1 = gp1.x();
         ygp1 = gp1.y();
-
 
         for(edmNew::DetSet<SiPixelCluster>::const_iterator iter2=begin2;iter2!=end2;++iter2) {
 
@@ -741,14 +705,12 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
            auto itHistMap6 = DQM_Correlation3_Y.find(modulePair);
            if ( itHistMap6 == DQM_Correlation3_Y.end() ) continue;
            itHistMap6->second->Fill ( col, col2 ) ;
-          }
+          }//end if cluster check
         }//end for clusters2
       }//end for cluster
     }//end for first detectors2
   }//end for first detectors
   
-
-
   // Counting the number of clusters for this detector and this event
   std::map< uint32_t, int > clustersPerModule ;
   for ( std::map<int, TString>::iterator it = detId_to_moduleName.begin(); it != detId_to_moduleName.end(); it++ ) clustersPerModule.insert( std::pair< uint32_t, int >( it->first, 0 ) ) ;
@@ -782,8 +744,6 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
 
   for ( std::map<uint32_t, int>::iterator it = clustersPerModule.begin(); it != clustersPerModule.end(); it++ ) DQM_NumbOfClusters_per_Event[ it->first ] -> Fill ( it->second ) ;
   
-
-
   //---------------------------------
   // Loop over the hits
   //---------------------------------
@@ -800,7 +760,6 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
     }//end for DetSet
   }//end for DetSetVector
 */
-
 
   //---------------------------------
   // Fill the 3D tree
@@ -850,8 +809,6 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
        if (!noisyflag) iclu_count++;
        // end check 
 
-
-      
       double ex=0.05, ey=0.05, ez=5;
       
       TVector3 tmpGP(x, y, z);
@@ -921,15 +878,12 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
       }
 */
 
-
-
       cluster3DTree->Fill();
       
-      if(int(detId) == 344200196 || int(detId) == 344201220) testModuleLayer->Fill( gp.x(),  gp.y()  );
+      //if(int(detId) == 344200196 || int(detId) == 344201220) testModuleLayer->Fill( gp.x(),  gp.y()  );
     } //end for clusters of the first detector
   } //end for first detectors
   DQM_NumbOfClus_per_Event-> Fill(iclu_count) ;
-  
   
   //**********************************************************************
   //**********************************************************************
@@ -955,7 +909,6 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
     }
   }
 */
-  
   
   //********  Add clusters on the next layer to build the track ***********
   doPatternReco( pixelclusters, tkgeom, cpe,  tracker);
@@ -1012,10 +965,11 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
         }
       }
       TrackTree->Fill();
-      //
+      //totalTree->Fill();
+
 
     for(unsigned int iHit=0; iHit < theGP.size(); iHit++){
-//      std::cout << "modulesID " << detId_to_moduleName[modulesID[iHit]] << std::endl;
+      //std::cout << "modulesID " << detId_to_moduleName[modulesID[iHit]] << std::endl;
       double xtemp, ytemp, ztemp;
       double parFit[6] = {theTeleTrackCollection[itrack].getParameter(0), theTeleTrackCollection[itrack].getParameter(1), theTeleTrackCollection[itrack].getParameter(2), theTeleTrackCollection[itrack].getParameter(3), theTeleTrackCollection[itrack].getParameter(4), theTeleTrackCollection[itrack].getParameter(5)};
 
@@ -1027,7 +981,7 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
       bool isright=false;
       int ilayernumber=-1;
       for (int il1=0; il1<8; il1++) {
-//        if (modulesID[iHit] == LayersDefinition[il1].first || modulesID[iHit] == LayersDefinition[il1].second) ilayernumber=il1;
+        //if (modulesID[iHit] == LayersDefinition[il1].first || modulesID[iHit] == LayersDefinition[il1].second) ilayernumber=il1;
         if (modulesID[iHit] == LayersDefinition[il1].first)  {
               ilayernumber=il1;
               isright=true;
@@ -1130,7 +1084,6 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
     }
   }
   
-
   // compute the residuals without including the cluster in the track GP list.
   for (unsigned int il1=0; il1<8; il1++) {
     int idetR = LayersDefinition[il1].first;
@@ -1139,14 +1092,12 @@ void SimpleTracking::analyze( const edm::Event& iEvent, const edm::EventSetup& i
     ComputeResiduals(idetL);
   }
   
-  
   DQM_NumbOfTracks_per_Event->Fill(icount_trk);
   if (iclu_count>=4) DQM_NumbOfTracks_4cl_per_Event-> Fill(icount_trk) ;
   
   theTeleTrackCollection.clear();
 
 }//end analyze()
-
 
 // ------------ method called once each job just before starting event loop  ------------
 void SimpleTracking::beginJob ( ) {
@@ -1155,7 +1106,8 @@ void SimpleTracking::beginJob ( ) {
 
   // load the noisy channel list
    std::ifstream file_noisy;
-   file_noisy.open("/opt/sbg/data/safe1/cms/ccollard/TrackerTelescope/ui6/PixelGeomV2/CMSSW_10_1_11/src/Geometry/PixelTelescope/test/noisy_list.txt");
+   //file_noisy.open("/opt/sbg/data/safe1/cms/ccollard/TrackerTelescope/ui6/PixelGeomV2/CMSSW_10_1_11/src/Geometry/PixelTelescope/test/noisy_list.txt");
+   file_noisy.open("/src/Geometry/PixelTelescope/test/noisy_list.txt");
    inoisy=0;
    if (!file_noisy) { std::cerr << "cannot open file  noisy_list.txt " << std::endl; }
    else
@@ -1193,8 +1145,6 @@ void SimpleTracking::fillDescriptions ( edm::ConfigurationDescriptions& descript
   //descriptions.addDefault(desc);
 
 }//end void fillDescriptions ( )
-
-
 
 void SimpleTracking::ApplyXmove(int detId,  double &xaligned, double &yaligned) {
        // example of manual misalignment shift with parameter in the configuration file
@@ -1254,9 +1204,7 @@ void SimpleTracking::ApplyAlignment(int detId, double &xaligned, double &yaligne
            yaligned-=-1.33751e-01;
           }
 
-
 }
-
 
 //******************************************************
 // SimpleTracking::doSeeding
@@ -1268,7 +1216,6 @@ void SimpleTracking::ApplyAlignment(int detId, double &xaligned, double &yaligne
 
 void SimpleTracking::doSeeding(edm::Handle<edmNew::DetSetVector<SiPixelCluster> > pixelclusters,
  const TrackerGeometry *tkgeom,  const PixelClusterParameterEstimator &cpe, edm::ESHandle<TrackerGeometry> tracker){
-  
 
 //  std::cout << "-------------" << std::endl;
   for( edmNew::DetSetVector<SiPixelCluster>::const_iterator DSViter=pixelclusters->begin(); DSViter!=pixelclusters->end();DSViter++   ) {
@@ -1278,8 +1225,6 @@ void SimpleTracking::doSeeding(edm::Handle<edmNew::DetSetVector<SiPixelCluster> 
       
     auto detid = DetId(DSViter->detId());
 //    std::cout << "detID "  << int(detid) << std::endl;
-
-
 
 /*
     std::cout << " caro debug position " << std::endl;
@@ -1328,7 +1273,6 @@ void SimpleTracking::doSeeding(edm::Handle<edmNew::DetSetVector<SiPixelCluster> 
     std::cout << " end caro debug position " << std::endl;
 */
 
-
     // first layer called layer0
     if(int(detid) != 353376260 && int(detid) != 353375236) continue; 
 
@@ -1362,8 +1306,6 @@ void SimpleTracking::doSeeding(edm::Handle<edmNew::DetSetVector<SiPixelCluster> 
         }
         if (noisyflag) continue;
         // end check 
-
-
 
 /*
 	if ((x < -0.3) && (x > 0.1)) continue;
@@ -1549,14 +1491,11 @@ void SimpleTracking::doSeeding(edm::Handle<edmNew::DetSetVector<SiPixelCluster> 
 	    theseed.intersection(planeq1, parFit, xtemp, ytemp, ztemp);
 //	    std::cout << "  check the fit 2 " << xtemp << " " << ytemp << "  " << ztemp << std::endl;
 //	    std::cout << "  to be compared with " << x2  << " " << y2  << "  " << z2  << std::endl; // ??
-	    
-	    
 	  }
         }
-       }
-     }
-   }
-  
+      }
+    }
+  } 
 }
 
 //*************************************************************
@@ -1575,7 +1514,6 @@ void SimpleTracking::doPatternReco(edm::Handle<edmNew::DetSetVector<SiPixelClust
     double distanceR = 0.;
     double deltaX = 0.;
     double deltaY = 0.;
-    
     
     for(int ilayer = 2; ilayer <8; ilayer++){
  
@@ -1599,8 +1537,6 @@ void SimpleTracking::doPatternReco(edm::Handle<edmNew::DetSetVector<SiPixelClust
        else if (int(detid) == LayersDefinition[ilayer].second) {
               isleft=true;
        }
-
-
        
        TVector3 closestClust;
        TVector3 closestClust2;
@@ -1644,8 +1580,6 @@ void SimpleTracking::doPatternReco(edm::Handle<edmNew::DetSetVector<SiPixelClust
 /*
           ApplyXmove(int(detid),x3,y3);
 */
-
-
 	  TVector3 clust(x3,   y3,  z3);
           double xlocclust3=lp.x();
           if (x3-0.03>50-1.1*(y3+0.03)/5.6 && x3+0.03<51.6-1.1*(y3-0.03)/5.6) { // some margin in case of misalignment
@@ -1667,8 +1601,6 @@ void SimpleTracking::doPatternReco(edm::Handle<edmNew::DetSetVector<SiPixelClust
           }
 */
 
-
-	    
           // compute the extrapolation of the track in the considered plane
 	  double xtemp, ytemp, ztemp;
 	  double parFit[6] = {theTeleTrackCollection[itrack].getParameter(0), theTeleTrackCollection[itrack].getParameter(1), theTeleTrackCollection[itrack].getParameter(2), theTeleTrackCollection[itrack].getParameter(3), theTeleTrackCollection[itrack].getParameter(4), theTeleTrackCollection[itrack].getParameter(5)};
@@ -1752,7 +1684,6 @@ void SimpleTracking::doPatternReco(edm::Handle<edmNew::DetSetVector<SiPixelClust
     deltaY_per_Track-> Fill (deltaY) ;
   } // end loop on TrackCollection
 
- 
 }
 
 //*************************************************************
@@ -1856,10 +1787,7 @@ void SimpleTracking::ComputeResiduals(int detId_to_study){
                        + (lptemp.Y() - theLP_to_study.Y())*(lptemp.Y() - theLP_to_study.Y());
       DQM2_Sum2[detId_to_study]->Fill(Sum2study);
     }
-
-
 }
-
 
 //define this as a plug-in
 DEFINE_FWK_MODULE ( SimpleTracking ) ;
