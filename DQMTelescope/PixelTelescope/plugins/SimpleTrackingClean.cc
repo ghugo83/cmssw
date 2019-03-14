@@ -4,7 +4,7 @@
 // class SimpleTrackingClean SimpleTrackingClean.cc DQMTelescope/SimpleTrackingClean/plugins/SimpleTrackingClean.cc
 
 // Original Author:  Jeremy Andrea
-//      Created:  03.08.2018
+//      Created:     03.08.2018
 //      Updated by:  Caroline Collard
 //      Updated by:  Nikkie Deelen
 //      Updated by:  Patrick Asenov
@@ -236,7 +236,7 @@ private:
     void ApplyAlignment(int detId, double &xaligned, double &yaligned);
     void ApplyXmove(int detId, double &xaligned, double &yaligned);
 
-    void ComputeResiduals(int detId_to_study, int eventNumber, double brX, double brY);
+    void ComputeResiduals(int detId_to_study, int eventNumber);
 
     // information about noisy clusters used in home-made tracking
     int noisy_det[1000];
@@ -353,7 +353,7 @@ SimpleTrackingClean::SimpleTrackingClean( const edm::ParameterSet& iConfig ) : t
     TFileDirectory sub1 = fs->mkdir(  "run100000" ); // This does not make sense yet
 
     cluster3DTree = sub1.make<TTree>("cluster3DTree", "3D Cluster Tree");
-    TrackTree = sub1.make<TTree>("TrackTree", "parameters of reco tracks");
+    TrackTree = sub1.make<TTree>("trackTree", "parameters of reco tracks");
     residualsTree = sub1.make<TTree>("residualsTree","Tree with residuals after tracking");
 
     TFileDirectory sub2 = sub1.mkdir( "dqmPlots" ) ;
@@ -953,8 +953,6 @@ void SimpleTrackingClean::analyze( const edm::Event& iEvent, const edm::EventSet
     if (iclu_count>=4) DQM_NumbOfSeeds_4cl_per_Event-> Fill(theTeleTrackCollection.size()) ;
     int icount_trk=0;
 
-    double biasedResiX=0, biasedResiY=0;
-
     // loop over the tracks
     for(unsigned int itrack = 0; itrack< theTeleTrackCollection.size(); itrack++) {
 
@@ -1045,9 +1043,6 @@ void SimpleTrackingClean::analyze( const edm::Event& iEvent, const edm::EventSet
                 DQM_TrackPull2_Y[modulesID[iHit]]->Fill(lptemp.Y() - theLP[iHit].Y());
                 DQM_Chi2[modulesID[iHit]]->Fill(theTeleTrackCollection[itrack].getChi2());
 
-                biasedResiX=lptemp.X() - theLP[iHit].X();
-                biasedResiY=lptemp.Y() - theLP[iHit].Y();
-
                 if (-0.6 < lptemp.X() && lptemp.X() < 0.2 && -1.1 < lptemp.Y() && lptemp.Y() < -0.3) {
                     // test central position of the beam
                     DQM_TrackPull3_X[modulesID[iHit]]->Fill(lptemp.X() - theLP[iHit].X());
@@ -1124,9 +1119,9 @@ void SimpleTrackingClean::analyze( const edm::Event& iEvent, const edm::EventSet
     // compute the residuals without including the cluster in the track GP list.
     for (unsigned int il1=0; il1<8; il1++) {
         int idetR = LayersDefinition[il1].first;
-        ComputeResiduals(idetR, myEvId.event(), biasedResiX, biasedResiY);
+        ComputeResiduals(idetR, myEvId.event());
         int idetL = LayersDefinition[il1].second;
-        ComputeResiduals(idetL, myEvId.event(), biasedResiX, biasedResiY);
+        ComputeResiduals(idetL, myEvId.event());
     }
 
     DQM_NumbOfTracks_per_Event->Fill(icount_trk);
@@ -1366,18 +1361,13 @@ void SimpleTrackingClean::doSeeding(edm::Handle<edmNew::DetSetVector<SiPixelClus
                 edmNew::DetSet<SiPixelCluster>::const_iterator begin2=DSViter2->begin();
                 edmNew::DetSet<SiPixelCluster>::const_iterator end2  =DSViter2->end();
 
-
-
                 for ( edmNew::DetSet<SiPixelCluster>::const_iterator itCluster2=begin2; itCluster2!=end2; ++itCluster2 ) {
-
 
                     const PixelGeomDetUnit *pixdet2 = (const PixelGeomDetUnit*) tkgeom->idToDetUnit(detid2);
                     LocalPoint lp2(-9999., -9999., -9999.);
 
                     PixelClusterParameterEstimator::ReturnType params2 = cpe.getParameters(*itCluster2,*pixdet2);
                     lp2 = std::get<0>(params2);
-
-
 
                     const Surface& surface2 = tracker->idToDet(detid2)->surface();
                     GlobalPoint gp2 = surface2.toGlobal(lp2);
@@ -1403,11 +1393,8 @@ void SimpleTrackingClean::doSeeding(edm::Handle<edmNew::DetSetVector<SiPixelClus
 
 
                     ApplyAlignment(int(detid2),x2,y2);
-                    /*
-                              ApplyXmove(int(detid2),x2,y2);
-                    */
-
-
+                    //ApplyXmove(int(detid2),x2,y2);
+                    
                     //std::cout << "detid  " << int(detid)  << "  x  " << x << " y " << y << " z " << z << std::endl;
                     //std::cout << "detid2 " << int(detid2) << " x2 " << x2 << " y2 " << y2 << " z2 "<< z2 << std::endl;
 
@@ -1638,9 +1625,8 @@ void SimpleTrackingClean::doPatternReco(edm::Handle<edmNew::DetSetVector<SiPixel
 
 
                     ApplyAlignment(int(detid),x3,y3);
-                    /*
-                              ApplyXmove(int(detid),x3,y3);
-                    */
+                    //ApplyXmove(int(detid),x3,y3);
+
                     TVector3 clust(x3,   y3,  z3);
                     double xlocclust3=lp.x();
                     if (x3-0.03>50-1.1*(y3+0.03)/5.6 && x3+0.03<51.6-1.1*(y3-0.03)/5.6) { // some margin in case of misalignment
@@ -1753,6 +1739,131 @@ void SimpleTrackingClean::doPatternReco(edm::Handle<edmNew::DetSetVector<SiPixel
 // from the track extrapolation
 //*************************************************************
 
+void SimpleTrackingClean::ComputeResiduals(int detId_to_study, int eventNumber) {
+// goal of this function: compute the residual for a point after having removed it from the track extrapolation
+// for the purpose of the alignment, also store the biased residual in the root file
+
+    // create a new track without the point from detId_to_study included
+    for(unsigned int itrack = 0; itrack< theTeleTrackCollection.size(); itrack++) {
+        std::vector<int > modulesID = theTeleTrackCollection[itrack].getModDetId();
+        std::vector<TVector3 > theGP = theTeleTrackCollection[itrack].getGlobalPoints();
+        std::vector<TVector3 > theLP = theTeleTrackCollection[itrack].getPseudoLocalPoints();
+        std::vector<double > plane_paramA = theTeleTrackCollection[itrack].getAssPlaneA();
+        std::vector<double > plane_paramB = theTeleTrackCollection[itrack].getAssPlaneB();
+        std::vector<double > plane_paramC = theTeleTrackCollection[itrack].getAssPlaneC();
+        std::vector<double > plane_paramD = theTeleTrackCollection[itrack].getAssPlaneD();
+        std::vector<double > plane_x0 = theTeleTrackCollection[itrack].getAssPlaneX0();
+        std::vector<double > plane_y0 = theTeleTrackCollection[itrack].getAssPlaneY0();
+        std::vector<double > plane_z0 = theTeleTrackCollection[itrack].getAssPlaneZ0();
+        std::vector<double > plane_th = theTeleTrackCollection[itrack].getAssPlaneTheta();
+        std::vector<double > plane_ph = theTeleTrackCollection[itrack].getAssPlanePhi();
+        std::vector<SiPixelCluster> clu_list = theTeleTrackCollection[itrack].getclusterList();
+        std::vector<TVector3> glob_pos = theTeleTrackCollection[itrack].getGlobalPoints();
+        std::vector<TVector3> glob_er = theTeleTrackCollection[itrack].getGlobalPointsErr();
+        std::vector<TVector3> pseudo_pos = theTeleTrackCollection[itrack].getPseudoLocalPoints();
+        std::vector<TVector3> pseudo_er = theTeleTrackCollection[itrack].getPseudoLocalPointsErr();
+        TVector3 theGP_to_study;
+        TVector3 theLP_to_study;
+        TelescopeTracks theModTeleTrack;
+        bool found_cluster_to_study=false;
+        int counter_theModTeleTrack=0;
+        double planeq0[4];
+        double parFitbiased[6] = {theTeleTrackCollection[itrack].getParameter(0), theTeleTrackCollection[itrack].getParameter(1), theTeleTrackCollection[itrack].getParameter(2), theTeleTrackCollection[itrack].getParameter(3), theTeleTrackCollection[itrack].getParameter(4), theTeleTrackCollection[itrack].getParameter(5)};
+        for(unsigned int iHit=0; iHit < modulesID.size(); iHit++) {
+            if (detId_to_study==modulesID[iHit]) {
+                // the module to study
+                theGP_to_study=theGP[iHit];
+                theLP_to_study=theLP[iHit];
+                planeq0[0]= plane_paramA[iHit];
+                planeq0[1]= plane_paramB[iHit];
+                planeq0[2]= plane_paramC[iHit];
+                planeq0[3]= plane_paramD[iHit];
+                found_cluster_to_study=true;
+
+            }
+            else {
+                // to be included in the theModTeleTrackCollection
+                theModTeleTrack.addGlobalPoint(glob_pos[iHit]);
+                theModTeleTrack.addGlobalPointErr(glob_er[iHit]);
+                theModTeleTrack.addCluster(clu_list[iHit]);
+                theModTeleTrack.addModDetId(modulesID[iHit]);
+                theModTeleTrack.addPseudoLocalPoint(pseudo_pos[iHit]);
+                theModTeleTrack.addPseudoLocalPointErr(pseudo_er[iHit]);
+                theModTeleTrack.addAssPlaneA(plane_paramA[iHit]);
+                theModTeleTrack.addAssPlaneB(plane_paramB[iHit]);
+                theModTeleTrack.addAssPlaneC(plane_paramC[iHit]);
+                theModTeleTrack.addAssPlaneD(plane_paramD[iHit]);
+                theModTeleTrack.addAssPlaneX0(plane_x0[iHit]);
+                theModTeleTrack.addAssPlaneY0(plane_y0[iHit]);
+                theModTeleTrack.addAssPlaneZ0(plane_z0[iHit]);
+                theModTeleTrack.addAssPlaneTheta(plane_th[iHit]);
+                theModTeleTrack.addAssPlanePhi(plane_ph[iHit]);
+                counter_theModTeleTrack++;
+            }
+        }
+        if (!found_cluster_to_study) continue;
+        if (counter_theModTeleTrack<3) continue;
+
+        int ilayernumber=-1;
+        bool isleft=false;
+        bool isright=false;
+        for (int il1=0; il1<8; il1++) {
+            if (detId_to_study == LayersDefinition[il1].first)  {
+                ilayernumber=il1;
+                isright=true;
+            }
+            else if (detId_to_study == LayersDefinition[il1].second) {
+                ilayernumber=il1;
+                isleft=true;
+            }
+        }
+
+        // biased residual
+        double xbiased, ybiased, zbiased;
+        theTeleTrackCollection[itrack].intersection(planeq0, parFitbiased, xbiased, ybiased, zbiased);
+        TVector3 gpbiased(xbiased, ybiased, zbiased);
+        TVector3 lpbiased;
+        if (isright) lpbiased= theSimpleLayersR[ilayernumber].getLocalPointPosition(gpbiased);
+        else if (isleft) lpbiased= theSimpleLayersL[ilayernumber].getLocalPointPosition(gpbiased);
+
+        // fit of the modified track
+        theModTeleTrack.fitTrack();
+        // compute of the unbiased residual for theGP_to_study
+        double xtemp, ytemp, ztemp;
+        double parFit[6] = {theModTeleTrack.getParameter(0), theModTeleTrack.getParameter(1), theModTeleTrack.getParameter(2), theModTeleTrack.getParameter(3), theModTeleTrack.getParameter(4), theModTeleTrack.getParameter(5)};
+        theModTeleTrack.intersection(planeq0, parFit, xtemp, ytemp, ztemp);
+        TVector3 gptemp(xtemp, ytemp, ztemp);
+
+        DQM2_Chi2[detId_to_study]->Fill(theModTeleTrack.getChi2());
+        // xtemp = global coordinates
+        // --> transformation into LP
+        TVector3 lptemp;
+        if (isright) lptemp= theSimpleLayersR[ilayernumber].getLocalPointPosition(gptemp);
+        else if (isleft) lptemp= theSimpleLayersL[ilayernumber].getLocalPointPosition(gptemp);
+
+        // store the info
+        DQM2_TrackPull_X[detId_to_study]->Fill(lptemp.X() - theLP_to_study.X());
+        DQM2_TrackPull_Y[detId_to_study]->Fill(lptemp.Y() - theLP_to_study.Y());
+
+        // Fill the tree
+        tree_eventN = eventNumber;
+        tree_detId2 = detId_to_study;
+        tree_biasedResidualX = lpbiased.X() - theLP_to_study.X() ;
+        tree_biasedResidualY = lpbiased.Y() - theLP_to_study.Y() ;
+        tree_unbiasedResidualX = lptemp.X() - theLP_to_study.X() ;
+        tree_unbiasedResidualY = lptemp.Y() - theLP_to_study.Y() ;
+        residualsTree->Fill();
+
+        double Sum2study= (lptemp.X() - theLP_to_study.X())*(lptemp.X() - theLP_to_study.X())
+                          + (lptemp.Y() - theLP_to_study.Y())*(lptemp.Y() - theLP_to_study.Y());
+        DQM2_Sum2[detId_to_study]->Fill(Sum2study);
+    }
+}
+
+//define this as a plug-in
+DEFINE_FWK_MODULE ( SimpleTrackingClean ) ;
+
+/*
 void SimpleTrackingClean::ComputeResiduals(int detId_to_study, int eventNumber, double brX, double brY) {
 // goal of this function: compute the residual for a point after having removed it from the track extrapolation
 
@@ -1839,9 +1950,11 @@ void SimpleTrackingClean::ComputeResiduals(int detId_to_study, int eventNumber, 
         TVector3 lptemp;
         if (isright) lptemp= theSimpleLayersR[ilayernumber].getLocalPointPosition(gptemp);
         else if (isleft) lptemp= theSimpleLayersL[ilayernumber].getLocalPointPosition(gptemp);
+
         // store the info
         DQM2_TrackPull_X[detId_to_study]->Fill(lptemp.X() - theLP_to_study.X());
         DQM2_TrackPull_Y[detId_to_study]->Fill(lptemp.Y() - theLP_to_study.Y());
+
         // Fill the tree
         tree_eventN = eventNumber;
         tree_detId2 = detId_to_study;
@@ -1860,3 +1973,4 @@ void SimpleTrackingClean::ComputeResiduals(int detId_to_study, int eventNumber, 
 
 //define this as a plug-in
 DEFINE_FWK_MODULE ( SimpleTrackingClean ) ;
+*/
