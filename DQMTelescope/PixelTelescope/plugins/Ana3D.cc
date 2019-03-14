@@ -235,9 +235,9 @@ Ana3D::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   const PixelClusterParameterEstimator &cpe(*cpEstimator); 
   
   // Get hand-made reco beam profile from EventSetup: this works
-  edm::ESHandle< BeamSpotObjects > beamhandle;
-	iSetup.get<BeamSpotObjectsRcd>().get(beamhandle);
-	const BeamSpotObjects* mybeamspot = beamhandle.product();
+  //edm::ESHandle< BeamSpotObjects > beamhandle;
+  //	iSetup.get<BeamSpotObjectsRcd>().get(beamhandle);
+  //	const BeamSpotObjects* mybeamspot = beamhandle.product();
 
   // Get hand-made reco beam profile from Event: this doesnt work
   //reco::BeamSpot beamSpot;
@@ -256,15 +256,7 @@ Ana3D::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	edm::Handle<reco::TrackCollection> trackCollection;
   iEvent.getByToken(tracksToken_,trackCollection  );
   
-  
-  
-  
    std::cout << "\nEvent ID = "<< iEvent.id() << std::endl ;
-
- 
- 
-  
- 
 
   //---------------------------------
   // Analyze beam profile
@@ -329,54 +321,39 @@ else { std::cout << "No beam spot available from EventSetup \n" << std::endl; }
       GlobalPoint gp = surface.toGlobal(lp);
 
       double x=0, y=0, z=0;
-        x = gp.x();
-        y = gp.y();
-	      z = gp.z();
+      x = gp.x();
+      y = gp.y();
+      z = gp.z();
 	
-        // Let's fill in the tree
-        tree_runNumber = myEvId.run();
-        tree_lumiSection = myEvId.luminosityBlock();
-        tree_event = myEvId.event();
-        tree_detId = detId;
-        tree_cluster = iCluster++;	
-        tree_x = x;
-        tree_y = y;
-	      tree_z = z;
-        tree_modName = detId_to_moduleName[detId];
-        cluster3DTree->Fill();
-      } //end for clusters of the first detector
-    } //end for first detectors
+      // Let's fill in the tree
+      tree_runNumber = myEvId.run();
+      tree_lumiSection = myEvId.luminosityBlock();
+      tree_event = myEvId.event();
+      tree_detId = detId;
+      tree_cluster = iCluster++;	
+      tree_x = x;
+      tree_y = y;
+      tree_z = z;
+      tree_modName = detId_to_moduleName[detId];
+      cluster3DTree->Fill();
+    } //end for clusters of the first detector
+  } //end for first detectors
     
- 
- 
- 
- 
   //---------------------------------
   // loop on rec hits
   //--------------------------------- 
   std::cout << "pixelhits.size() = " << pixelhits.product()->size() << std::endl;
  
-   
-   
   //---------------------------------
   // loop on seeds
   //---------------------------------    
    std::cout << "trajectorySeeds.size() = " << trajectorySeeds.product()->size() << std::endl; 
-   
-   
-   
-   
    
   //---------------------------------
   // loop on tracks candidates
   //---------------------------------    
    std::cout << "trackCandidates.size() = " << trackCandidates.product()->size() << std::endl;
     
-    
-    
-    
-    
-
   //---------------------------------
   // loop on reconstructed tracks
   //---------------------------------    
@@ -413,16 +390,8 @@ else { std::cout << "No beam spot available from EventSetup \n" << std::endl; }
 	}else{
 	  std::cout <<"\t\t Invalid Hit On "<<(*it)->geographicalId().rawId()<<std::endl;
 	}
-      }
-      
-    }
-    
-    
-    
-    
-    
-    
-    
+      }    
+    }   
 }
 
 

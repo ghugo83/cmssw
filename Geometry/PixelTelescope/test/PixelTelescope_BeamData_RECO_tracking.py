@@ -148,7 +148,7 @@ process.TFileService = cms.Service("TFileService",
       closeFileFast = cms.untracked.bool(True)
 )
 
-process.DQMData = cms.EDAnalyzer('SimpleTracking', 
+process.DQMData = cms.EDAnalyzer('SimpleTrackingClean', 
  	tracks = cms.untracked.InputTag('ctfWithMaterialTracks'),
 	PixelDigisLabel = cms.InputTag("siPixelDigis"),
 	PixelClustersLabel = cms.InputTag("siPixelClusters"),
