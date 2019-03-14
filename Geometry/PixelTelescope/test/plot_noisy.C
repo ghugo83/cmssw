@@ -1,8 +1,6 @@
 {
 
-
   FILE * fout1 = fopen("noisy_list.txt","w");
-
 
   TChain *super = new TChain("DQMData/run100000/cluster3DTree");
   super->Add("PixelTelescope_BeamData_DQM_caro.root");
@@ -23,11 +21,13 @@
   int nbinx=160;
   int nbiny=420;
   std::vector<TH2F*> hdet;
+
   for (int i=0; i<16; i++) {
     TString name = Form("hdet%d",i);
     TH2F *hdettemp= new TH2F(name,name,nbinx, xmin,xmax,nbiny, ymin,ymax);
     hdet.push_back(hdettemp);
   }
+
   super->Draw("ybary:xbary >>hdet0 ","detId==344987652");
   super->Draw("ybary:xbary >>hdet1 ","detId==344986628");
   super->Draw("ybary:xbary >>hdet2 ","detId==344725508");
@@ -60,46 +60,46 @@
   for (int i=0; i<16; i++) {
 //   can[i]->cd();
 //   hdet[i]->Draw("colz");
-   float sum=0;
-   float nbinpos=0;
-   for (int ix=0;ix<nbinx+1;ix++) {
-    for (int iy=0;iy<nbiny+1;iy++) {
-      sum+=hdet[i]->GetBinContent(ix+1,iy+1);
-      if (hdet[i]->GetBinContent(ix+1,iy+1)>0) nbinpos++;
-    }
-   }
-   sum/=nbinpos;
-   cout << " hdet " << i << " mean entry per bin " << sum << endl;
-   for (int ix=0;ix<nbinx+1;ix++) {
-    for (int iy=0;iy<nbiny+1;iy++) {
-      float bincont=hdet[i]->GetBinContent(ix+1,iy+1);
-      if (bincont>10*sum) {
-       cout << " hdet " << i << " x " << ix << " y "<< iy << " bincont " << bincont << endl; 
-       int detval=0;
-       if (i==0) detval=344987652;
-       if (i==1) detval=344986628;
-       if (i==2) detval=344725508;
-       if (i==3) detval=344724484;
-       if (i==4) detval=344463364;
-       if (i==5) detval=344462340;
-       if (i==6) detval=344201220;
-       if (i==7) detval=344200196;
-       if (i==8) detval=352588804;
-       if (i==9) detval=352589828;
-       if (i==10) detval=352850948;
-       if (i==11) detval=352851972;
-       if (i==12) detval=353113092;
-       if (i==13) detval=353114116;
-       if (i==14) detval=353375236;
-       if (i==15) detval=353376260;
-       fprintf(fout1,"%d       %d       %d\n",detval,ix,iy);
+    float sum=0;
+    float nbinpos=0;
+    for (int ix=0;ix<nbinx+1;ix++) {
+      for (int iy=0;iy<nbiny+1;iy++) {
+        sum+=hdet[i]->GetBinContent(ix+1,iy+1);
+        if (hdet[i]->GetBinContent(ix+1,iy+1)>0) nbinpos++;
       }
-    } 
-   }
+    }
+    sum/=nbinpos;
+    cout << " hdet " << i << " mean entry per bin " << sum << endl;
+    for (int ix=0;ix<nbinx+1;ix++) {
+      for (int iy=0;iy<nbiny+1;iy++) {
+        float bincont=hdet[i]->GetBinContent(ix+1,iy+1);
+        if (bincont>10*sum) {
+        cout << " hdet " << i << " x " << ix << " y "<< iy << " bincont " << bincont << endl; 
+        int detval=0;
+        if (i==0) detval=344987652;
+        if (i==1) detval=344986628;
+        if (i==2) detval=344725508;
+        if (i==3) detval=344724484;
+        if (i==4) detval=344463364;
+        if (i==5) detval=344462340;
+        if (i==6) detval=344201220;
+        if (i==7) detval=344200196;
+        if (i==8) detval=352588804;
+        if (i==9) detval=352589828;
+        if (i==10) detval=352850948;
+        if (i==11) detval=352851972;
+        if (i==12) detval=353113092;
+        if (i==13) detval=353114116;
+        if (i==14) detval=353375236;
+        if (i==15) detval=353376260;
+        fprintf(fout1,"%d       %d       %d\n",detval,ix,iy);
+        }
+      } 
+    }
   }
-   fclose(fout1);
-//   hdet[8]->Draw("colz");
+  fclose(fout1);
 
+//   hdet[8]->Draw("colz");
 
 /*
   c1->SaveAs("c1.pdf");
@@ -111,6 +111,5 @@
   c7->SaveAs("c7.pdf");
   c8->SaveAs("c8.pdf");
 */
-
 
 }

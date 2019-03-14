@@ -377,29 +377,30 @@ AnaStefano::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
  
   //TCanvas* aCanvas = new TCanvas("eventDisplay", "Event Display", 2000, 500); 
   for( edm::DetSetVector<PixelDigi>::const_iterator DSViter=pixeldigis->begin(); DSViter!=pixeldigis->end(); DSViter++   ) {
-      auto id = DetId(DSViter->detId());
-        auto nDigisHere = DSViter->size();
-        if (nDigisHere>15) {
-          int tree_runNumber = myEvId.run();
-          int tree_lumiSection = myEvId.luminosityBlock();
-          int tree_event = myEvId.event();
-          int tree_id = id;
-          if ((tree_lumiSection==9)&&(tree_event==14965)) {
-	  //DQM_DigiPosition[ modulesNbr_to_idx[int(id.rawId())]]->Reset();
-            edm::DetSet<PixelDigi>::const_iterator begin=DSViter->begin();
-            edm::DetSet<PixelDigi>::const_iterator end  =DSViter->end();
-            for(edm::DetSet<PixelDigi>::const_iterator iter=begin;iter!=end;++iter) {
-              float x = iter->column();                // x position
-              float y = iter->row();                   // y position
-              float adc = iter->adc();                 // ~ energy release
-	      //DQM_DigiPosition[ modulesNbr_to_idx[int(id.rawId())]]->Fill(x, y, adc);
-	      std::cout << "Nice event hit x=" << x << " y=" <<y<<" adc=" <<adc <<std::endl;
-            }
-          //aCanvas->cd();
-          //DQM_DigiPosition[ modulesNbr_to_idx[int(id.rawId())]]->Draw("colz");
+      numberofDigi_total++;
+      //auto id = DetId(DSViter->detId());
+      auto nDigisHere = DSViter->size();
+      if (nDigisHere>15) {
+        //int tree_runNumber = myEvId.run();
+        int tree_lumiSection = myEvId.luminosityBlock();
+        int tree_event = myEvId.event();
+        //int tree_id = id;
+        if ((tree_lumiSection==9)&&(tree_event==14965)) {
+	//DQM_DigiPosition[ modulesNbr_to_idx[int(id.rawId())]]->Reset();
+          edm::DetSet<PixelDigi>::const_iterator begin=DSViter->begin();
+          edm::DetSet<PixelDigi>::const_iterator end  =DSViter->end();
+          for(edm::DetSet<PixelDigi>::const_iterator iter=begin;iter!=end;++iter) {
+            float x = iter->column();                // x position
+            float y = iter->row();                   // y position
+            float adc = iter->adc();                 // ~ energy release
+	    //DQM_DigiPosition[ modulesNbr_to_idx[int(id.rawId())]]->Fill(x, y, adc);
+	    std::cout << "Nice event hit x=" << x << " y=" <<y<<" adc=" <<adc <<std::endl;
           }
-          //aCanvas->SaveAs(Form("event_bigCluster_Run%d_LS%d_Ev%d_detId%d.png", tree_runNumber, tree_lumiSection, tree_event, tree_id));
+        //aCanvas->cd();
+        //DQM_DigiPosition[ modulesNbr_to_idx[int(id.rawId())]]->Draw("colz");
         }
+        //aCanvas->SaveAs(Form("event_bigCluster_Run%d_LS%d_Ev%d_detId%d.png", tree_runNumber, tree_lumiSection, tree_event, tree_id));
+      }
    }
   //delete aCanvas;
   
