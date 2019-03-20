@@ -9,9 +9,22 @@
     <!-- TELESCOPE ARMS AND PLANES: -->
     <!-- ARM -->
     <Constant name="InterArmDeltaZ" value="496.0*mm"/>  <!-- Total distance in Z between the centres of the 2 arms --> <!-- Was 350 mm -->
+    <Constant name="MinusZArmCenterZ" value="-[tuneParameters:InterArmDeltaZ]/2.0"/>
+    <Constant name="PlusZArmCenterZ" value="[tuneParameters:InterArmDeltaZ]/2.0"/>
 
-    <!-- PLANE -->
-    <Constant name="InterPlaneDeltaZ" value="50.0*mm"/> <!-- Total distance in Z between the centres of 2 consecutive planes -->
+    <!-- PLANE -->    
+    <Constant name="Plane1CenterZ" value="-75.0*mm"/>
+    <Constant name="Plane2CenterZ" value="-25.0*mm"/>
+    <Constant name="Plane3CenterZ" value="25.0*mm"/>
+    <Constant name="Plane4CenterZ" value="75.0*mm"/>
+
+    <Constant name="Plane5CenterZ" value="-75.0*mm"/>
+    <Constant name="Plane6CenterZ" value="-25.0*mm"/>
+    <Constant name="Plane7CenterZ" value="25.0*mm"/>
+    <Constant name="Plane8CenterZ" value="75.0*mm"/>
+
+ 
+    <!--<Constant name="InterPlaneDeltaZ" value="50.0*mm"/> --> <!-- Total distance in Z between the centres of 2 consecutive planes -->
     <Constant name="PlaneTiltAngle" value="30.0*deg"/>  <!-- Rotation around CMS_X. Angle is counted in the counter-trigonometric sense. Angle = 0 on (XY) plane. -->
     <Constant name="PlaneSkewAngle" value="20.0*deg"/>  <!-- Rotation around CMS_Y. Angle is counted in the trigonometric sense. Angle = 0 on (XY) plane. -->
     <!-- NB: "InterPlaneDeltaZ" and "PlaneSkewAngle" must be in [0° 90°]. -->

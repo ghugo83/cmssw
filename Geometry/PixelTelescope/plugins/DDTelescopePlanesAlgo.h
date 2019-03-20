@@ -31,10 +31,10 @@ public:
 
 private:
 
-  int           n;              // Number of telescope planes.
+  int           childIndex;     // Number of telescope planes.
   double        tiltAngle;      // Rotation around CMS_X. Angle is counted in the counter-trigonometric sense. Angle = 0 on (XY) plane. Must be in [0° 90°].
   double        skewAngle;      // Rotation around CMS_Y. Angle is counted in the trigonometric sense. Angle = 0 on (XY) plane. Must be in [0° 90°].
-  double        deltaZ;         // Distance in Z between the centers of 2 consecutive planes.
+  std::vector<double> planeTranslation;
 
   std::string   idNameSpace;    // Namespace of this and ALL sub-parts.
   std::string   childName;      // Child name (ie, telescope plane name).
