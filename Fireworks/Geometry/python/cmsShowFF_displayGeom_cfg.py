@@ -12,7 +12,9 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("FFWDISPLAY")
 
 
-process.load("Geometry.CMSCommonData.cmsIdealGeometryXML_cfi")
+#process.load("Geometry.CMSCommonData.cmsIdealGeometryXML_cfi")
+#process.load("Geometry.CMSCommonData.cmsExtendedGeometry2018ZeroMaterialXML_cfi")
+process.load("Geometry.CMSCommonData.cmsExtendedGeometry2023D21XML_cfi")
 
 process.add_(cms.ESProducer("TGeoMgrFromDdd",
         verbose = cms.untracked.bool(False),

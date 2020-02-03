@@ -5,7 +5,7 @@ process = cms.Process("G4PrintGeometry")
 #process.load('Configuration.Geometry.GeometryIdeal_cff')
 #process.load('Configuration.Geometry.GeometryExtended_cff')
 #process.load('Configuration.Geometry.GeometryExtended2015_cff')
-process.load('Configuration.Geometry.GeometryExtended2017_cff')
+process.load('Configuration.Geometry.GeometryExtended2023D21_cff')
 #process.load('Configuration.Geometry.GeometryExtended2019_cff')
 #process.load('Configuration.Geometry.GeometryExtended2023D12_cff')
 #process.load('Configuration.Geometry.GeometryExtended2023D13_cff')
@@ -24,7 +24,7 @@ process.g4SimHits.G4CheckOverlap.Resolution = cms.untracked.int32(10000)
 # tells if NodeName is G4Region or G4PhysicalVolume
 process.g4SimHits.G4CheckOverlap.RegionFlag = cms.untracked.bool(False)
 # list of names
-process.g4SimHits.G4CheckOverlap.NodeNames  = cms.vstring('CMSE')
+process.g4SimHits.G4CheckOverlap.NodeNames  = cms.vstring('Tracker')
 # enable dump gdml file 
 process.g4SimHits.G4CheckOverlap.gdmlFlag   = cms.untracked.bool(False)
 # if defined a G4PhysicsVolume info is printed

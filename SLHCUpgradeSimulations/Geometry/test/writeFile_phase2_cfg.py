@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("ICALIB")
 process.load("Configuration.StandardSequences.Services_cff")
-process.load('Configuration.Geometry.GeometryExtended2023D17Reco_cff')
+process.load('Configuration.Geometry.GeometryExtended2023D21Reco_cff')
 
 process.trackerGeometry.applyAlignment = cms.bool(False)
 
@@ -29,7 +29,7 @@ process.prodstrip = cms.EDAnalyzer("SiStripDetInfoFileWriter",
 )
 
 process.prodpixel = cms.EDAnalyzer("SiPixelDetInfoFileWriter",
-    FilePath = cms.untracked.string('PixelSkimmedGeometry_GeometryExtended2023Tilted.txt'),
+    FilePath = cms.untracked.string('PixelSkimmedGeometry_T17.txt'),
     WriteROCInfo = cms.untracked.bool(True)
 )
 
