@@ -3548,6 +3548,10 @@ note: see OT616_IT615_2019_11_28.cfg for full config files
 <rSolid name="pixel:Layer4"/>
 <rMaterial name="materials:Air"/>
 </LogicalPart>
+<LogicalPart name="DiscA" category="unspecified">
+<rSolid name="pixel:DiscA"/>
+<rMaterial name="materials:Air"/>
+</LogicalPart>
 <LogicalPart name="EModule1Disc1" category="unspecified">
 <rSolid name="pixel:EModule1Disc1"/>
 <rMaterial name="materials:Air"/>
@@ -6828,6 +6832,7 @@ note: see OT616_IT615_2019_11_28.cfg for full config files
 <Tubs name="Ring3Disc6" rMin="82.69*mm" rMax="128.417*mm" dz="3.335*mm" startPhi="0*deg" deltaPhi="360*deg"/>
 <Tubs name="Ring4Disc6" rMin="116.03*mm" rMax="161.498*mm" dz="3.335*mm" startPhi="0*deg" deltaPhi="360*deg"/>
 <Tubs name="Disc6" rMin="30.48*mm" rMax="161.508*mm" dz="9.595*mm" startPhi="0*deg" deltaPhi="360*deg"/>
+<Tubs name="DiscA" rMin="30.48*mm" rMax="161.508*mm" dz="9.595*mm" startPhi="0*deg" deltaPhi="360*deg"/>
 <Box name="EModule1Disc7" dx="9.4*mm" dy="22.225*mm" dz="0.575*mm"/>
 <Box name="EModule1Disc7InnerPixelwafer" dx="8.4*mm" dy="21.725*mm" dz="0.075*mm"/>
 <Box name="EModule1Disc7InnerPixelActive" dx="8.4*mm" dy="21.725*mm" dz="0.075*mm"/>
@@ -10346,6 +10351,32 @@ note: see OT616_IT615_2019_11_28.cfg for full config files
 <Translation x="0*mm" y="0*mm" z="1459*mm"/>
 </PosPart>
 <PosPart copyNumber="1">
+<rParent name="pixel:DiscA"/>
+<rChild name="pixel:Ring1Disc1"/>
+<Translation x="0*mm" y="0*mm" z="6.25*mm"/>
+</PosPart>
+<PosPart copyNumber="1">
+<rParent name="pixel:DiscA"/>
+<rChild name="pixel:Ring2Disc1"/>
+<Translation x="0*mm" y="0*mm" z="-6.25*mm"/>
+</PosPart>
+<PosPart copyNumber="1">
+<rParent name="pixel:DiscA"/>
+<rChild name="pixel:Ring3Disc1"/>
+<Translation x="0*mm" y="0*mm" z="6.25*mm"/>
+</PosPart>
+<PosPart copyNumber="1">
+<rParent name="pixel:DiscA"/>
+<rChild name="pixel:Ring4Disc1"/>
+<Translation x="0*mm" y="0*mm" z="-6.25*mm"/>
+</PosPart>
+<PosPart copyNumber="2">
+<rParent name="pixfwd:Phase2PixelEndcap"/>
+<rChild name="pixel:DiscA"/>
+<rRotation name="pixel:Y180"/>
+<Translation x="0*mm" y="0*mm" z="709*mm"/>
+</PosPart>
+<PosPart copyNumber="1">
 <rParent name="pixel:EModule1Disc10"/>
 <rChild name="pixel:EModule1Disc10InnerPixelwafer"/>
 </PosPart>
@@ -12296,10 +12327,10 @@ note: see OT616_IT615_2019_11_28.cfg for full config files
 <Algorithm name="track:DDTrackerRingAlgo">
 <rParent name="pixel:Ring1Disc1"/>
 <String name="ChildName" value="pixel:EModule1Disc1"/>
-<Numeric name="N" value="10"/>
+<Numeric name="N" value="5"/>
 <Numeric name="StartCopyNo" value="1"/>
 <Numeric name="IncrCopyNo" value="2"/>
-<Numeric name="RangeAngle" value="360*deg"/>
+<Numeric name="RangeAngle" value="144*deg"/>
 <Numeric name="StartAngle" value="99*deg"/>
 <Numeric name="Radius" value="52.725"/>
 <Vector name="Center" type="numeric" nEntries="3">0,0,-2.75</Vector>
@@ -12310,10 +12341,10 @@ note: see OT616_IT615_2019_11_28.cfg for full config files
 <Algorithm name="track:DDTrackerRingAlgo">
 <rParent name="pixel:Ring1Disc1"/>
 <String name="ChildName" value="pixel:EModule1Disc1"/>
-<Numeric name="N" value="10"/>
+<Numeric name="N" value="5"/>
 <Numeric name="StartCopyNo" value="2"/>
 <Numeric name="IncrCopyNo" value="2"/>
-<Numeric name="RangeAngle" value="360*deg"/>
+<Numeric name="RangeAngle" value="144*deg"/>
 <Numeric name="StartAngle" value="117*deg"/>
 <Numeric name="Radius" value="52.725"/>
 <Vector name="Center" type="numeric" nEntries="3">0,0,2.75</Vector>
@@ -12324,10 +12355,10 @@ note: see OT616_IT615_2019_11_28.cfg for full config files
 <Algorithm name="track:DDTrackerRingAlgo">
 <rParent name="pixel:Ring2Disc1"/>
 <String name="ChildName" value="pixel:EModule2Disc1"/>
-<Numeric name="N" value="16"/>
+<Numeric name="N" value="8"/>
 <Numeric name="StartCopyNo" value="1"/>
 <Numeric name="IncrCopyNo" value="2"/>
-<Numeric name="RangeAngle" value="360*deg"/>
+<Numeric name="RangeAngle" value="157.5*deg"/>
 <Numeric name="StartAngle" value="95.625*deg"/>
 <Numeric name="Radius" value="70.725"/>
 <Vector name="Center" type="numeric" nEntries="3">0,0,-2.75</Vector>
@@ -12338,10 +12369,10 @@ note: see OT616_IT615_2019_11_28.cfg for full config files
 <Algorithm name="track:DDTrackerRingAlgo">
 <rParent name="pixel:Ring2Disc1"/>
 <String name="ChildName" value="pixel:EModule2Disc1"/>
-<Numeric name="N" value="16"/>
+<Numeric name="N" value="8"/>
 <Numeric name="StartCopyNo" value="2"/>
 <Numeric name="IncrCopyNo" value="2"/>
-<Numeric name="RangeAngle" value="360*deg"/>
+<Numeric name="RangeAngle" value="157.5*deg"/>
 <Numeric name="StartAngle" value="106.875*deg"/>
 <Numeric name="Radius" value="70.725"/>
 <Vector name="Center" type="numeric" nEntries="3">0,0,2.75</Vector>
@@ -12352,10 +12383,10 @@ note: see OT616_IT615_2019_11_28.cfg for full config files
 <Algorithm name="track:DDTrackerRingAlgo">
 <rParent name="pixel:Ring3Disc1"/>
 <String name="ChildName" value="pixel:EModule3Disc1"/>
-<Numeric name="N" value="12"/>
+<Numeric name="N" value="6"/>
 <Numeric name="StartCopyNo" value="1"/>
 <Numeric name="IncrCopyNo" value="2"/>
-<Numeric name="RangeAngle" value="360*deg"/>
+<Numeric name="RangeAngle" value="150*deg"/>
 <Numeric name="StartAngle" value="97.5*deg"/>
 <Numeric name="Radius" value="104.925"/>
 <Vector name="Center" type="numeric" nEntries="3">0,0,-2.75</Vector>
@@ -12366,10 +12397,10 @@ note: see OT616_IT615_2019_11_28.cfg for full config files
 <Algorithm name="track:DDTrackerRingAlgo">
 <rParent name="pixel:Ring3Disc1"/>
 <String name="ChildName" value="pixel:EModule3Disc1"/>
-<Numeric name="N" value="12"/>
+<Numeric name="N" value="6"/>
 <Numeric name="StartCopyNo" value="2"/>
 <Numeric name="IncrCopyNo" value="2"/>
-<Numeric name="RangeAngle" value="360*deg"/>
+<Numeric name="RangeAngle" value="150*deg"/>
 <Numeric name="StartAngle" value="112.5*deg"/>
 <Numeric name="Radius" value="104.925"/>
 <Vector name="Center" type="numeric" nEntries="3">0,0,2.75</Vector>
@@ -12380,10 +12411,10 @@ note: see OT616_IT615_2019_11_28.cfg for full config files
 <Algorithm name="track:DDTrackerRingAlgo">
 <rParent name="pixel:Ring4Disc1"/>
 <String name="ChildName" value="pixel:EModule4Disc1"/>
-<Numeric name="N" value="16"/>
+<Numeric name="N" value="8"/>
 <Numeric name="StartCopyNo" value="1"/>
 <Numeric name="IncrCopyNo" value="2"/>
-<Numeric name="RangeAngle" value="360*deg"/>
+<Numeric name="RangeAngle" value="157.5*deg"/>
 <Numeric name="StartAngle" value="95.625*deg"/>
 <Numeric name="Radius" value="138.265"/>
 <Vector name="Center" type="numeric" nEntries="3">0,0,-2.75</Vector>
@@ -12394,10 +12425,10 @@ note: see OT616_IT615_2019_11_28.cfg for full config files
 <Algorithm name="track:DDTrackerRingAlgo">
 <rParent name="pixel:Ring4Disc1"/>
 <String name="ChildName" value="pixel:EModule4Disc1"/>
-<Numeric name="N" value="16"/>
+<Numeric name="N" value="8"/>
 <Numeric name="StartCopyNo" value="2"/>
 <Numeric name="IncrCopyNo" value="2"/>
-<Numeric name="RangeAngle" value="360*deg"/>
+<Numeric name="RangeAngle" value="157.5*deg"/>
 <Numeric name="StartAngle" value="106.875*deg"/>
 <Numeric name="Radius" value="138.265"/>
 <Vector name="Center" type="numeric" nEntries="3">0,0,2.75</Vector>

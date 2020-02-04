@@ -46,6 +46,7 @@ note: see OT616_IT615_2019_11_28.cfg for full config files
 <PartSelector path="//pixel:Disc4"/>
 <PartSelector path="//pixel:Disc5"/>
 <PartSelector path="//pixel:Disc6"/>
+<PartSelector path="//pixel:DiscA"/>
 <PartSelector path="//pixel:Disc7"/>
 <PartSelector path="//pixel:Disc8"/>
 <PartSelector path="//pixel:Disc9"/>

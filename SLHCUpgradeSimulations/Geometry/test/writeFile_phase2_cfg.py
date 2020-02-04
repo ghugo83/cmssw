@@ -29,7 +29,7 @@ process.prodstrip = cms.EDAnalyzer("SiStripDetInfoFileWriter",
 )
 
 process.prodpixel = cms.EDAnalyzer("SiPixelDetInfoFileWriter",
-    FilePath = cms.untracked.string('PixelSkimmedGeometry_T17.txt'),
+    FilePath = cms.untracked.string('PixelSkimmedGeometry_9disks.txt'),
     WriteROCInfo = cms.untracked.bool(True)
 )
 
