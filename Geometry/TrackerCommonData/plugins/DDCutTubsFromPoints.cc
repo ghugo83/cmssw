@@ -111,6 +111,18 @@ void DDCutTubsFromPoints::execute(DDCompactView& cpv) {
   double min_z = 1e9;
   double max_z = -1e9;
 
+  Section s1 = sections[0];
+  for (Section s2 : sections) {
+    if (s1.phi != s2.phi) {
+
+      // track the min/max to properly place&align later
+      if (s2.z_l < min_z)
+        min_z = s2.z_l;
+      if (s2.z_t > max_z)
+        max_z = s2.z_t;
+    }
+  }
+
   // counter of actually produced segments (excluding skipped ones)
   int segment = 0;
 
@@ -118,7 +130,7 @@ void DDCutTubsFromPoints::execute(DDCompactView& cpv) {
   //std::vector<DDSolid> segments;
   //std::vector<double> offsets;
 
-  Section s1 = sections[0];
+  //Section s1 = sections[0];
   for (Section s2 : sections) {
     if (s1.phi != s2.phi) {
       segment++;
@@ -127,12 +139,6 @@ void DDCutTubsFromPoints::execute(DDCompactView& cpv) {
 
       double phi1 = s1.phi;
       double phi2 = s2.phi;
-
-      // track the min/max to properly place&align later
-      if (s2.z_l < min_z)
-        min_z = s2.z_l;
-      if (s2.z_t > max_z)
-        max_z = s2.z_t;
 
       double P1_z_l = s1.z_l;
       double P1_z_t = s1.z_t;
@@ -202,8 +208,8 @@ void DDCutTubsFromPoints::execute(DDCompactView& cpv) {
       // solid w/o placing it.
       DDRotation rot180("pixfwdCommon:Z180");
       //double offset = -shift + (min_z + (max_z - min_z) / 2);
-      cpv.position(logicalSeg, parent(), 2*segment-1, DDTranslation(0, 0, z_pos - (min_z + (max_z - min_z) / 2) + offset), DDRotation());
-      cpv.position(logicalSeg, parent(), 2*segment, DDTranslation(0, 0, z_pos - (min_z + (max_z - min_z) / 2) + offset), rot180);
+      cpv.position(logicalSeg, parent(), 1, DDTranslation(0, 0, z_pos - (min_z + (max_z - min_z) / 2) + offset), DDRotation());
+      cpv.position(logicalSeg, parent(), 2, DDTranslation(0, 0, z_pos - (min_z + (max_z - min_z) / 2) + offset), rot180);
 
 
 
