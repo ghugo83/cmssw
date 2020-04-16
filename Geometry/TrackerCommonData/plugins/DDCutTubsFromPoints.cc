@@ -115,8 +115,8 @@ void DDCutTubsFromPoints::execute(DDCompactView& cpv) {
   int segment = 0;
 
   // the segments and their corresponding offset (absolute, as in the input)
-  std::vector<DDSolid> segments;
-  std::vector<double> offsets;
+  //std::vector<DDSolid> segments;
+  //std::vector<double> offsets;
 
   Section s1 = sections[0];
   for (Section s2 : sections) {
@@ -195,41 +195,54 @@ void DDCutTubsFromPoints::execute(DDCompactView& cpv) {
 
       DDSolid seg =
           DDSolidFactory::cuttubs(segname, dz, r_min, r_max, phi1, dphi, n_x_l, n_y_l, n_z_l, n_x_t, n_y_t, n_z_t);
-      segments.emplace_back(seg);
-      offsets.emplace_back(offset);
+
+      DDLogicalPart logicalSeg(segname, material, seg, DDEnums::support);
+
+      // This is not as generic as the name promises, but it is hard to make a
+      // solid w/o placing it.
+      DDRotation rot180("pixfwdCommon:Z180");
+      //double offset = -shift + (min_z + (max_z - min_z) / 2);
+      cpv.position(logicalSeg, parent(), 2*segment-1, DDTranslation(0, 0, z_pos - (min_z + (max_z - min_z) / 2) + offset), DDRotation());
+      cpv.position(logicalSeg, parent(), 2*segment, DDTranslation(0, 0, z_pos - (min_z + (max_z - min_z) / 2) + offset), rot180);
+
+
+
+      //segments.emplace_back(seg);
+      //offsets.emplace_back(offset);
     }
     s1 = s2;
   }
 
-  assert(segments.size() >= 2);  // less would be special cases
+  assert(segment >= 2);  // less would be special cases
 
-  DDSolid solid = segments[0];
-  // placment happens relative to the first member of the union
-  double shift = offsets[0];
+  /*
+    DDSolid solid = segments[0];
+    // placment happens relative to the first member of the union
+    double shift = offsets[0];
 
-  for (unsigned i = 1; i < segments.size() - 1; i++) {
+    for (unsigned i = 1; i < segments.size() - 1; i++) {
     // each sub-union needs a name. Well.
     DDName unionname(solidOutput.name() + "_uni_" + std::to_string(i + 1), solidOutput.ns());
     solid = DDSolidFactory::unionSolid(
-        unionname, solid, segments[i], DDTranslation(0, 0, offsets[i] - shift), DDRotation());
-  }
+    unionname, solid, segments[i], DDTranslation(0, 0, offsets[i] - shift), DDRotation());
+    }
 
-  solid = DDSolidFactory::unionSolid(solidOutput,
-                                     solid,
-                                     segments[segments.size() - 1],
-                                     DDTranslation(0, 0, offsets[segments.size() - 1] - shift),
-                                     DDRotation());
+    solid = DDSolidFactory::unionSolid(solidOutput,
+    solid,
+    segments[segments.size() - 1],
+    DDTranslation(0, 0, offsets[segments.size() - 1] - shift),
+    DDRotation());
 
-  // remove the common offset from the input, to get sth. aligned at z=0.
-  double offset = -shift + (min_z + (max_z - min_z) / 2);
+    // remove the common offset from the input, to get sth. aligned at z=0.
+    double offset = -shift + (min_z + (max_z - min_z) / 2);
 
-  DDLogicalPart logical(solidOutput, material, solid, DDEnums::support);
+    DDLogicalPart logical(solidOutput, material, solid, DDEnums::support);
 
-  // This is not as generic as the name promises, but it is hard to make a
-  // solid w/o placing it.
-  DDRotation rot180("pixfwdCommon:Z180");
-  cpv.position(logical, parent(), 1, DDTranslation(0, 0, z_pos - offset), DDRotation());
-  cpv.position(logical, parent(), 2, DDTranslation(0, 0, z_pos - offset), rot180);
+    // This is not as generic as the name promises, but it is hard to make a
+    // solid w/o placing it.
+    DDRotation rot180("pixfwdCommon:Z180");
+    cpv.position(logical, parent(), 1, DDTranslation(0, 0, z_pos - offset), DDRotation());
+    cpv.position(logical, parent(), 2, DDTranslation(0, 0, z_pos - offset), rot180);*/
 }
 
 DEFINE_EDM_PLUGIN(DDAlgorithmFactory, DDCutTubsFromPoints, "track:DDCutTubsFromPoints");
