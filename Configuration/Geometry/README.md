@@ -11,6 +11,7 @@ Tracker:
 * T17: Phase2 tilted tracker (v6.1.6) w/ phase 2 pixel (v6.1.5) TFPX: Changed sensors spacing within all double-disks + Increased distance between Disks 6 and 7 + Put TBPX portcards between Disks 6 and 7.
 * T19: Phase2 tilted tracker (v6.1.6) w/ phase 2 pixel (v7.0.0) Inner Tracker description with 3D sensors in TBPX L1 + TBPX L2 + TFPX R1.
 * T20: Phase2 tilted tracker (v6.1.6) Outer Tracker: All sensors 200 um -> 290 um + Update in Module MB + PS modules: s-sensor 164 um longer + Major update in OTST MB. Inner Tracker: (v6.1.5) from T17 is called.
+* T21: phase 2 pixel (v6.3.0) Like T17, but switched to bricked sensors in all IT.
 
 Calorimeters:
 * C4: HGCal (v9) + Phase2 HCAL and EB
@@ -56,5 +57,6 @@ Several detector combinations have been generated:
 * D54 = T19+C9+M4+I10+O4+F2
 * D55 = T19+C9+M5+I10+O4+F2
 * D56 = T20+C9+M4+I10+O4+F2
+* D57 = T21+C9+M4+I10+O4+F2
 
 D35 is the MTD TDR baseline, D41 is the L1T TDR baseline, and D49 is the HLT TDR baseline.
