@@ -9,6 +9,7 @@
 #include "CondFormats/DataRecord/interface/OpticalAlignmentsRcd.h" 
 #include "DetectorDescription/Core/interface/DDFilteredView.h"
 #include "DetectorDescription/Core/interface/DDCompactView.h"
+#include "DD4hep/DetFactoryHelper.h"
 #include "Geometry/Records/interface/IdealGeometryRecord.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
@@ -130,13 +131,17 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
   // At each node we get specpars as variables and use them in 
   // constructing COCOA objects. 
   //  It stores these objects in a private data member, opt
-  std::string attribute = "COCOA"; 
-  std::string value     = "COCOA";
+  //std::string attribute = "COCOA"; 
+  //std::string value     = "COCOA";
+  std::string attribute = "ReadOutName"; 
+  //std::string value     = "MuonCSCHits";
+  std::string value     = "TrackerHitsPixelBarrel";
   
 	  // get all parts labelled with COCOA using a SpecPar
   DDSpecificsMatchesValueFilter filter{DDValue(attribute, value, 0.0)};
   DDFilteredView fv(*cpv, filter);
   bool doCOCOA = fv.firstChild();
+  std::cout << "doCOCOA = " << doCOCOA << std::endl;
   
   // Loop on parts
   int nObjects=0;
@@ -172,20 +177,26 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
     if(ALIUtils::debug >= 5) {
       std::cout << " @@ Name built= " << oaInfo.name_ << " short_name= " << name << " parent= " << oaInfo.parentName_ << std::endl; 
     }
+
     //----- Read centre and angles
     oaInfo.x_.quality_  = int (myFetchDbl(params, "centre_X_quality", 0));
     DDTranslation transl = (fv.translation());
     DDRotationMatrix rot = (fv.rotation());
+    std::cout << "child transl = " << transl << std::endl;
+    std::cout << "child rot = " << rot << std::endl;
+
     DDExpandedNode parent = fv.geoHistory()[ fv.geoHistory().size()-2 ];
     const DDTranslation& parentTransl = parent.absTranslation();
     const DDRotationMatrix& parentRot = parent.absRotation();
+    std::cout << "parent transl = " << parentTransl << std::endl;
+    std::cout << "parent rot = " << parentRot << std::endl;
+
     transl = parentRot.Inverse()*(transl - parentTransl );
     rot = parentRot.Inverse()*rot;
     rot = rot.Inverse(); //DDL uses opposite convention than COCOA
-    /*    if(ALIUtils::debug >= 4) {
-      ALIUtils::dumprm( rot, "local rotation ");
-      ALIUtils::dump3v( transl, "local translation");
-      } */
+    std::cout << "transl = " << transl << std::endl;
+    std::cout << "rot = " << rot << std::endl;
+
 
     oaInfo.x_.name_ = "X";
     oaInfo.x_.dim_type_ = "centre";
@@ -211,6 +222,7 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
     rot.GetComponents (xx, xy, xz,
                  yx, yy, yz,
                  zx, zy, zz);
+    std::cout << "xx,xy,xz,yx,yy,yz,zx,zy,zz = " << xx << xy << xz << yx << yy << yz << zx << zy << zz << std::endl;
     CLHEP::Hep3Vector colX(xx,xy,xz);
     CLHEP::Hep3Vector colY(yx,yy,yz);
     CLHEP::Hep3Vector colZ(zx,zy,zz);

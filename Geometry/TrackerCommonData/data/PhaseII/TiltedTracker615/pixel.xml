@@ -2767,6 +2767,7 @@ note: see OT616_IT615_2019_11_28.cfg for full config files
 </CompositeMaterial>
 </MaterialSection>
 <RotationSection label="pixel.xml">
+<Rotation name="TEST" thetaX="90*deg" phiX="90*deg" thetaY="90*deg" phiY="180*deg" thetaZ="0*deg" phiZ="0*deg"/>
 <Rotation name="INNERTRACKERRODTOFLIPPEDMODULE" thetaX="90*deg" phiX="90*deg" thetaY="180*deg" phiY="0*deg" thetaZ="90*deg" phiZ="180*deg"/>
 <Rotation name="INNERTRACKERRODTOMODULE" thetaX="90*deg" phiX="270*deg" thetaY="180*deg" phiY="0*deg" thetaZ="90*deg" phiZ="0*deg"/>
 <Rotation name="Y180" thetaX="90*deg" phiX="180*deg" thetaY="90*deg" phiY="90*deg" thetaZ="180*deg" phiZ="0*deg"/>
@@ -7466,6 +7467,8 @@ note: see OT616_IT615_2019_11_28.cfg for full config files
 <PosPart copyNumber="1">
 <rParent name="pixel:BModule1Layer1InnerPixelwafer"/>
 <rChild name="pixel:BModule1Layer1InnerPixelActive"/>
+<rRotation name="pixel:TEST"/>
+<Translation x="1*mm" y="2*mm" z="3*mm"/>
 </PosPart>
 <PosPart copyNumber="1">
 <rParent name="pixel:BModule1Layer1"/>

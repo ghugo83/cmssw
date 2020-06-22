@@ -43,7 +43,7 @@ process.maxEvents = cms.untracked.PSet(
     )
 
 process.DDDetectorESProducer = cms.ESSource("DDDetectorESProducer",
-                                            confGeomXMLFiles = cms.FileInPath('DetectorDescription/DDCMS/data/cms-tracker-2021.xml'),
+                                            confGeomXMLFiles = cms.FileInPath('Geometry/TrackerCommonData/data/dd4hep/cms-tracker-geometry-2021.xml'),
                                             appendToDataLabel = cms.string('CMS')
                                             )
 

@@ -79,9 +79,9 @@ void GlobalOptionMgr::setDefaultGlobalOptions() {
 
   theGlobalOptions[ALIstring("stopAfter1stIteration")] = 0;
   theGlobalOptions[ALIstring("calParamInyfMatrix")] = 0;
-  theGlobalOptions[ALIstring("writeXML")] = 0;
+  theGlobalOptions[ALIstring("writeXML")] = 1;
   theGlobalOptions[ALIstring("dumpInAllFrames")] = 0;
-  theGlobalOptions[ALIstring("rootResults")] = 0;
+  theGlobalOptions[ALIstring("rootResults")] = 1;
   theGlobalOptions[ALIstring("writeDBAlign")] = 0;
   theGlobalOptions[ALIstring("writeDBOptAlign")] = 0;
 }
