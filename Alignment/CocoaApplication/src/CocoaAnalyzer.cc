@@ -101,24 +101,40 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 
 
   std::string fileName_ = edm::FileInPath("Geometry/CMSCommonData/data/dd4hep/cmsExtendedGeometry2021.xml").fullPath();
-  const cms::DDDetector det("DUMMY", fileName_);
+  const cms::DDDetector det("", fileName_);
   cms::DDCompactView cpv(det);
-  std::cout << "cpv_new->detector()->worldVolume().name() = " << cpv.detector()->worldVolume().name() << std::endl;
 
+  std::cout << "cpv_new->detector()->worldPlacement().name() = " << cpv.detector()->worldPlacement().name() << std::endl;
+  for (auto const& it : det.detectors()) {
+    dd4hep::DetElement det(it.second);
+    std::cout << it.first << ": " << det.path() << std::endl;
+  }
 
+  
+  //const cms::DDFilter filter(attribute, value);
+  //cms::DDFilteredView fv(cpv, filter);
+  cms::DDFilteredView fv(cpv.detector(), cpv.detector()->worldVolume());
+  const cms::DDSpecParRegistry& mypar = cpv.specpars();
+  cms::DDSpecParRefs refs;
+  std::string attribute = "ReadOutName"; 
+  std::string value     = "TrackerHitsPixelBarrel";
+  mypar.filter(refs, attribute, value);
+  fv.mergedSpecifics(refs);
 
+  bool doCOCOA = fv.firstChild();
+  std::cout << "doCOCOA = " << doCOCOA << std::endl;
+  const dd4hep::PlacedVolume lv = fv.volume();
+  std::cout << "fv.volume().name() = " << lv.name() << std::endl;
+  //std::cout << "fv.firstChild().volume().name() = " << fv.firstChild().volume().name() << std::endl;
 
+  //doCOCOA = fv.next();
+  //std::cout << "doCOCOA AFTER NEXT = " << doCOCOA << std::endl;
 
   /*
   edm::ESTransientHandle<cms::DDDetector> det;
   evts.get<IdealGeometryRecord>().get(m_tag, det);
-  std::cout << "det->worldVolume().name() = " << det->worldVolume().name() << std::endl;
-  for (auto const& it : det->detectors()) {
-    dd4hep::DetElement det(it.second);
-    std::cout << it.first << ": " << det.path() << std::endl;
-    }*/
-
-  
+  std::cout << "det->worldVolume().name() = " << det->worldVolume().name() << std::endl;*/
+ 
   /*
   std::unique_ptr<cms::DDDetector> det = std::make_unique<cms::DDDetector>("DUMMY", fileName_);
   DDFilteredView fview(det.get(), det->description()->worldVolume());
