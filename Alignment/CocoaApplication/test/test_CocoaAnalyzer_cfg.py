@@ -8,7 +8,16 @@ process.load("FWCore.MessageService.MessageLogger_cfi")
 #process.load('Geometry.CMSCommonData.cmsIdealGeometry2015XML_cfi')
 process.load("Geometry.CMSCommonData.cmsExtendedGeometry2026D51XML_cfi")
 
+process.source = cms.Source("EmptySource")   
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+
+process.DDDetectorESProducer = cms.ESSource("DDDetectorESProducer",
+                                            #confGeomXMLFiles = cms.FileInPath('Geometry/CMSCommonData/data/dd4hep/cmsExtendedGeometry2026D51.xml'),
+                                            confGeomXMLFiles = cms.FileInPath('Geometry/TrackerCommonData/data/dd4hep/cms-tracker-geometry-2021.xml'),
+                                            appendToDataLabel = cms.string('CMS')
+                                            )
+
+
 
 #process.source = cms.Source("PoolSource",
                                 #fileNames = cms.untracked.vstring(
@@ -18,7 +27,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
             				#'file:/eos/cms/store/relval/CMSSW_11_2_0_pre1/RelValNuGun/GEN-SIM/110X_mcRun4_realistic_v3_2026D49noPU-v1/10000/F3227D3F-965E-9B42-9D7B-D80CB5B01FBE.root'
                 		#)
                             #)
-process.source = cms.Source("EmptySource")   
+
                         
                             
 #process.load("CondCore.DBCommon.CondDBSetup_cfi")
@@ -62,8 +71,10 @@ process.source = cms.Source("EmptySource")
 
 process.demo = cms.EDAnalyzer('CocoaAnalyzer',
 				maxEvents = cms.int32(1),
-				cocoaDaqRootFile = cms.string("cocoaDaqTest.root")
+				cocoaDaqRootFile = cms.string("cocoaDaqTest.root"),
+				DDDetector = cms.ESInputTag('','')
                               )
 
-process.p = cms.Path(process.demo)
+process.p = cms.Path(
+process.demo)
 

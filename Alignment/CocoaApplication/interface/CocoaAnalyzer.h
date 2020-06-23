@@ -73,6 +73,7 @@ class CocoaAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>
   OpticalAlignments oaList_;
   OpticalAlignMeasurements measList_;
   std::string theCocoaDaqRootFileName;
+  edm::ESInputTag m_tag;
 };
 
 #endif

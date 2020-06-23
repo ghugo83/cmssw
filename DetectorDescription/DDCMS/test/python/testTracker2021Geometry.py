@@ -67,8 +67,14 @@ process.testGeoIter = cms.EDAnalyzer("DDTestDumpGeometry",
                                      DDDetector = cms.ESInputTag('','CMS')
                                      )
 
+process.demo = cms.EDAnalyzer('CocoaAnalyzer',
+				maxEvents = cms.int32(1),
+				cocoaDaqRootFile = cms.string("cocoaDaqTest.root"),
+                                DDDetector = cms.ESInputTag('','CMS')
+                              )
 process.p = cms.Path(
     process.test
     +process.testVectors
     +process.testDump
-    +process.testGeoIter)
+    +process.testGeoIter
+    +process.demo)

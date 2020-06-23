@@ -4,16 +4,20 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/ESTransientHandle.h"
 
-#include "Alignment/CocoaApplication/interface/CocoaAnalyzer.h"
+#include "DD4hep/DetFactoryHelper.h"
+//#include "DetectorDescription/Core/interface/DDFilteredView.h"
+//#include "DetectorDescription/Core/interface/DDCompactView.h"
+#include "DetectorDescription/DDCMS/interface/DDCompactView.h"
+#include "DetectorDescription/DDCMS/interface/DDFilteredView.h"
+#include "DetectorDescription/DDCMS/interface/DDDetector.h"
+
 #include "CondFormats/OptAlignObjects/interface/OpticalAlignMeasurementInfo.h" 
 #include "CondFormats/DataRecord/interface/OpticalAlignmentsRcd.h" 
-#include "DetectorDescription/Core/interface/DDFilteredView.h"
-#include "DetectorDescription/Core/interface/DDCompactView.h"
-#include "DD4hep/DetFactoryHelper.h"
 #include "Geometry/Records/interface/IdealGeometryRecord.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 
+#include "Alignment/CocoaApplication/interface/CocoaAnalyzer.h"
 #include "Alignment/CocoaUtilities/interface/ALIUtils.h"
 #include "Alignment/CocoaModel/interface/Model.h"
 #include "Alignment/CocoaFit/interface/Fit.h"
@@ -28,7 +32,7 @@
 CocoaAnalyzer::CocoaAnalyzer(edm::ParameterSet const& pset) 
 {
   theCocoaDaqRootFileName = pset.getParameter< std::string >("cocoaDaqRootFile");
-
+  m_tag = pset.getParameter< edm::ESInputTag> ("DDDetector");
   int maxEvents = pset.getParameter< int32_t >("maxEvents");
   GlobalOptionMgr::getInstance()->setDefaultGlobalOptions();
   GlobalOptionMgr::getInstance()->setGlobalOption("maxEvents",maxEvents);
@@ -87,15 +91,56 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
   // STEP ONE:  Initial COCOA objects will be built from a DDL geometry
   // description.  
   
-  edm::ESTransientHandle<DDCompactView> cpv;
-  evts.get<IdealGeometryRecord>().get(cpv);
+  //edm::ESTransientHandle<DDCompactView> cpv;
+  //evts.get<IdealGeometryRecord>().get(cpv);
 
+  //const edm::ESInputTag m_tag;
+  //edm::ESTransientHandle<cms::DDCompactView> cpv;
+  //evts.get<IdealGeometryRecord>().get(m_tag, cpv);
+  
+
+
+  std::string fileName_ = edm::FileInPath("Geometry/CMSCommonData/data/dd4hep/cmsExtendedGeometry2021.xml").fullPath();
+  const cms::DDDetector det("DUMMY", fileName_);
+  cms::DDCompactView cpv(det);
+  std::cout << "cpv_new->detector()->worldVolume().name() = " << cpv.detector()->worldVolume().name() << std::endl;
+
+
+
+
+
+  /*
+  edm::ESTransientHandle<cms::DDDetector> det;
+  evts.get<IdealGeometryRecord>().get(m_tag, det);
+  std::cout << "det->worldVolume().name() = " << det->worldVolume().name() << std::endl;
+  for (auto const& it : det->detectors()) {
+    dd4hep::DetElement det(it.second);
+    std::cout << it.first << ": " << det.path() << std::endl;
+    }*/
+
+  
+  /*
+  std::unique_ptr<cms::DDDetector> det = std::make_unique<cms::DDDetector>("DUMMY", fileName_);
+  DDFilteredView fview(det.get(), det->description()->worldVolume());
+  fview.next(0);
+  std::cout << fview.name() << " is a " << cms::dd::name(cms::DDSolidShapeMap, fview.shape()) << "\n";
+  fview.parent();
+  std::cout << fview.name() << " is a " << cms::dd::name(cms::DDSolidShapeMap, fview.shape()) << "\n";*/
+
+
+
+
+
+
+  /*
   if(ALIUtils::debug >= 3) {
     std::cout << std::endl << "$$$ CocoaAnalyzer::ReadXML: root object= " << cpv->root() << std::endl;
   }
   
   //Build OpticalAlignInfo "system"
   const DDLogicalPart lv = cpv->root();
+  std::cout << "lv.name() = " << lv.name() << std::endl;
+  std::cout << "lv.name().name() = " << lv.name().name() << std::endl;
   
   OpticalAlignInfo oaInfo;
   oaInfo.ID_ = 0;
@@ -445,6 +490,7 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
     std::cout << " @@@@@@ OpticalMeasurements " << measList_ << std::endl;
   }
 
+  */
 }
 
 //------------------------------------------------------------------------
