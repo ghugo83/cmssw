@@ -164,9 +164,8 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
   //DDSpecificsMatchesValueFilter filter{DDValue(attribute, value, 0.0)};
   //DDFilteredView fv(*cpv, filter);
   const cms::DDFilter filter(attribute, value);
-  cms::DDFilteredView fv(cpv, filter); // TO DO: ONLY NEXT LINE WAS WORKING
-  //cms::DDFilteredView fv(cpv.detector(), cpv.detector()->worldVolume());
- 
+  cms::DDFilteredView fv(cpv, filter);
+
 
   // Loop on parts
   int nObjects=0;
@@ -178,11 +177,13 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
     ++nObjects;
     //    oaInfo.ID_ = nObjects;
     //const DDsvalues_type params(fv.mergedSpecifics());
-    //const cms::DDSpecParRegistry& reg = cpv.specpars();
+    const cms::DDSpecParRegistry& reg = cpv.specpars();  // TO DO: remove?
     cms::DDSpecParRefs params;
-    //reg.filter(params, attribute, value);
+    reg.filter(params, attribute, value);  // TO DO: remove?
     fv.mergedSpecifics(params);
 
+    std::cout << "params.size() = " << params.size() << std::endl;
+    fv.printFilter();
 
     //const DDLogicalPart lv = fv.logicalPart();
     const dd4hep::PlacedVolume myPlacedVolume = fv.volume();
@@ -506,8 +507,11 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 //       std::cout << "  dimType=" << dims.size() << std::endl;
     oaInfo.clear();
     //doCOCOA = fv.next();
-    //doCOCOA = fv.next(0); // go to next part
-    doCOCOA = fv.nextSibling();
+    //doCOCOA = fv.next(0); // printout full tree instead of only next filtered node
+    //doCOCOA = fv.nextSibling();
+    //doCOCOA = fv.sibling();
+    doCOCOA = fv.firstChild();
+
     } // while (doCOCOA)
  
     if(ALIUtils::debug >= 3) {
