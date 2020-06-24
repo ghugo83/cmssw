@@ -246,24 +246,24 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 
 
     //----- Read centre and angles
-    oaInfo.x_.quality_  = int (myFetchDbl(params, "centre_X_quality", 0));
+    oaInfo.x_.quality_  = int (myFetchDbl(params, "centre_X_quality"));
     oaInfo.x_.name_ = "X";
     oaInfo.x_.dim_type_ = "centre";
     oaInfo.x_.value_ = transl.x()*0.01; // COCOA units are m 
-    oaInfo.x_.error_ = myFetchDbl(params, "centre_X_sigma", 0)*0.01; // COCOA units are m 
-    oaInfo.x_.quality_  = int (myFetchDbl(params, "centre_X_quality", 0));
+    oaInfo.x_.error_ = myFetchDbl(params, "centre_X_sigma")*0.01; // COCOA units are m 
+    oaInfo.x_.quality_  = int (myFetchDbl(params, "centre_X_quality"));
     
     oaInfo.y_.name_ = "Y";
     oaInfo.y_.dim_type_ = "centre";
     oaInfo.y_.value_ = transl.y()*0.01; // COCOA units are m 
-    oaInfo.y_.error_ = myFetchDbl(params, "centre_Y_sigma", 0)*0.01; // COCOA units are m 
-    oaInfo.y_.quality_  = int (myFetchDbl(params, "centre_Y_quality", 0));
+    oaInfo.y_.error_ = myFetchDbl(params, "centre_Y_sigma")*0.01; // COCOA units are m 
+    oaInfo.y_.quality_  = int (myFetchDbl(params, "centre_Y_quality"));
 
     oaInfo.z_.name_ = "Z";
     oaInfo.z_.dim_type_ = "centre";
     oaInfo.z_.value_ = transl.z()*0.01; // COCOA units are m 
-    oaInfo.z_.error_ = myFetchDbl(params, "centre_Z_sigma", 0)*0.01; // COCOA units are m 
-    oaInfo.z_.quality_  = int (myFetchDbl(params, "centre_Z_quality", 0));
+    oaInfo.z_.error_ = myFetchDbl(params, "centre_Z_sigma")*0.01; // COCOA units are m 
+    oaInfo.z_.quality_  = int (myFetchDbl(params, "centre_Z_quality"));
 
   //---- DDD convention is to use the inverse matrix, COCOA is the direct one!!!
     //---- convert it to CLHEP::Matrix
@@ -292,25 +292,25 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 
     oaInfo.angx_.name_ = "X";
     oaInfo.angx_.dim_type_ = "angles";
-    oaInfo.angx_.value_ = myFetchDbl(params, "angles_X_value", 0);
-    oaInfo.angx_.error_ = myFetchDbl(params, "angles_X_sigma", 0);
-    oaInfo.angx_.quality_  = int (myFetchDbl(params, "angles_X_quality", 0));
+    oaInfo.angx_.value_ = myFetchDbl(params, "angles_X_value");
+    oaInfo.angx_.error_ = myFetchDbl(params, "angles_X_sigma");
+    oaInfo.angx_.quality_  = int (myFetchDbl(params, "angles_X_quality"));
 
     oaInfo.angy_.name_ = "Y";
     oaInfo.angy_.dim_type_ = "angles";
-    oaInfo.angy_.value_ = myFetchDbl(params, "angles_Y_value", 0);
-    oaInfo.angy_.error_ = myFetchDbl(params, "angles_Y_sigma", 0);
-    oaInfo.angy_.quality_  = int (myFetchDbl(params, "angles_Y_quality", 0));
+    oaInfo.angy_.value_ = myFetchDbl(params, "angles_Y_value");
+    oaInfo.angy_.error_ = myFetchDbl(params, "angles_Y_sigma");
+    oaInfo.angy_.quality_  = int (myFetchDbl(params, "angles_Y_quality"));
 
     oaInfo.angz_.name_ = "Z";
     oaInfo.angz_.dim_type_ = "angles";
-    oaInfo.angz_.value_ = myFetchDbl(params, "angles_Z_value", 0);
-    oaInfo.angz_.error_ = myFetchDbl(params, "angles_Z_sigma", 0);
-    oaInfo.angz_.quality_  = int (myFetchDbl(params, "angles_Z_quality", 0));
+    oaInfo.angz_.value_ = myFetchDbl(params, "angles_Z_value");
+    oaInfo.angz_.error_ = myFetchDbl(params, "angles_Z_sigma");
+    oaInfo.angz_.quality_  = int (myFetchDbl(params, "angles_Z_quality"));
 
-    oaInfo.type_ = myFetchString(params, "cocoa_type", 0);
+    oaInfo.type_ = myFetchString(params, "cocoa_type");
 
-    oaInfo.ID_ = int(myFetchDbl(params, "cmssw_ID", 0));
+    oaInfo.ID_ = int(myFetchDbl(params, "cmssw_ID"));
 
     if(ALIUtils::debug >= 4) {
       std::cout << "CocoaAnalyzer::ReadXML OBJECT " << oaInfo.name_ << " pos/angles read " << std::endl;
@@ -326,11 +326,10 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 	}
 
     //----- Read extra entries and measurements
-    /* TO DO: PORT THIS
     //const std::vector<const DDsvalues_type *> params2(fv.specifics());
     //std::vector<const DDsvalues_type *>::const_iterator spit = params2.begin();
     //std::vector<const DDsvalues_type *>::const_iterator endspit = params2.end();
-    //const cms::DDSpecParRegistry& reg = fv.specpars();
+    const cms::DDSpecParRefs& params2 = fv.specpars();
     //--- extra entries variables
     std::vector<std::string> names, dims;
     std::vector<double> values, errors, quality;
@@ -343,66 +342,86 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
     std::map<std::string, std::vector<double> > measParamSigmas;
     std::map<std::string, std::vector<double> > measIsSimulatedValue;
 
-    for ( ; spit != endspit; ++spit ) {
-      DDsvalues_type::const_iterator sit = (**spit).begin();
-      DDsvalues_type::const_iterator endsit = (**spit).end();
-      for ( ; sit != endsit; ++sit ) {
- 	if (sit->second.name() == "extra_entry") {
-	  names = sit->second.strings();
+    //for ( ; spit != endspit; ++spit ) {
+    for (const auto& mySpecPar : params2) {
+      //DDsvalues_type::const_iterator sit = (**spit).begin();
+      //DDsvalues_type::const_iterator endsit = (**spit).end();
+      //for ( ; sit != endsit; ++sit ) {
+      /*if (sit->second.name() == "extra_entry") {
+	names = sit->second.strings();
 	} else if (sit->second.name() == "dimType") {
-	  dims = sit->second.strings();
+	dims = sit->second.strings();
 	} else if (sit->second.name() == "value") {
-	  values = sit->second.doubles();
+	values = sit->second.doubles();
 	} else if (sit->second.name() == "sigma") {
-	  errors = sit->second.doubles();
+	errors = sit->second.doubles();
 	} else if (sit->second.name() == "quality") {
-	  quality = sit->second.doubles();
+	quality = sit->second.doubles();
 
 	} else if (sit->second.name() == "meas_name") {
-	  //-	  std::cout << " meas_name found " << std::endl;
-	  measNames = sit->second.strings();
+	//-	  std::cout << " meas_name found " << std::endl;
+	measNames = sit->second.strings();
 	} else if (sit->second.name() == "meas_type") {
-	  //- std::cout << " meas_type found " << std::endl;
-	  measTypes = sit->second.strings();
-	}
+	//- std::cout << " meas_type found " << std::endl;
+	measTypes = sit->second.strings();
+	}*/
+      names = mySpecPar->value<std::vector<std::string>>("extra_entry");
+      dims = mySpecPar->value<std::vector<std::string>>("dimType");
+      values = mySpecPar->value<std::vector<double>>("value");
+      errors = mySpecPar->value<std::vector<double>>("sigma");
+      quality = mySpecPar->value<std::vector<double>>("quality");
+      measNames = mySpecPar->value<std::vector<std::string>>("meas_name");
+      measTypes = mySpecPar->value<std::vector<std::string>>("meas_type");
+
 	
-      }
-      }
+      //}
+    }
 
     //---- loop again to look for the measurement object names, that have the meas name in the SpecPar title 
     //    <Parameter name="meas_object_name_SENSOR2D:OCMS/sens2" value="OCMS/laser1"  eval="false" /> 
     //   <Parameter name="meas_object_name_SENSOR2D:OCMS/sens2" value="OCMS/sens2"  eval="false" /> 
 
-    std::vector<std::string>::iterator vsite;
-    for ( spit = params2.begin(); spit != params2.end(); ++spit ) {
+    //std::vector<std::string>::iterator vsite;
+    //for ( spit = params2.begin(); spit != params2.end(); ++spit ) {
+    for (const auto& mySpecPar : params2) {
       //-  std::cout << "loop vector DDsvalues " << std::endl;
-      DDsvalues_type::const_iterator sit = (**spit).begin();
-      DDsvalues_type::const_iterator endsit = (**spit).end();
-      for ( ; sit != endsit; ++sit ) {
-	for( vsite = measNames.begin(); vsite != measNames.end(); ++vsite ){
-	  //- std::cout << "looping measObjectNames " << *vsite << std::endl;
+      //DDsvalues_type::const_iterator sit = (**spit).begin();
+      //DDsvalues_type::const_iterator endsit = (**spit).end();
+      //for ( ; sit != endsit; ++sit ) {
+      //for( vsite = measNames.begin(); vsite != measNames.end(); ++vsite ){
+      for (const auto& name : measNames) {
+	//- std::cout << "looping measObjectNames " << *vsite << std::endl;
+	/*
 	  if (sit->second.name() == "meas_object_name_"+(*vsite)) {
-	    measObjectNames[*vsite] = sit->second.strings();
+	  measObjectNames[*vsite] = sit->second.strings();
 	  }else if (sit->second.name() == "meas_value_name_"+(*vsite)) {
-	    measParamNames[*vsite] = sit->second.strings();
+	  measParamNames[*vsite] = sit->second.strings();
 	  }else if (sit->second.name() == "meas_value_"+(*vsite)) {
-	    measParamValues[*vsite] = sit->second.doubles();
+	  measParamValues[*vsite] = sit->second.doubles();
 	  }else if (sit->second.name() == "meas_sigma_"+(*vsite)) {
-	    measParamSigmas[*vsite] = sit->second.doubles();
+	  measParamSigmas[*vsite] = sit->second.doubles();
 	  }else if (sit->second.name() == "meas_is_simulated_value_"+(*vsite)) {
-	    measIsSimulatedValue[*vsite] = sit->second.doubles(); // this is not in OptAlignParam info
-	    if(ALIUtils::debug >= 5) {
-	      std::cout << *vsite << " setting issimu " << measIsSimulatedValue[*vsite][0] << std::endl;
-	    }
-	  }
-	  if(ALIUtils::debug >= 5) {
-	    std::cout << "CocoaAnalyser: looped measObjectNames " << "meas_object_name_"+(*vsite) << " n obj " << measObjectNames[*vsite].size() << std::endl;
-	  }
+	  measIsSimulatedValue[*vsite] = sit->second.doubles(); 
 
+	  if(ALIUtils::debug >= 5) {
+	  std::cout << *vsite << " setting issimu " << measIsSimulatedValue[*vsite][0] << std::endl;
+	  }
+	  }*/
+	measObjectNames[name] = mySpecPar->value<std::vector<std::string>>("meas_object_name_" + name);
+	measParamNames[name] = mySpecPar->value<std::vector<std::string>>("meas_value_name_" + name);
+	measParamValues[name] = mySpecPar->value<std::vector<double>>("meas_value_" + name);
+	measParamSigmas[name] = mySpecPar->value<std::vector<double>>("meas_sigma_" + name);
+	// this is not in OptAlignParam info
+	measIsSimulatedValue[name] = mySpecPar->value<std::vector<double>>("meas_is_simulated_value_" + name);
+
+	if(ALIUtils::debug >= 5) {
+	  //std::cout << "CocoaAnalyser: looped measObjectNames " << "meas_object_name_"+(*vsite) << " n obj " << measObjectNames[*vsite].size() << std::endl;
+	  std::cout << "CocoaAnalyser: looped measObjectNames " << "meas_object_name_" + name << " n obj " << measObjectNames.at(name).size() << std::endl;
 	}
-	
+
       }
-      }
+      //}
+    }
     
     if(ALIUtils::debug >= 4) {
       std::cout << " CocoaAnalyzer::ReadXML:  Fill extra entries with read parameters " << std::endl;
@@ -487,7 +506,7 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 		  << " not match!  Did not add " << nObjects << " item to XXXMeasurements" 
 		  << std::endl;
       }
-      }*/
+    }
 
 //       std::cout << "sizes are values=" << values.size();
 //       std::cout << "  sigma(errors)=" << errors.size();
@@ -740,8 +759,8 @@ void CocoaAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& evts)
 //double CocoaAnalyzer::myFetchDbl(const DDsvalues_type& dvst,
 double CocoaAnalyzer::myFetchDbl(const cms::DDSpecParRefs& params,
 				 //const std::string& spName,
-				 const std::string& name,
-				      const size_t& vecInd ) {
+				 const std::string& name) {
+  //const size_t& vecInd ) {
   //DDValue val(spName, 0.0);
   //if (DDfetch(&dvst,val)) {
   //if ( val.doubles().size() > vecInd ) {
@@ -765,8 +784,8 @@ double CocoaAnalyzer::myFetchDbl(const cms::DDSpecParRefs& params,
 //-----------------------------------------------------------------------
 //std::string CocoaAnalyzer::myFetchString(const DDsvalues_type& dvst,
 std::string_view CocoaAnalyzer::myFetchString(const cms::DDSpecParRefs& params,
-				      const std::string& name,
-				      const size_t& vecInd ) {
+					      const std::string& name) {
+					      //const size_t& vecInd ) {
   //DDValue val(spName, 0.0);
   //if (DDfetch(&dvst,val)) {
   //if ( val.strings().size() > vecInd ) {

@@ -65,12 +65,12 @@ class CocoaAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>
   OpticalAlignInfo GetOptAlignInfoFromOptO( OpticalObject* opto );
   //double myFetchDbl(const DDsvalues_type& dvst, 
   double myFetchDbl(const cms::DDSpecParRefs& params,
-	        		      const std::string& spName,
-				    const size_t& vecInd );
+		      const std::string& spName);
+//const size_t& vecInd );
 //std::string myFetchString(const DDsvalues_type& dvst, 
  std::string_view myFetchString(const cms::DDSpecParRefs& params,
-				      const std::string& spName,
-				    const size_t& vecInd );
+				  const std::string& spName);
+//const size_t& vecInd );
 
  private:
   OpticalAlignments oaList_;
