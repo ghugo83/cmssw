@@ -21,7 +21,8 @@
 #include <iostream>
 #include <map>
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
-#include "DetectorDescription/Core/interface/DDPosData.h" 
+//#include "DetectorDescription/Core/interface/DDPosData.h"
+#include "DetectorDescription/DDCMS/interface/DDSpecParRegistry.h"
 
 class Event;
 class EventSetup;
@@ -62,10 +63,12 @@ class CocoaAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>
   void RunCocoa();
 
   OpticalAlignInfo GetOptAlignInfoFromOptO( OpticalObject* opto );
-  double myFetchDbl(const DDsvalues_type& dvst, 
+  //double myFetchDbl(const DDsvalues_type& dvst, 
+  double myFetchDbl(const cms::DDSpecParRefs& params,
 	        		      const std::string& spName,
 				    const size_t& vecInd );
-  std::string myFetchString(const DDsvalues_type& dvst, 
+//std::string myFetchString(const DDsvalues_type& dvst, 
+ std::string_view myFetchString(const cms::DDSpecParRefs& params,
 				      const std::string& spName,
 				    const size_t& vecInd );
 

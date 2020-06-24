@@ -182,8 +182,6 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
     reg.filter(params, attribute, value);  // TO DO: remove?
     fv.mergedSpecifics(params);
 
-    std::cout << "params.size() = " << params.size() << std::endl;
-    fv.printFilter();
 
     //const DDLogicalPart lv = fv.logicalPart();
     const dd4hep::PlacedVolume myPlacedVolume = fv.volume();
@@ -218,10 +216,6 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
     if(ALIUtils::debug >= 5) {
       std::cout << " @@ Name built= " << oaInfo.name_ << " short_name= " << name << " parent= " << oaInfo.parentName_ << std::endl; 
     }
-
-    //----- Read centre and angles
-    //oaInfo.x_.quality_  = int (myFetchDbl(params, "centre_X_quality", 0));
-    //oaInfo.x_.quality_ = int (params.hasValue("centre_X_quality") ? params.dblValue("centre_X_quality") : 0.);
     
     //DDTranslation transl = (fv.translation());
     //DDRotationMatrix rot = (fv.rotation());
@@ -251,26 +245,25 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
     std::cout << "transl = " << transl << std::endl;
 
 
+    //----- Read centre and angles
+    oaInfo.x_.quality_  = int (myFetchDbl(params, "centre_X_quality", 0));
     oaInfo.x_.name_ = "X";
     oaInfo.x_.dim_type_ = "centre";
     oaInfo.x_.value_ = transl.x()*0.01; // COCOA units are m 
-    //oaInfo.x_.error_ = myFetchDbl(params, "centre_X_sigma", 0)*0.001; // CLHEP units are mm, COCOA are m 
-    //oaInfo.x_.error_ = (params.hasValue("centre_X_sigma") ? params.dblValue("centre_X_sigma") : 0.) *0.001; // CLHEP units are mm, COCOA are m 
-  //oaInfo.x_.quality_  = int (myFetchDbl(params, "centre_X_quality", 0));
-    //oaInfo.x_.quality_  = int (params.hasValue("centre_X_quality") ? params.dblValue("centre_X_quality") : 0.) *0.001; // CLHEP units are mm, COCOA are m 
+    oaInfo.x_.error_ = myFetchDbl(params, "centre_X_sigma", 0)*0.01; // COCOA units are m 
+    oaInfo.x_.quality_  = int (myFetchDbl(params, "centre_X_quality", 0));
     
     oaInfo.y_.name_ = "Y";
     oaInfo.y_.dim_type_ = "centre";
     oaInfo.y_.value_ = transl.y()*0.01; // COCOA units are m 
-    // TO DO: ALSO PORT THIS COMMENTED INFO TO DD4HEP
-    //oaInfo.y_.error_ = myFetchDbl(params, "centre_Y_sigma", 0)*0.001; // CLHEP units are mm, COCOA are m 
-    //oaInfo.y_.quality_  = int (myFetchDbl(params, "centre_Y_quality", 0));
+    oaInfo.y_.error_ = myFetchDbl(params, "centre_Y_sigma", 0)*0.01; // COCOA units are m 
+    oaInfo.y_.quality_  = int (myFetchDbl(params, "centre_Y_quality", 0));
 
     oaInfo.z_.name_ = "Z";
     oaInfo.z_.dim_type_ = "centre";
     oaInfo.z_.value_ = transl.z()*0.01; // COCOA units are m 
-    //oaInfo.z_.error_ = myFetchDbl(params, "centre_Z_sigma", 0)*0.001; // CLHEP units are mm, COCOA are m 
-    //oaInfo.z_.quality_  = int (myFetchDbl(params, "centre_Z_quality", 0));
+    oaInfo.z_.error_ = myFetchDbl(params, "centre_Z_sigma", 0)*0.01; // COCOA units are m 
+    oaInfo.z_.quality_  = int (myFetchDbl(params, "centre_Z_quality", 0));
 
   //---- DDD convention is to use the inverse matrix, COCOA is the direct one!!!
     //---- convert it to CLHEP::Matrix
@@ -299,34 +292,30 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 
     oaInfo.angx_.name_ = "X";
     oaInfo.angx_.dim_type_ = "angles";
-    //-    oaInfo.angx_.value_ = angles[0];
-    // TO DO: ALSO PORT THIS COMMENTED INFO TO DD4HEP
-    //oaInfo.angx_.value_ = myFetchDbl(params, "angles_X_value", 0);
-    //oaInfo.angx_.error_ = myFetchDbl(params, "angles_X_sigma", 0);
-    //oaInfo.angx_.quality_  = int (myFetchDbl(params, "angles_X_quality", 0));
+    oaInfo.angx_.value_ = myFetchDbl(params, "angles_X_value", 0);
+    oaInfo.angx_.error_ = myFetchDbl(params, "angles_X_sigma", 0);
+    oaInfo.angx_.quality_  = int (myFetchDbl(params, "angles_X_quality", 0));
 
     oaInfo.angy_.name_ = "Y";
     oaInfo.angy_.dim_type_ = "angles";
-    //-    oaInfo.angy_.value_ = angles[1];
-    //oaInfo.angy_.value_ = myFetchDbl(params, "angles_Y_value", 0);
-    //oaInfo.angy_.error_ = myFetchDbl(params, "angles_Y_sigma", 0);
-    //oaInfo.angy_.quality_  = int (myFetchDbl(params, "angles_Y_quality", 0));
+    oaInfo.angy_.value_ = myFetchDbl(params, "angles_Y_value", 0);
+    oaInfo.angy_.error_ = myFetchDbl(params, "angles_Y_sigma", 0);
+    oaInfo.angy_.quality_  = int (myFetchDbl(params, "angles_Y_quality", 0));
 
     oaInfo.angz_.name_ = "Z";
     oaInfo.angz_.dim_type_ = "angles";
-    //    oaInfo.angz_.value_ = angles[2];
-    //oaInfo.angz_.value_ = myFetchDbl(params, "angles_Z_value", 0);
-    //oaInfo.angz_.error_ = myFetchDbl(params, "angles_Z_sigma", 0);
-    //oaInfo.angz_.quality_  = int (myFetchDbl(params, "angles_Z_quality", 0));
+    oaInfo.angz_.value_ = myFetchDbl(params, "angles_Z_value", 0);
+    oaInfo.angz_.error_ = myFetchDbl(params, "angles_Z_sigma", 0);
+    oaInfo.angz_.quality_  = int (myFetchDbl(params, "angles_Z_quality", 0));
 
-    //oaInfo.type_ = myFetchString(params, "cocoa_type", 0);
+    oaInfo.type_ = myFetchString(params, "cocoa_type", 0);
 
-    //oaInfo.ID_ = int(myFetchDbl(params, "cmssw_ID", 0));
+    oaInfo.ID_ = int(myFetchDbl(params, "cmssw_ID", 0));
 
     if(ALIUtils::debug >= 4) {
       std::cout << "CocoaAnalyzer::ReadXML OBJECT " << oaInfo.name_ << " pos/angles read " << std::endl;
     }
-    /* TO DO: UNCOMMENT
+
     if( fabs( oaInfo.angx_.value_ - angles[0] ) > 1.E-9 || 
 	fabs( oaInfo.angy_.value_ - angles[1] ) > 1.E-9 || 
 	fabs( oaInfo.angz_.value_ - angles[2] ) > 1.E-9 ) {
@@ -334,7 +323,7 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 	oaInfo.angx_.value_ << " =? " << angles[0] <<
 	oaInfo.angy_.value_ << " =? " << angles[1] <<
 	oaInfo.angz_.value_ << " =? " << angles[2] << std::endl;
-	}*/
+	}
 
     //----- Read extra entries and measurements
     /* TO DO: PORT THIS
@@ -748,32 +737,48 @@ void CocoaAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& evts)
 
 
 //-----------------------------------------------------------------------
-double CocoaAnalyzer::myFetchDbl(const DDsvalues_type& dvst, 
-				      const std::string& spName,
+//double CocoaAnalyzer::myFetchDbl(const DDsvalues_type& dvst,
+double CocoaAnalyzer::myFetchDbl(const cms::DDSpecParRefs& params,
+				 //const std::string& spName,
+				 const std::string& name,
 				      const size_t& vecInd ) {
-  DDValue val(spName, 0.0);
-  if (DDfetch(&dvst,val)) {
-    if ( val.doubles().size() > vecInd ) {
-      //	  std::cout << "about to return: " << val.doubles()[vecInd] << std::endl;
-      return val.doubles()[vecInd];
-    } else {
-      std::cout << "WARNING: OUT OF BOUNDS RETURNING 0 for index " << vecInd << " of SpecPar " << spName << std::endl;
+  //DDValue val(spName, 0.0);
+  //if (DDfetch(&dvst,val)) {
+  //if ( val.doubles().size() > vecInd ) {
+  //	  std::cout << "about to return: " << val.doubles()[vecInd] << std::endl;
+  //return val.doubles()[vecInd];
+  //} else {
+  //   std::cout << "WARNING: OUT OF BOUNDS RETURNING 0 for index " << vecInd << " of SpecPar " << spName << std::endl;
+  // }
+  // }
+  //return 0.0;
+
+  //if (params.hasSpecPar(name)) {
+  for (const auto& mySpecPar : params) {
+    if (mySpecPar->hasValue(name)) {
+      return mySpecPar->dblValue(name);
     }
   }
-  return 0.0;
+  return 0.;
 }
 
 //-----------------------------------------------------------------------
-std::string CocoaAnalyzer::myFetchString(const DDsvalues_type& dvst, 
-				      const std::string& spName,
+//std::string CocoaAnalyzer::myFetchString(const DDsvalues_type& dvst,
+std::string_view CocoaAnalyzer::myFetchString(const cms::DDSpecParRefs& params,
+				      const std::string& name,
 				      const size_t& vecInd ) {
-  DDValue val(spName, 0.0);
-  if (DDfetch(&dvst,val)) {
-    if ( val.strings().size() > vecInd ) {
-      //	  std::cout << "about to return: " << val.doubles()[vecInd] << std::endl;
-      return val.strings()[vecInd];
-    } else {
-      std::cout << "WARNING: OUT OF BOUNDS RETURNING 0 for index " << vecInd << " of SpecPar " << spName << std::endl;
+  //DDValue val(spName, 0.0);
+  //if (DDfetch(&dvst,val)) {
+  //if ( val.strings().size() > vecInd ) {
+  //	  std::cout << "about to return: " << val.doubles()[vecInd] << std::endl;
+  //return val.strings()[vecInd];
+  //} else {
+  //std::cout << "WARNING: OUT OF BOUNDS RETURNING 0 for index " << vecInd << " of SpecPar " << spName << std::endl;
+  //}
+  // }
+  for (const auto& mySpecPar : params) {
+    if (mySpecPar->hasValue(name)) {
+      return mySpecPar->strValue(name);
     }
   }
   return "";
