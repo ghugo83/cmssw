@@ -1,5 +1,10 @@
 <use   name="clhep"/>
 <use   name="root"/>
+
+<use name="rootmath"/>
+<use name="rootgeom"/>
+<use name="DataFormats/GeometryVector"/>
+
 <use   name="dd4hep"/>
 <use   name="DetectorDescription/Core"/>
 <use   name="DetectorDescription/DDCMS"/>

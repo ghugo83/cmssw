@@ -97,71 +97,33 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
   //const edm::ESInputTag m_tag;
   //edm::ESTransientHandle<cms::DDCompactView> cpv;
   //evts.get<IdealGeometryRecord>().get(m_tag, cpv);
-  
-
-
-  std::string fileName_ = edm::FileInPath("Geometry/CMSCommonData/data/dd4hep/cmsExtendedGeometry2021.xml").fullPath();
-  const cms::DDDetector det("", fileName_);
-  cms::DDCompactView cpv(det);
-
-  std::cout << "cpv_new->detector()->worldPlacement().name() = " << cpv.detector()->worldPlacement().name() << std::endl;
-  for (auto const& it : det.detectors()) {
-    dd4hep::DetElement det(it.second);
-    std::cout << it.first << ": " << det.path() << std::endl;
-  }
-
-  
-  //const cms::DDFilter filter(attribute, value);
-  //cms::DDFilteredView fv(cpv, filter);
-  cms::DDFilteredView fv(cpv.detector(), cpv.detector()->worldVolume());
-  const cms::DDSpecParRegistry& mypar = cpv.specpars();
-  cms::DDSpecParRefs refs;
-  std::string attribute = "ReadOutName"; 
-  std::string value     = "TrackerHitsPixelBarrel";
-  mypar.filter(refs, attribute, value);
-  fv.mergedSpecifics(refs);
-
-  bool doCOCOA = fv.firstChild();
-  std::cout << "doCOCOA = " << doCOCOA << std::endl;
-  const dd4hep::PlacedVolume lv = fv.volume();
-  std::cout << "fv.volume().name() = " << lv.name() << std::endl;
-  //std::cout << "fv.firstChild().volume().name() = " << fv.firstChild().volume().name() << std::endl;
-
-  //doCOCOA = fv.next();
-  //std::cout << "doCOCOA AFTER NEXT = " << doCOCOA << std::endl;
 
   /*
   edm::ESTransientHandle<cms::DDDetector> det;
   evts.get<IdealGeometryRecord>().get(m_tag, det);
   std::cout << "det->worldVolume().name() = " << det->worldVolume().name() << std::endl;*/
+  
+  // TO DO: add as a parameter
+  std::string fileName_ = edm::FileInPath("Geometry/CMSCommonData/data/dd4hep/cmsExtendedGeometry2021.xml").fullPath();
+  //std::string fileName_ = edm::FileInPath("Geometry/CMSCommonData/data/dd4hep/cmsExtendedGeometry2026D35.xml").fullPath();
+
+  const cms::DDDetector det("", fileName_);
+  cms::DDCompactView cpv(det);
  
-  /*
-  std::unique_ptr<cms::DDDetector> det = std::make_unique<cms::DDDetector>("DUMMY", fileName_);
-  DDFilteredView fview(det.get(), det->description()->worldVolume());
-  fview.next(0);
-  std::cout << fview.name() << " is a " << cms::dd::name(cms::DDSolidShapeMap, fview.shape()) << "\n";
-  fview.parent();
-  std::cout << fview.name() << " is a " << cms::dd::name(cms::DDSolidShapeMap, fview.shape()) << "\n";*/
-
-
-
-
-
-
-  /*
-  if(ALIUtils::debug >= 3) {
-    std::cout << std::endl << "$$$ CocoaAnalyzer::ReadXML: root object= " << cpv->root() << std::endl;
-  }
   
   //Build OpticalAlignInfo "system"
-  const DDLogicalPart lv = cpv->root();
-  std::cout << "lv.name() = " << lv.name() << std::endl;
-  std::cout << "lv.name().name() = " << lv.name().name() << std::endl;
+  //const DDLogicalPart lv = cpv->root();
+  //if(ALIUtils::debug >= 3) {
+  //std::cout << std::endl << "$$$ CocoaAnalyzer::ReadXML: root object= " << cpv->root() << std::endl;
+  //}
+  const dd4hep::Volume rootVolume = det.worldVolume();
+  if(ALIUtils::debug >= 3) {
+    std::cout << std::endl << "$$$ CocoaAnalyzer::ReadXML: root object= " << rootVolume.name() << std::endl;
+  }
   
   OpticalAlignInfo oaInfo;
   oaInfo.ID_ = 0;
-  //--- substract file name to object name
-  oaInfo.name_ = lv.name().name();
+  oaInfo.name_ = rootVolume.name();
   oaInfo.parentName_ = "";
   oaInfo.x_.quality_  = 0;    
   oaInfo.x_.value_ = 0.;
@@ -194,96 +156,140 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
   //  It stores these objects in a private data member, opt
   //std::string attribute = "COCOA"; 
   //std::string value     = "COCOA";
-  std::string attribute = "ReadOutName"; 
-  //std::string value     = "MuonCSCHits";
+  std::string attribute = "ReadOutName";
   std::string value     = "TrackerHitsPixelBarrel";
+  //std::string value     = "MuonCSCHits";
   
-	  // get all parts labelled with COCOA using a SpecPar
-  DDSpecificsMatchesValueFilter filter{DDValue(attribute, value, 0.0)};
-  DDFilteredView fv(*cpv, filter);
-  bool doCOCOA = fv.firstChild();
-  std::cout << "doCOCOA = " << doCOCOA << std::endl;
-  
+  // get all parts labelled with COCOA using a SpecPar
+  //DDSpecificsMatchesValueFilter filter{DDValue(attribute, value, 0.0)};
+  //DDFilteredView fv(*cpv, filter);
+  const cms::DDFilter filter(attribute, value);
+  cms::DDFilteredView fv(cpv, filter); // TO DO: ONLY NEXT LINE WAS WORKING
+  //cms::DDFilteredView fv(cpv.detector(), cpv.detector()->worldVolume());
+ 
+
   // Loop on parts
   int nObjects=0;
   OpticalAlignParam oaParam;
   OpticalAlignMeasurementInfo oaMeas;
 
+  bool doCOCOA = fv.firstChild();
   while ( doCOCOA ){
     ++nObjects;
     //    oaInfo.ID_ = nObjects;
-    const DDsvalues_type params(fv.mergedSpecifics());
-    
-    const DDLogicalPart lv = fv.logicalPart();
-    if(ALIUtils::debug >= 4) {
-      std::cout << " CocoaAnalyzer::ReadXML reading object " << lv.name() << std::endl;
-    }
+    //const DDsvalues_type params(fv.mergedSpecifics());
+    //const cms::DDSpecParRegistry& reg = cpv.specpars();
+    cms::DDSpecParRefs params;
+    //reg.filter(params, attribute, value);
+    fv.mergedSpecifics(params);
 
-    std::vector<DDExpandedNode> history = fv.geoHistory();
+
+    //const DDLogicalPart lv = fv.logicalPart();
+    const dd4hep::PlacedVolume myPlacedVolume = fv.volume();
+    /*
+    //std::vector<DDExpandedNode> history = fv.geoHistory();
+    const std::vector<const Node*> history = fv.geoHistory();
     oaInfo.parentName_ = "";
     size_t ii;
     for(ii = 0; ii < history.size()-1;ii++ ) {
-      if( ii != 0 ) oaInfo.parentName_ += "/";
-      std::string name = history[ii].logicalPart().name().name();
-      oaInfo.parentName_ += name;
- //    oaInfo.parentName_ = (fv.geoHistory()[fv.geoHistory().size()-2]).logicalPart().name();
-//    icol = oaInfo.parentName_.find(":");
- //   oaInfo.parentName_ = oaInfo.parentName_.substr(icol+1,oaInfo.parentName_.length());
+    if( ii != 0 ) oaInfo.parentName_ += "/";
+    std::string name = history[ii].logicalPart().name().name();
+    oaInfo.parentName_ += name;
     }
 
     //--- build object name (= parent name + object name)
     std::string name = history[ii].logicalPart().name().name();
     //--- substract file name to object name
     oaInfo.name_ = oaInfo.parentName_ + "/" + name;
+    */
+    const std::string name = myPlacedVolume.name();
+    oaInfo.name_ = fv.path();
+    
+    const dd4hep::Volume parentVolume = myPlacedVolume.motherVol();
+    oaInfo.parentName_ = parentVolume.name();
+ 
+
+    if(ALIUtils::debug >= 4) {
+      std::cout << " CocoaAnalyzer::ReadXML reading object " << myPlacedVolume.name() << std::endl;
+    }
+
+
     if(ALIUtils::debug >= 5) {
       std::cout << " @@ Name built= " << oaInfo.name_ << " short_name= " << name << " parent= " << oaInfo.parentName_ << std::endl; 
     }
 
     //----- Read centre and angles
-    oaInfo.x_.quality_  = int (myFetchDbl(params, "centre_X_quality", 0));
-    DDTranslation transl = (fv.translation());
-    DDRotationMatrix rot = (fv.rotation());
-    std::cout << "child transl = " << transl << std::endl;
-    std::cout << "child rot = " << rot << std::endl;
+    //oaInfo.x_.quality_  = int (myFetchDbl(params, "centre_X_quality", 0));
+    //oaInfo.x_.quality_ = int (params.hasValue("centre_X_quality") ? params.dblValue("centre_X_quality") : 0.);
+    
+    //DDTranslation transl = (fv.translation());
+    //DDRotationMatrix rot = (fv.rotation());
+    //cms::Translation childTrans = (fv.translation());
+    //cms::RotationMatrix chilRot = (fv.rotation());
+    //std::cout << "child transl = " << childTrans << std::endl;
+    //std::cout << "child rot = " << chilRot << std::endl;
 
-    DDExpandedNode parent = fv.geoHistory()[ fv.geoHistory().size()-2 ];
-    const DDTranslation& parentTransl = parent.absTranslation();
-    const DDRotationMatrix& parentRot = parent.absRotation();
-    std::cout << "parent transl = " << parentTransl << std::endl;
-    std::cout << "parent rot = " << parentRot << std::endl;
+    //DDExpandedNode parent = fv.geoHistory()[ fv.geoHistory().size()-2 ];
+    //const DDTranslation& parentTransl = parent.absTranslation();
+    //const DDRotationMatrix& parentRot = parent.absRotation();
+    //const cms::Translation& parentTransl = parent.translation();
+    //const cms::RotationMatrix& parentRot = parent.rotation();
+    //bool hasParent = fv.parent();
+    //std::cout << "hasParent = " << hasParent << std::endl;
+    //const cms::Translation& parentTransl = fv.translation();
+    //const cms::RotationMatrix& parentRot = fv.rotation();
+    //std::cout << "parent transl = " << parentTransl << std::endl;
+    //std::cout << "parent rot = " << parentRot << std::endl;
 
-    transl = parentRot.Inverse()*(transl - parentTransl );
-    rot = parentRot.Inverse()*rot;
-    rot = rot.Inverse(); //DDL uses opposite convention than COCOA
+    //transl = parentRot.Inverse()*(transl - parentTransl );
+    //rot = parentRot.Inverse()*rot;
+    //rot = rot.Inverse(); //DDL uses opposite convention than COCOA
+    //const TGeoMatrix& rot = myPlacedVolume.matrix();
+    const Double_t* rot = myPlacedVolume.matrix().Inverse().GetRotationMatrix();
+    const dd4hep::Position& transl = myPlacedVolume.position();
     std::cout << "transl = " << transl << std::endl;
-    std::cout << "rot = " << rot << std::endl;
 
 
     oaInfo.x_.name_ = "X";
     oaInfo.x_.dim_type_ = "centre";
-    oaInfo.x_.value_ = transl.x()*0.001; // CLHEP units are mm, COCOA are m 
-    oaInfo.x_.error_ = myFetchDbl(params, "centre_X_sigma", 0)*0.001; // CLHEP units are mm, COCOA are m 
-    oaInfo.x_.quality_  = int (myFetchDbl(params, "centre_X_quality", 0));
+    oaInfo.x_.value_ = transl.x()*0.01; // COCOA units are m 
+    //oaInfo.x_.error_ = myFetchDbl(params, "centre_X_sigma", 0)*0.001; // CLHEP units are mm, COCOA are m 
+    //oaInfo.x_.error_ = (params.hasValue("centre_X_sigma") ? params.dblValue("centre_X_sigma") : 0.) *0.001; // CLHEP units are mm, COCOA are m 
+  //oaInfo.x_.quality_  = int (myFetchDbl(params, "centre_X_quality", 0));
+    //oaInfo.x_.quality_  = int (params.hasValue("centre_X_quality") ? params.dblValue("centre_X_quality") : 0.) *0.001; // CLHEP units are mm, COCOA are m 
     
     oaInfo.y_.name_ = "Y";
     oaInfo.y_.dim_type_ = "centre";
-    oaInfo.y_.value_ = transl.y()*0.001; // CLHEP units are mm, COCOA are m 
-    oaInfo.y_.error_ = myFetchDbl(params, "centre_Y_sigma", 0)*0.001; // CLHEP units are mm, COCOA are m 
-    oaInfo.y_.quality_  = int (myFetchDbl(params, "centre_Y_quality", 0));
+    oaInfo.y_.value_ = transl.y()*0.01; // COCOA units are m 
+    // TO DO: ALSO PORT THIS COMMENTED INFO TO DD4HEP
+    //oaInfo.y_.error_ = myFetchDbl(params, "centre_Y_sigma", 0)*0.001; // CLHEP units are mm, COCOA are m 
+    //oaInfo.y_.quality_  = int (myFetchDbl(params, "centre_Y_quality", 0));
 
     oaInfo.z_.name_ = "Z";
     oaInfo.z_.dim_type_ = "centre";
-    oaInfo.z_.value_ = transl.z()*0.001; // CLHEP units are mm, COCOA are m 
-    oaInfo.z_.error_ = myFetchDbl(params, "centre_Z_sigma", 0)*0.001; // CLHEP units are mm, COCOA are m 
-    oaInfo.z_.quality_  = int (myFetchDbl(params, "centre_Z_quality", 0));
+    oaInfo.z_.value_ = transl.z()*0.01; // COCOA units are m 
+    //oaInfo.z_.error_ = myFetchDbl(params, "centre_Z_sigma", 0)*0.001; // CLHEP units are mm, COCOA are m 
+    //oaInfo.z_.quality_  = int (myFetchDbl(params, "centre_Z_quality", 0));
 
   //---- DDD convention is to use the inverse matrix, COCOA is the direct one!!!
     //---- convert it to CLHEP::Matrix
-    double xx,xy,xz,yx,yy,yz,zx,zy,zz;
-    rot.GetComponents (xx, xy, xz,
-                 yx, yy, yz,
-                 zx, zy, zz);
-    std::cout << "xx,xy,xz,yx,yy,yz,zx,zy,zz = " << xx << xy << xz << yx << yy << yz << zx << zy << zz << std::endl;
+    //double xx,xy,xz,yx,yy,yz,zx,zy,zz;
+    double xx = rot[0];
+    double xy = rot[1];
+    double xz = rot[2];
+    double yx = rot[3];
+    double yy = rot[4];
+    double yz = rot[5];
+    double zx = rot[6];
+    double zy = rot[7];
+    double zz = rot[8];
+    //rot.GetComponents(xx, xy, xz,
+    //yx, yy, yz,
+    //zx, zy, zz);
+    std::cout << "rot = " << std::endl;
+    std::cout << xx << "  " << xy << "  " << xz << std::endl;
+    std::cout << yx << "  " << yy << "  " << yz << std::endl;
+    std::cout << zx << "  " << zy << "  " << zz << std::endl;
     CLHEP::Hep3Vector colX(xx,xy,xz);
     CLHEP::Hep3Vector colY(yx,yy,yz);
     CLHEP::Hep3Vector colZ(zx,zy,zz);
@@ -293,32 +299,33 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
     oaInfo.angx_.name_ = "X";
     oaInfo.angx_.dim_type_ = "angles";
     //-    oaInfo.angx_.value_ = angles[0];
-    oaInfo.angx_.value_ = myFetchDbl(params, "angles_X_value", 0);
-    oaInfo.angx_.error_ = myFetchDbl(params, "angles_X_sigma", 0);
-    oaInfo.angx_.quality_  = int (myFetchDbl(params, "angles_X_quality", 0));
+    // TO DO: ALSO PORT THIS COMMENTED INFO TO DD4HEP
+    //oaInfo.angx_.value_ = myFetchDbl(params, "angles_X_value", 0);
+    //oaInfo.angx_.error_ = myFetchDbl(params, "angles_X_sigma", 0);
+    //oaInfo.angx_.quality_  = int (myFetchDbl(params, "angles_X_quality", 0));
 
     oaInfo.angy_.name_ = "Y";
     oaInfo.angy_.dim_type_ = "angles";
     //-    oaInfo.angy_.value_ = angles[1];
-    oaInfo.angy_.value_ = myFetchDbl(params, "angles_Y_value", 0);
-    oaInfo.angy_.error_ = myFetchDbl(params, "angles_Y_sigma", 0);
-    oaInfo.angy_.quality_  = int (myFetchDbl(params, "angles_Y_quality", 0));
+    //oaInfo.angy_.value_ = myFetchDbl(params, "angles_Y_value", 0);
+    //oaInfo.angy_.error_ = myFetchDbl(params, "angles_Y_sigma", 0);
+    //oaInfo.angy_.quality_  = int (myFetchDbl(params, "angles_Y_quality", 0));
 
     oaInfo.angz_.name_ = "Z";
     oaInfo.angz_.dim_type_ = "angles";
     //    oaInfo.angz_.value_ = angles[2];
-    oaInfo.angz_.value_ = myFetchDbl(params, "angles_Z_value", 0);
-    oaInfo.angz_.error_ = myFetchDbl(params, "angles_Z_sigma", 0);
-    oaInfo.angz_.quality_  = int (myFetchDbl(params, "angles_Z_quality", 0));
+    //oaInfo.angz_.value_ = myFetchDbl(params, "angles_Z_value", 0);
+    //oaInfo.angz_.error_ = myFetchDbl(params, "angles_Z_sigma", 0);
+    //oaInfo.angz_.quality_  = int (myFetchDbl(params, "angles_Z_quality", 0));
 
-    oaInfo.type_ = myFetchString(params, "cocoa_type", 0);
+    //oaInfo.type_ = myFetchString(params, "cocoa_type", 0);
 
-    oaInfo.ID_ = int(myFetchDbl(params, "cmssw_ID", 0));
+    //oaInfo.ID_ = int(myFetchDbl(params, "cmssw_ID", 0));
 
     if(ALIUtils::debug >= 4) {
       std::cout << "CocoaAnalyzer::ReadXML OBJECT " << oaInfo.name_ << " pos/angles read " << std::endl;
     }
-
+    /* TO DO: UNCOMMENT
     if( fabs( oaInfo.angx_.value_ - angles[0] ) > 1.E-9 || 
 	fabs( oaInfo.angy_.value_ - angles[1] ) > 1.E-9 || 
 	fabs( oaInfo.angz_.value_ - angles[2] ) > 1.E-9 ) {
@@ -326,12 +333,14 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 	oaInfo.angx_.value_ << " =? " << angles[0] <<
 	oaInfo.angy_.value_ << " =? " << angles[1] <<
 	oaInfo.angz_.value_ << " =? " << angles[2] << std::endl;
-    }
+	}*/
 
     //----- Read extra entries and measurements
-    const std::vector<const DDsvalues_type *> params2(fv.specifics());
-    std::vector<const DDsvalues_type *>::const_iterator spit = params2.begin();
-    std::vector<const DDsvalues_type *>::const_iterator endspit = params2.end();
+    /* TO DO: PORT THIS
+    //const std::vector<const DDsvalues_type *> params2(fv.specifics());
+    //std::vector<const DDsvalues_type *>::const_iterator spit = params2.begin();
+    //std::vector<const DDsvalues_type *>::const_iterator endspit = params2.end();
+    //const cms::DDSpecParRegistry& reg = fv.specpars();
     //--- extra entries variables
     std::vector<std::string> names, dims;
     std::vector<double> values, errors, quality;
@@ -368,7 +377,7 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 	}
 	
       }
-    }
+      }
 
     //---- loop again to look for the measurement object names, that have the meas name in the SpecPar title 
     //    <Parameter name="meas_object_name_SENSOR2D:OCMS/sens2" value="OCMS/laser1"  eval="false" /> 
@@ -403,7 +412,7 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 	}
 	
       }
-    }
+      }
     
     if(ALIUtils::debug >= 4) {
       std::cout << " CocoaAnalyzer::ReadXML:  Fill extra entries with read parameters " << std::endl;
@@ -488,7 +497,7 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 		  << " not match!  Did not add " << nObjects << " item to XXXMeasurements" 
 		  << std::endl;
       }
-    }
+      }*/
 
 //       std::cout << "sizes are values=" << values.size();
 //       std::cout << "  sigma(errors)=" << errors.size();
@@ -496,17 +505,20 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 //       std::cout << "  names=" << names.size();
 //       std::cout << "  dimType=" << dims.size() << std::endl;
     oaInfo.clear();
-    doCOCOA = fv.next(); // go to next part
-  } // while (doCOCOA)
-  if(ALIUtils::debug >= 3) {
-    std::cout << "CocoaAnalyzer::ReadXML: Finished building " << nObjects+1 << " OpticalAlignInfo objects" << " and " <<  measList_.oaMeasurements_.size() << " OpticalAlignMeasurementInfo objects " << std::endl;
-  }
-  if(ALIUtils::debug >= 5) {
-    std::cout << " @@@@@@ OpticalAlignments " << oaList_ << std::endl;
-    std::cout << " @@@@@@ OpticalMeasurements " << measList_ << std::endl;
-  }
+    //doCOCOA = fv.next();
+    //doCOCOA = fv.next(0); // go to next part
+    doCOCOA = fv.nextSibling();
+    } // while (doCOCOA)
+ 
+    if(ALIUtils::debug >= 3) {
+      std::cout << "CocoaAnalyzer::ReadXML: Finished building " << nObjects+1 << " OpticalAlignInfo objects" << " and " <<  measList_.oaMeasurements_.size() << " OpticalAlignMeasurementInfo objects " << std::endl;
+    }
+    if(ALIUtils::debug >= 5) {
+      std::cout << " @@@@@@ OpticalAlignments " << oaList_ << std::endl;
+      std::cout << " @@@@@@ OpticalMeasurements " << measList_ << std::endl;
+    }
 
-  */
+ 
 }
 
 //------------------------------------------------------------------------
