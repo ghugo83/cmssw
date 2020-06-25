@@ -214,14 +214,19 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
   while ( doCOCOA ){
     ++nObjects;
     //    oaInfo.ID_ = nObjects;
-    //const DDsvalues_type params(fv.mergedSpecifics());
-    // GOOOOOOOOD
-    //const cms::DDSpecParRegistry& reg = cpv.specpars();  // TO DO: remove?
+    //const DDsvalues_type params(fv.mergedSpecifics());   
     // BANZAIIIIIIII
     const cms::DDSpecParRegistry& reg = cpv->specpars();  // TO DO: remove?
     cms::DDSpecParRefs params;
     reg.filter(params, attribute, value);  // TO DO: remove?
+    std::cout << "params.size() = " << params.size() << std::endl;
     fv.mergedSpecifics(params);
+    
+    
+    std::cout << "reg.names() = " << std::endl;
+    for (const auto& name : reg.names()) {
+      std::cout << name << std::endl;
+    }
 
 
     //const DDLogicalPart lv = fv.logicalPart();
@@ -281,15 +286,9 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
     //rot = parentRot.Inverse()*rot;
     //rot = rot.Inverse(); //DDL uses opposite convention than COCOA
     //const TGeoMatrix& rot = myPlacedVolume.matrix();
-    std::cout << "just before a " << std::endl;
     const TGeoHMatrix a = myPlacedVolume.matrix();
-    std::cout << "a = "  << std::endl;
-    a.Print();
     const TGeoHMatrix b = a.Inverse();
-    std::cout << "b = " << std::endl;
-    b.Print();
     const Double_t* rot = b.GetRotationMatrix();
-    std::cout << "got rot" << std::endl;
     //const Double_t* rot = myPlacedVolume.matrix().Inverse().GetRotationMatrix();
     const dd4hep::Position& transl = myPlacedVolume.position();
     std::cout << "transl = " << transl << std::endl;
@@ -380,6 +379,7 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
     //std::vector<const DDsvalues_type *>::const_iterator spit = params2.begin();
     //std::vector<const DDsvalues_type *>::const_iterator endspit = params2.end();
     const cms::DDSpecParRefs& params2 = fv.specpars();
+    std::cout << "params2.size() = " << params2.size() << std::endl;
     //--- extra entries variables
     std::vector<std::string> names, dims;
     std::vector<double> values, errors, quality;
@@ -569,7 +569,10 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
     //doCOCOA = fv.nextSibling();
     //doCOCOA = fv.sibling();
     doCOCOA = fv.firstChild();
-    std::cout << "Z" << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;
     } // while (doCOCOA)
  
     if(ALIUtils::debug >= 3) {

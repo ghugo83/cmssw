@@ -210,6 +210,7 @@ void DDFilteredView::mergedSpecifics(DDSpecParRefs const& specs) {
 }
 
 void DDFilteredView::printFilter() const {
+  std::cout << "DDFilteredView::printFilter() filters_.size() = " << filters_.size() << std::endl;
   for (const auto& f : filters_) {
     f->print();
   }

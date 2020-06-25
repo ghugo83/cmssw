@@ -74,6 +74,8 @@
  <PosPart copyNumber="1">
    <rParent name="table"/>
    <rChild name="tilt1"/>
+   <rRotation name="TEST"/>
+   <Translation x="1*mm" y="2*mm" z="3*mm"/>
  </PosPart>
  <PosPart copyNumber="1">
    <rParent name="MotherOfAllBoxes"/>
@@ -96,6 +98,7 @@
 
 
 <RotationSection label="table2DWithMirror.xml">
+  <Rotation name="TEST" thetaX="90*deg" phiX="90*deg" thetaY="90*deg" phiY="180*deg" thetaZ="0*deg" phiZ="0*deg"/>
  <Rotation name="R0" phiX="-45*deg" thetaX="90*deg" phiY="45*deg" thetaY="90*deg" phiZ="0*deg" thetaZ="0*deg" />
  <Rotation name="R1" phiX="0*deg" thetaX="45*deg" phiY="90*deg" thetaY="90*deg" phiZ="180*deg" thetaZ="45*deg" />
  <Rotation name="R2" phiX="0*deg" thetaX="90*deg" phiY="90*deg" thetaY="100*deg" phiZ="90*deg" thetaZ="10*deg" />
@@ -247,7 +250,7 @@
    <Parameter name="angles_Z_sigma" value="0.57295779513*deg" /> 
    <Parameter name="angles_Z_quality" value="1" /> 
  </SpecPar>
- <SpecPar name="cmsWorld:OCMS/MotherOfAllBoxes/sens2_PARAMS">
+ <SpecPar name="sens2_PARAMS">
    <PartSelector path="//sens2"/> 
    <Parameter name="cocoa_type" value="sensor2D"   eval="false" /> 
    <Parameter name="cmssw_ID" value="6" /> 

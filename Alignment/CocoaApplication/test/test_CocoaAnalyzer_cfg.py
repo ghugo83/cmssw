@@ -71,13 +71,12 @@ process.DDCompactViewESProducer = cms.ESProducer("DDCompactViewESProducer",
 
 # Reading from DB
 #process.load("CondCore.DBCommon.CondDBSetup_cfi")
-
 #process.PoolDBESSource = cms.ESSource("PoolDBESSource",
 #    process.CondDBSetup,
 #    toGet = cms.VPSet(
-#        cms.PSet(
+#       cms.PSet(
 #            record = cms.string('OpticalAlignmentsRcd'),
-#            tag = cms.string('caca')
+#            tag = cms.string('OPTICALALIGNMENTS')
 #        )),
 #    connect = cms.string('sqlite_file:/home/ghugo/CMSSW/CMSSW_11_2_0_pre1/src/Alignment/CocoaApplication/test/OpticalAlignments.db')
 #)
