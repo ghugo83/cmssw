@@ -105,6 +105,7 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
   
   // TO DO: add as a parameter
   std::string fileName_ = edm::FileInPath("Geometry/CMSCommonData/data/dd4hep/cmsExtendedGeometry2021.xml").fullPath();
+  //std::string fileName_ = edm::FileInPath("Alignment/CocoaApplication/test/table2DWithMirror_dd4hep.xml").fullPath();
   //std::string fileName_ = edm::FileInPath("Geometry/CMSCommonData/data/dd4hep/cmsExtendedGeometry2026D35.xml").fullPath();
 
   const cms::DDDetector det("", fileName_);
@@ -156,9 +157,11 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
   //  It stores these objects in a private data member, opt
   //std::string attribute = "COCOA"; 
   //std::string value     = "COCOA";
+  //std::string value     = "MuonCSCHits";
+
   std::string attribute = "ReadOutName";
   std::string value     = "TrackerHitsPixelBarrel";
-  //std::string value     = "MuonCSCHits";
+  
   
   // get all parts labelled with COCOA using a SpecPar
   //DDSpecificsMatchesValueFilter filter{DDValue(attribute, value, 0.0)};
