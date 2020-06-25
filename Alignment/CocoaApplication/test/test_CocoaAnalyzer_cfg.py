@@ -6,16 +6,33 @@ process.load("FWCore.MessageService.MessageLogger_cfi")
 
 # Ideal geometry
 #process.load('Geometry.CMSCommonData.cmsIdealGeometry2015XML_cfi')
-process.load("Geometry.CMSCommonData.cmsExtendedGeometry2026D51XML_cfi")
+#process.load("Geometry.CMSCommonData.cmsExtendedGeometry2026D51XML_cfi")
 
 process.source = cms.Source("EmptySource")   
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
 
+
+# GOOOOOOOOD = BANZAI 2
 process.DDDetectorESProducer = cms.ESSource("DDDetectorESProducer",
-                                            #confGeomXMLFiles = cms.FileInPath('Geometry/CMSCommonData/data/dd4hep/cmsExtendedGeometry2026D51.xml'),
-                                            confGeomXMLFiles = cms.FileInPath('Geometry/TrackerCommonData/data/dd4hep/cms-tracker-geometry-2021.xml'),
-                                            appendToDataLabel = cms.string('CMS')
+                                            confGeomXMLFiles = cms.FileInPath('Alignment/CocoaApplication/test/table2DWithMirror_dd4hep.xml'),
+                                            #confGeomXMLFiles = cms.FileInPath('Geometry/CMSCommonData/data/dd4hep/cmsExtendedGeometry2021.xml'),
+                                            appendToDataLabel = cms.string('')
                                             )
+                                            
+process.DDCompactViewESProducer = cms.ESProducer("DDCompactViewESProducer",
+                                                 appendToDataLabel = cms.string('')
+                                                )
+                                                
+
+
+# BANZAI 1
+#XMLIdealGeometryESSource = cms.ESSource("XMLIdealGeometryESSource",
+#    geomXMLFiles = cms.vstring("DetectorDescription/DDCMS/data/cmsWorld.xml",
+#                               "Geometry/CMSCommonData/data/materials/2015/v1/materials.xml",
+#                               "Alignment/CocoaApplication/test/table2DWithMirror_dd4hep.xml"),
+#    rootNodeName = cms.string('cmsWorld:OCMS')
+#)
+                                          
 
 
 

@@ -94,6 +94,12 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
   //edm::ESTransientHandle<DDCompactView> cpv;
   //evts.get<IdealGeometryRecord>().get(cpv);
 
+
+  // BANZAIIIIIII
+  edm::ESTransientHandle<cms::DDCompactView> cpv;
+  evts.get<IdealGeometryRecord>().get(cpv);
+  const cms::DDDetector& det = *(cpv->detector());
+
   //const edm::ESInputTag m_tag;
   //edm::ESTransientHandle<cms::DDCompactView> cpv;
   //evts.get<IdealGeometryRecord>().get(m_tag, cpv);
@@ -104,12 +110,15 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
   std::cout << "det->worldVolume().name() = " << det->worldVolume().name() << std::endl;*/
   
   // TO DO: add as a parameter
-  std::string fileName_ = edm::FileInPath("Geometry/CMSCommonData/data/dd4hep/cmsExtendedGeometry2021.xml").fullPath();
+  // GOODDDDDDD
+  //std::string fileName_ = edm::FileInPath("Geometry/CMSCommonData/data/dd4hep/cmsExtendedGeometry2021.xml").fullPath();
   //std::string fileName_ = edm::FileInPath("Alignment/CocoaApplication/test/table2DWithMirror_dd4hep.xml").fullPath();
   //std::string fileName_ = edm::FileInPath("Geometry/CMSCommonData/data/dd4hep/cmsExtendedGeometry2026D35.xml").fullPath();
 
-  const cms::DDDetector det("", fileName_);
-  cms::DDCompactView cpv(det);
+
+  // GOODDDDDDD
+  //const cms::DDDetector det("", fileName_);
+  //cms::DDCompactView cpv(det);
  
   
   //Build OpticalAlignInfo "system"
@@ -155,19 +164,37 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
   // At each node we get specpars as variables and use them in 
   // constructing COCOA objects. 
   //  It stores these objects in a private data member, opt
-  //std::string attribute = "COCOA"; 
-  //std::string value     = "COCOA";
+  std::string attribute = "COCOA"; 
+  std::string value     = "COCOA";
   //std::string value     = "MuonCSCHits";
 
-  std::string attribute = "ReadOutName";
-  std::string value     = "TrackerHitsPixelBarrel";
+  //std::string attribute = "ReadOutName";
+  //std::string value     = "TrackerHitsPixelBarrel";
   
   
   // get all parts labelled with COCOA using a SpecPar
   //DDSpecificsMatchesValueFilter filter{DDValue(attribute, value, 0.0)};
   //DDFilteredView fv(*cpv, filter);
-  const cms::DDFilter filter(attribute, value);
-  cms::DDFilteredView fv(cpv, filter);
+
+  // GOOOOOOOOD
+  //const cms::DDFilter filter(attribute, value);
+  //cms::DDFilteredView fv(cpv, filter);
+
+  // BANZAIIIIIIII
+  cms::DDFilteredView fv(cpv->detector(), cpv->detector()->worldVolume());
+  cms::DDSpecParRefs ref;
+  const cms::DDSpecParRegistry& mypar = cpv->specpars();
+  mypar.filter(ref, attribute, value);
+  std::cout << " cms::DDSpecParRef size() = " << ref.size() << std::endl;
+  fv.mergedSpecifics(ref);
+  std::cout << "after merge:  cms::DDSpecParRef size() = " << ref.size() << std::endl;
+  for (const auto& specPar : ref) {
+    std::cout << "specPar->name = " << specPar->name << std::endl;
+    for (const auto& valo : specPar->value<std::vector<std::string>>(attribute)) {
+      std::cout << "specPar->value = " << valo << std::endl;
+    }
+  }
+
 
 
   // Loop on parts
@@ -175,12 +202,23 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
   OpticalAlignParam oaParam;
   OpticalAlignMeasurementInfo oaMeas;
 
+  fv.printFilter();
+  std::cout << "fv.path() = " << fv.path() << std::endl;
   bool doCOCOA = fv.firstChild();
+  std::cout << "doCOCOA = " << doCOCOA << std::endl;
+  std::cout << "after get child fv.path() = " << fv.path() << std::endl;
+
+
+
+  
   while ( doCOCOA ){
     ++nObjects;
     //    oaInfo.ID_ = nObjects;
     //const DDsvalues_type params(fv.mergedSpecifics());
-    const cms::DDSpecParRegistry& reg = cpv.specpars();  // TO DO: remove?
+    // GOOOOOOOOD
+    //const cms::DDSpecParRegistry& reg = cpv.specpars();  // TO DO: remove?
+    // BANZAIIIIIIII
+    const cms::DDSpecParRegistry& reg = cpv->specpars();  // TO DO: remove?
     cms::DDSpecParRefs params;
     reg.filter(params, attribute, value);  // TO DO: remove?
     fv.mergedSpecifics(params);
@@ -243,7 +281,16 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
     //rot = parentRot.Inverse()*rot;
     //rot = rot.Inverse(); //DDL uses opposite convention than COCOA
     //const TGeoMatrix& rot = myPlacedVolume.matrix();
-    const Double_t* rot = myPlacedVolume.matrix().Inverse().GetRotationMatrix();
+    std::cout << "just before a " << std::endl;
+    const TGeoHMatrix a = myPlacedVolume.matrix();
+    std::cout << "a = "  << std::endl;
+    a.Print();
+    const TGeoHMatrix b = a.Inverse();
+    std::cout << "b = " << std::endl;
+    b.Print();
+    const Double_t* rot = b.GetRotationMatrix();
+    std::cout << "got rot" << std::endl;
+    //const Double_t* rot = myPlacedVolume.matrix().Inverse().GetRotationMatrix();
     const dd4hep::Position& transl = myPlacedVolume.position();
     std::cout << "transl = " << transl << std::endl;
 
@@ -522,7 +569,7 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
     //doCOCOA = fv.nextSibling();
     //doCOCOA = fv.sibling();
     doCOCOA = fv.firstChild();
-
+    std::cout << "Z" << std::endl;
     } // while (doCOCOA)
  
     if(ALIUtils::debug >= 3) {
