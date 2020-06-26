@@ -63,14 +63,28 @@ class CocoaAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>
   void RunCocoa();
 
   OpticalAlignInfo GetOptAlignInfoFromOptO( OpticalObject* opto );
-  //double myFetchDbl(const DDsvalues_type& dvst, 
-  double myFetchDbl(const cms::DDSpecParRefs& params,
-		      const std::string& spName);
+  std::vector<double> getAllParameterValuesFromSpecParSections(const cms::DDSpecParRegistry& allSpecParSections,
+							       const std::string& nodePath,
+							       const std::string& parameterName
+							       );
+//double myFetchDbl(const DDsvalues_type& dvst,
 //const size_t& vecInd );
+  double getParameterValueFromSpecParSections(const cms::DDSpecParRegistry& allSpecParSections,
+					      const std::string& nodePath,
+					      const std::string& parameterName,
+					      const unsigned int parameterValueIndex
+					      );
+
 //std::string myFetchString(const DDsvalues_type& dvst, 
- std::string_view myFetchString(const cms::DDSpecParRefs& params,
-				  const std::string& spName);
-//const size_t& vecInd );
+std::vector<std::string> getAllParameterValuesFromSpecParSectionsString(const cms::DDSpecParRegistry& allSpecParSections,
+									  const std::string& nodePath,
+									  const std::string& parameterName
+									  );
+std::string getParameterValueFromSpecParSectionsString(const cms::DDSpecParRegistry& allSpecParSections,
+							 const std::string& nodePath,
+							 const std::string& parameterName,
+							 const unsigned int parameterValueIndex
+							 );
 
  private:
   OpticalAlignments oaList_;

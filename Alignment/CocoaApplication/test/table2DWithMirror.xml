@@ -126,7 +126,7 @@
     <Parameter name="COCOA" value="COCOA" />
   </SpecPar>
  <SpecPar name="laser1_PARAMS">
-   <PartSelector path="//laser1"/> 
+   <PartSelector path="world_volume/MotherOfAllBoxes_1/table_1/laser1_1"/> 
    <Parameter name="cocoa_type" value="laser"   eval="false" /> 
    <Parameter name="cmssw_ID" value="2" /> 
    <Parameter name="angles_X_value" value="0*deg" /> 
@@ -146,7 +146,7 @@
    <Parameter name="angles_Z_quality" value="0" /> 
  </SpecPar>
  <SpecPar name="mirror_PARAMS">
-   <PartSelector path="//mirror"/> 
+   <PartSelector path="world_volume/MotherOfAllBoxes_1/table_1/mirror_1"/> 
    <Parameter name="cocoa_type" value="mirror"   eval="false" /> 
    <Parameter name="cmssw_ID" value="3" /> 
    <Parameter name="angles_X_value" value="0*deg" /> 
@@ -191,7 +191,7 @@
    <Parameter name="quality" value="0"  eval="true" /> 
  </SpecPar>
  <SpecPar name="tilt1_PARAMS">
-   <PartSelector path="//tilt1"/> 
+   <PartSelector path="world_volume/MotherOfAllBoxes_1/table_1/tilt1_1"/> 
    <Parameter name="cocoa_type" value="tiltmeter"   eval="false" /> 
    <Parameter name="cmssw_ID" value="4" /> 
    <Parameter name="angles_X_value" value="0*deg" /> 
@@ -211,7 +211,7 @@
    <Parameter name="angles_Z_quality" value="1" /> 
  </SpecPar>
  <SpecPar name="table_PARAMS">
-   <PartSelector path="//table"/> 
+   <PartSelector path="world_volume/MotherOfAllBoxes_1/table_1"/>
    <Parameter name="cocoa_type" value="table"   eval="false" /> 
    <Parameter name="cmssw_ID" value="1" /> 
    <Parameter name="angles_X_value" value="10*deg" /> 
@@ -231,7 +231,7 @@
    <Parameter name="angles_Z_quality" value="1" /> 
  </SpecPar>
  <SpecPar name="sens1_PARAMS">
-   <PartSelector path="//sens1"/> 
+   <PartSelector path="world_volume/MotherOfAllBoxes_1/sens1_1"/> 
    <Parameter name="cocoa_type" value="sensor2D"   eval="false" /> 
    <Parameter name="cmssw_ID" value="5" /> 
    <Parameter name="angles_X_value" value="0*deg" /> 
@@ -251,7 +251,7 @@
    <Parameter name="angles_Z_quality" value="1" /> 
  </SpecPar>
  <SpecPar name="sens2_PARAMS">
-   <PartSelector path="//sens2"/> 
+   <PartSelector path="world_volume/MotherOfAllBoxes_1/sens2_1"/> 
    <Parameter name="cocoa_type" value="sensor2D"   eval="false" /> 
    <Parameter name="cmssw_ID" value="6" /> 
    <Parameter name="angles_X_value" value="0*deg" /> 
@@ -271,21 +271,21 @@
    <Parameter name="angles_Z_quality" value="1" /> 
  </SpecPar> 
  <SpecPar name="tilt1_MEASUREMENT">
-   <PartSelector path="//tilt1"/> 
+   <PartSelector path="world_volume/MotherOfAllBoxes_1/table_1/tilt1_1"/> 
    <Parameter name="meas_name" value="tilt1"  eval="false" /> 
    <Parameter name="meas_type" value="TILTMETER"  eval="false" /> 
-   <Parameter name="meas_object_name_tilt1" value="cmsWorld:OCMS/MotherOfAllBoxes/table/tilt1"  eval="false" /> 
+   <Parameter name="meas_object_name_tilt1" value="world_volume/MotherOfAllBoxes_1/table_1/tilt1_1"  eval="false" /> 
    <Parameter name="meas_value_name_tilt1" value="T"  eval="false" /> 
    <Parameter name="meas_value_tilt1" value="0"  eval="true" /> 
    <Parameter name="meas_sigma_tilt1" value="1e-05"  eval="true" /> 
    <Parameter name="meas_is_simulated_value_tilt1" value="1"  eval="true" /> 
  </SpecPar>
  <SpecPar name="sens1_MEASUREMENT">
-   <PartSelector path="//sens1"/> 
+   <PartSelector path="world_volume/MotherOfAllBoxes_1/sens1_1"/> 
    <Parameter name="meas_name" value="sens1"  eval="false" /> 
    <Parameter name="meas_type" value="SENSOR2D"  eval="false" /> 
-   <Parameter name="meas_object_name_sens1" value="cmsWorld:OCMS/MotherOfAllBoxes/table/laser1"  eval="false" /> 
-   <Parameter name="meas_object_name_sens1" value="cmsWorld:OCMS/MotherOfAllBoxes/sens1"  eval="false" /> 
+   <Parameter name="meas_object_name_sens1" value="world_volume/MotherOfAllBoxes_1/table_1/laser1_1"  eval="false" /> 
+   <Parameter name="meas_object_name_sens1" value="world_volume/MotherOfAllBoxes_1/sens1_1"  eval="false" /> 
    <Parameter name="meas_value_name_sens1" value="H"  eval="false" /> 
    <Parameter name="meas_value_sens1" value="0"  eval="true" /> 
    <Parameter name="meas_sigma_sens1" value="0.0001"  eval="true" /> 
@@ -296,8 +296,8 @@
    <Parameter name="meas_is_simulated_value_sens1" value="1"  eval="true" /> 
    <Parameter name="meas_name" value="sens1-b"  eval="false" /> 
    <Parameter name="meas_type" value="SENSOR2D"  eval="false" /> 
-   <Parameter name="meas_object_name_sens1-b" value="cmsWorld:OCMS/MotherOfAllBoxes/table/laser1"  eval="false" /> 
-   <Parameter name="meas_object_name_sens1-b" value="cmsWorld:OCMS/MotherOfAllBoxes/sens1"  eval="false" /> 
+   <Parameter name="meas_object_name_sens1-b" value="world_volume/MotherOfAllBoxes_1/table_1/laser1_1"  eval="false" /> 
+   <Parameter name="meas_object_name_sens1-b" value="world_volume/MotherOfAllBoxes_1/sens1_1"  eval="false" /> 
    <Parameter name="meas_value_name_sens1-b" value="H"  eval="false" /> 
    <Parameter name="meas_value_sens1-b" value="0"  eval="true" /> 
    <Parameter name="meas_sigma_sens1-b" value="0.0001"  eval="true" /> 
@@ -308,12 +308,12 @@
    <Parameter name="meas_is_simulated_value_sens1-b" value="1"  eval="true" /> 
  </SpecPar>
  <SpecPar name="sens2_MEASUREMENT">
-   <PartSelector path="//sens2"/> 
+   <PartSelector path="world_volume/MotherOfAllBoxes_1/sens2_1"/> 
    <Parameter name="meas_name" value="sens2"  eval="false" /> 
    <Parameter name="meas_type" value="SENSOR2D"  eval="false" /> 
-   <Parameter name="meas_object_name_sens2" value="cmsWorld:OCMS/MotherOfAllBoxes/table/laser1"  eval="false" /> 
-   <Parameter name="meas_object_name_sens2" value="cmsWorld:OCMS/MotherOfAllBoxes/table/mirror:DD"  eval="false" /> 
-   <Parameter name="meas_object_name_sens2" value="cmsWorld:OCMS/MotherOfAllBoxes/sens2"  eval="false" /> 
+   <Parameter name="meas_object_name_sens2" value="world_volume/MotherOfAllBoxes_1/table_1/laser1_1"  eval="false" /> 
+   <Parameter name="meas_object_name_sens2" value="world_volume/MotherOfAllBoxes_1/table_1/mirror_1"  eval="false" /> 
+   <Parameter name="meas_object_name_sens2" value="world_volume/MotherOfAllBoxes_1/sens2_1"  eval="false" /> 
    <Parameter name="meas_value_name_sens2" value="H"  eval="false" /> 
    <Parameter name="meas_value_sens2" value="0"  eval="true" /> 
    <Parameter name="meas_sigma_sens2" value="0.0001"  eval="true" /> 

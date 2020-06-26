@@ -181,19 +181,11 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
   //cms::DDFilteredView fv(cpv, filter);
 
   // BANZAIIIIIIII
-  cms::DDFilteredView fv(cpv->detector(), cpv->detector()->worldVolume());
-  cms::DDSpecParRefs ref;
+  cms::DDFilteredView fv(cpv->detector(), cpv->detector()->worldVolume()); 
   const cms::DDSpecParRegistry& mypar = cpv->specpars();
+  cms::DDSpecParRefs ref;
   mypar.filter(ref, attribute, value);
-  std::cout << " cms::DDSpecParRef size() = " << ref.size() << std::endl;
   fv.mergedSpecifics(ref);
-  std::cout << "after merge:  cms::DDSpecParRef size() = " << ref.size() << std::endl;
-  for (const auto& specPar : ref) {
-    std::cout << "specPar->name = " << specPar->name << std::endl;
-    for (const auto& valo : specPar->value<std::vector<std::string>>(attribute)) {
-      std::cout << "specPar->value = " << valo << std::endl;
-    }
-  }
 
 
 
@@ -209,24 +201,17 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
   std::cout << "after get child fv.path() = " << fv.path() << std::endl;
 
 
-
-  
   while ( doCOCOA ){
     ++nObjects;
     //    oaInfo.ID_ = nObjects;
     //const DDsvalues_type params(fv.mergedSpecifics());   
     // BANZAIIIIIIII
-    const cms::DDSpecParRegistry& reg = cpv->specpars();  // TO DO: remove?
-    cms::DDSpecParRefs params;
-    reg.filter(params, attribute, value);  // TO DO: remove?
-    std::cout << "params.size() = " << params.size() << std::endl;
-    fv.mergedSpecifics(params);
-    
-    
-    std::cout << "reg.names() = " << std::endl;
-    for (const auto& name : reg.names()) {
-      std::cout << name << std::endl;
-    }
+    const cms::DDSpecParRegistry& allSpecParSections = cpv->specpars();
+    const std::string nodePath = fv.path();
+    //cms::DDSpecParRefs params;
+    //allSpecParSections.filter(params, attribute, value);
+    //fv.mergedSpecifics(params);   
+
 
 
     //const DDLogicalPart lv = fv.logicalPart();
@@ -248,7 +233,7 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
     oaInfo.name_ = oaInfo.parentName_ + "/" + name;
     */
     const std::string name = myPlacedVolume.name();
-    oaInfo.name_ = fv.path();
+    oaInfo.name_ = nodePath;
     
     const dd4hep::Volume parentVolume = myPlacedVolume.motherVol();
     oaInfo.parentName_ = parentVolume.name();
@@ -295,24 +280,42 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 
 
     //----- Read centre and angles
-    oaInfo.x_.quality_  = int (myFetchDbl(params, "centre_X_quality"));
     oaInfo.x_.name_ = "X";
     oaInfo.x_.dim_type_ = "centre";
     oaInfo.x_.value_ = transl.x()*0.01; // COCOA units are m 
-    oaInfo.x_.error_ = myFetchDbl(params, "centre_X_sigma")*0.01; // COCOA units are m 
-    oaInfo.x_.quality_  = int (myFetchDbl(params, "centre_X_quality"));
+    oaInfo.x_.error_ = getParameterValueFromSpecParSections(allSpecParSections,
+							    nodePath,
+							    "centre_X_sigma",
+							    0)*0.01; // COCOA units are m 
+    //oaInfo.x_.quality_  = int (myFetchDbl(params, "centre_X_quality"));
+    oaInfo.x_.quality_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
+									       nodePath,
+									       "centre_X_quality",
+									       0));
     
     oaInfo.y_.name_ = "Y";
     oaInfo.y_.dim_type_ = "centre";
     oaInfo.y_.value_ = transl.y()*0.01; // COCOA units are m 
-    oaInfo.y_.error_ = myFetchDbl(params, "centre_Y_sigma")*0.01; // COCOA units are m 
-    oaInfo.y_.quality_  = int (myFetchDbl(params, "centre_Y_quality"));
+    oaInfo.y_.error_ = getParameterValueFromSpecParSections(allSpecParSections,
+							    nodePath,
+							    "centre_Y_sigma",
+							    0)*0.01; // COCOA units are m 
+    oaInfo.y_.quality_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
+									       nodePath,
+									       "centre_Y_quality",
+									       0));
 
     oaInfo.z_.name_ = "Z";
     oaInfo.z_.dim_type_ = "centre";
     oaInfo.z_.value_ = transl.z()*0.01; // COCOA units are m 
-    oaInfo.z_.error_ = myFetchDbl(params, "centre_Z_sigma")*0.01; // COCOA units are m 
-    oaInfo.z_.quality_  = int (myFetchDbl(params, "centre_Z_quality"));
+    oaInfo.z_.error_ = getParameterValueFromSpecParSections(allSpecParSections,
+							    nodePath,
+							    "centre_Z_sigma",
+							    0)*0.01; // COCOA units are m 
+    oaInfo.z_.quality_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
+									       nodePath,
+									       "centre_Z_quality",
+									       0));
 
   //---- DDD convention is to use the inverse matrix, COCOA is the direct one!!!
     //---- convert it to CLHEP::Matrix
@@ -341,25 +344,58 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 
     oaInfo.angx_.name_ = "X";
     oaInfo.angx_.dim_type_ = "angles";
-    oaInfo.angx_.value_ = myFetchDbl(params, "angles_X_value");
-    oaInfo.angx_.error_ = myFetchDbl(params, "angles_X_sigma");
-    oaInfo.angx_.quality_  = int (myFetchDbl(params, "angles_X_quality"));
+    oaInfo.angx_.value_ = getParameterValueFromSpecParSections(allSpecParSections,
+							       nodePath,
+							       "angles_X_value",
+							       0);
+    oaInfo.angx_.error_ = getParameterValueFromSpecParSections(allSpecParSections,
+							       nodePath,
+							       "angles_X_sigma",
+							       0);
+    oaInfo.angx_.quality_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
+										   nodePath,
+										   "angles_X_quality",
+										   0));
 
     oaInfo.angy_.name_ = "Y";
     oaInfo.angy_.dim_type_ = "angles";
-    oaInfo.angy_.value_ = myFetchDbl(params, "angles_Y_value");
-    oaInfo.angy_.error_ = myFetchDbl(params, "angles_Y_sigma");
-    oaInfo.angy_.quality_  = int (myFetchDbl(params, "angles_Y_quality"));
+    oaInfo.angy_.value_ = getParameterValueFromSpecParSections(allSpecParSections,
+							       nodePath,
+							       "angles_Y_value",
+							       0);
+    oaInfo.angy_.error_ = getParameterValueFromSpecParSections(allSpecParSections,
+							       nodePath,
+							       "angles_Y_sigma",
+							       0);
+    oaInfo.angy_.quality_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
+										   nodePath,
+										   "angles_Y_quality",
+										   0));
 
     oaInfo.angz_.name_ = "Z";
     oaInfo.angz_.dim_type_ = "angles";
-    oaInfo.angz_.value_ = myFetchDbl(params, "angles_Z_value");
-    oaInfo.angz_.error_ = myFetchDbl(params, "angles_Z_sigma");
-    oaInfo.angz_.quality_  = int (myFetchDbl(params, "angles_Z_quality"));
+    oaInfo.angz_.value_ = getParameterValueFromSpecParSections(allSpecParSections,
+							       nodePath,
+							       "angles_Z_value",
+							       0);
+    oaInfo.angz_.error_ = getParameterValueFromSpecParSections(allSpecParSections,
+							       nodePath,
+							       "angles_Z_sigma",
+							       0);
+    oaInfo.angz_.quality_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
+										   nodePath,
+										   "angles_Z_quality",
+										   0));
 
-    oaInfo.type_ = myFetchString(params, "cocoa_type");
+    oaInfo.type_ = getParameterValueFromSpecParSectionsString(allSpecParSections,
+							      nodePath,
+							      "cocoa_type",
+							      0);
 
-    oaInfo.ID_ = int(myFetchDbl(params, "cmssw_ID"));
+    oaInfo.ID_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
+								       nodePath,
+								       "cmssw_ID",
+								       0));
 
     if(ALIUtils::debug >= 4) {
       std::cout << "CocoaAnalyzer::ReadXML OBJECT " << oaInfo.name_ << " pos/angles read " << std::endl;
@@ -378,8 +414,10 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
     //const std::vector<const DDsvalues_type *> params2(fv.specifics());
     //std::vector<const DDsvalues_type *>::const_iterator spit = params2.begin();
     //std::vector<const DDsvalues_type *>::const_iterator endspit = params2.end();
-    const cms::DDSpecParRefs& params2 = fv.specpars();
-    std::cout << "params2.size() = " << params2.size() << std::endl;
+
+    //const cms::DDSpecParRefs& params2 = fv.specpars();
+    //std::cout << "params2.size() = " << params2.size() << std::endl;
+
     //--- extra entries variables
     std::vector<std::string> names, dims;
     std::vector<double> values, errors, quality;
@@ -393,7 +431,7 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
     std::map<std::string, std::vector<double> > measIsSimulatedValue;
 
     //for ( ; spit != endspit; ++spit ) {
-    for (const auto& mySpecPar : params2) {
+    //for (const auto& mySpecPar : params2) {
       //DDsvalues_type::const_iterator sit = (**spit).begin();
       //DDsvalues_type::const_iterator endsit = (**spit).end();
       //for ( ; sit != endsit; ++sit ) {
@@ -415,17 +453,34 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 	//- std::cout << " meas_type found " << std::endl;
 	measTypes = sit->second.strings();
 	}*/
-      names = mySpecPar->value<std::vector<std::string>>("extra_entry");
-      dims = mySpecPar->value<std::vector<std::string>>("dimType");
-      values = mySpecPar->value<std::vector<double>>("value");
-      errors = mySpecPar->value<std::vector<double>>("sigma");
-      quality = mySpecPar->value<std::vector<double>>("quality");
-      measNames = mySpecPar->value<std::vector<std::string>>("meas_name");
-      measTypes = mySpecPar->value<std::vector<std::string>>("meas_type");
+
+      //names = mySpecPar->value<std::vector<std::string>>("extra_entry");
+      names = getAllParameterValuesFromSpecParSectionsString(allSpecParSections,
+							     nodePath,
+							     "extra_entry"
+							     );
+      dims = getAllParameterValuesFromSpecParSectionsString(allSpecParSections,
+							    nodePath,
+							    "dimType");
+      values = getAllParameterValuesFromSpecParSections(allSpecParSections,
+							nodePath,
+							"value");
+      errors = getAllParameterValuesFromSpecParSections(allSpecParSections,
+							nodePath,
+							"sigma");
+      quality = getAllParameterValuesFromSpecParSections(allSpecParSections,
+							 nodePath,
+							 "quality");
+      measNames = getAllParameterValuesFromSpecParSectionsString(allSpecParSections,
+								 nodePath,
+								 "meas_name");
+      measTypes = getAllParameterValuesFromSpecParSectionsString(allSpecParSections,
+								 nodePath,
+								 "meas_type");
 
 	
       //}
-    }
+      //}
 
     //---- loop again to look for the measurement object names, that have the meas name in the SpecPar title 
     //    <Parameter name="meas_object_name_SENSOR2D:OCMS/sens2" value="OCMS/laser1"  eval="false" /> 
@@ -433,7 +488,7 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 
     //std::vector<std::string>::iterator vsite;
     //for ( spit = params2.begin(); spit != params2.end(); ++spit ) {
-    for (const auto& mySpecPar : params2) {
+    //for (const auto& mySpecPar : params2) {
       //-  std::cout << "loop vector DDsvalues " << std::endl;
       //DDsvalues_type::const_iterator sit = (**spit).begin();
       //DDsvalues_type::const_iterator endsit = (**spit).end();
@@ -457,21 +512,30 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 	  std::cout << *vsite << " setting issimu " << measIsSimulatedValue[*vsite][0] << std::endl;
 	  }
 	  }*/
-	measObjectNames[name] = mySpecPar->value<std::vector<std::string>>("meas_object_name_" + name);
-	measParamNames[name] = mySpecPar->value<std::vector<std::string>>("meas_value_name_" + name);
-	measParamValues[name] = mySpecPar->value<std::vector<double>>("meas_value_" + name);
-	measParamSigmas[name] = mySpecPar->value<std::vector<double>>("meas_sigma_" + name);
+	measObjectNames[name] = getAllParameterValuesFromSpecParSectionsString(allSpecParSections,
+									       nodePath,
+									       "meas_object_name_" + name);
+	measParamNames[name] = getAllParameterValuesFromSpecParSectionsString(allSpecParSections,
+									      nodePath,
+									      "meas_value_name_" + name);
+	measParamValues[name] = getAllParameterValuesFromSpecParSections(allSpecParSections,
+									 nodePath,
+									 "meas_value_" + name);
+	measParamSigmas[name] = getAllParameterValuesFromSpecParSections(allSpecParSections,
+									 nodePath,
+									 "meas_sigma_" + name);
 	// this is not in OptAlignParam info
-	measIsSimulatedValue[name] = mySpecPar->value<std::vector<double>>("meas_is_simulated_value_" + name);
+	measIsSimulatedValue[name] = getAllParameterValuesFromSpecParSections(allSpecParSections,
+									      nodePath,
+									      "meas_is_simulated_value_" + name);
 
 	if(ALIUtils::debug >= 5) {
-	  //std::cout << "CocoaAnalyser: looped measObjectNames " << "meas_object_name_"+(*vsite) << " n obj " << measObjectNames[*vsite].size() << std::endl;
 	  std::cout << "CocoaAnalyser: looped measObjectNames " << "meas_object_name_" + name << " n obj " << measObjectNames.at(name).size() << std::endl;
 	}
 
       }
       //}
-    }
+      //}
     
     if(ALIUtils::debug >= 4) {
       std::cout << " CocoaAnalyzer::ReadXML:  Fill extra entries with read parameters " << std::endl;
@@ -489,7 +553,7 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 	} 
 	oaParam.value_ = values[ind]*dimFactor;
 	oaParam.error_ = errors[ind]*dimFactor;
-	oaParam.quality_ = int (quality[ind]);
+	oaParam.quality_ = static_cast<int>(quality[ind]);
 	oaParam.name_ = names[ind];
 	oaParam.dim_type_ = dims[ind];
 	oaInfo.extraEntries_.push_back (oaParam);
@@ -809,10 +873,27 @@ void CocoaAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& evts)
 
 
 //-----------------------------------------------------------------------
+std::vector<double> CocoaAnalyzer::getAllParameterValuesFromSpecParSections(const cms::DDSpecParRegistry& allSpecParSections,
+									    const std::string& nodePath,
+									    const std::string& parameterName
+									    ) {
+  cms::DDSpecParRefs filteredSpecParSections;
+  allSpecParSections.filter(filteredSpecParSections, parameterName);
+  for (const auto& mySpecParSection : filteredSpecParSections) {
+    if (mySpecParSection->hasPath(nodePath)) {
+      return mySpecParSection->value<std::vector<double>>(parameterName);
+    }
+  }
+
+  return std::vector<double>();
+}
+
 //double CocoaAnalyzer::myFetchDbl(const DDsvalues_type& dvst,
-double CocoaAnalyzer::myFetchDbl(const cms::DDSpecParRefs& params,
-				 //const std::string& spName,
-				 const std::string& name) {
+double CocoaAnalyzer::getParameterValueFromSpecParSections(const cms::DDSpecParRegistry& allSpecParSections,
+							   const std::string& nodePath,
+							   const std::string& parameterName,
+							   const unsigned int parameterValueIndex
+							   ) {
   //const size_t& vecInd ) {
   //DDValue val(spName, 0.0);
   //if (DDfetch(&dvst,val)) {
@@ -826,18 +907,17 @@ double CocoaAnalyzer::myFetchDbl(const cms::DDSpecParRefs& params,
   //return 0.0;
 
   //if (params.hasSpecPar(name)) {
-  for (const auto& mySpecPar : params) {
-    if (mySpecPar->hasValue(name)) {
-      return mySpecPar->dblValue(name);
-    }
+  
+  const std::vector<double>& allParameterValues = getAllParameterValuesFromSpecParSections(allSpecParSections, nodePath, parameterName);
+  if (parameterValueIndex < allParameterValues.size()) {
+    return allParameterValues.at(parameterValueIndex);
   }
   return 0.;
 }
 
+
 //-----------------------------------------------------------------------
 //std::string CocoaAnalyzer::myFetchString(const DDsvalues_type& dvst,
-std::string_view CocoaAnalyzer::myFetchString(const cms::DDSpecParRefs& params,
-					      const std::string& name) {
 					      //const size_t& vecInd ) {
   //DDValue val(spName, 0.0);
   //if (DDfetch(&dvst,val)) {
@@ -848,11 +928,34 @@ std::string_view CocoaAnalyzer::myFetchString(const cms::DDSpecParRefs& params,
   //std::cout << "WARNING: OUT OF BOUNDS RETURNING 0 for index " << vecInd << " of SpecPar " << spName << std::endl;
   //}
   // }
-  for (const auto& mySpecPar : params) {
-    if (mySpecPar->hasValue(name)) {
-      return mySpecPar->strValue(name);
+  //return "";
+//}
+
+
+std::vector<std::string> CocoaAnalyzer::getAllParameterValuesFromSpecParSectionsString(const cms::DDSpecParRegistry& allSpecParSections,
+										       const std::string& nodePath,
+										       const std::string& parameterName
+										       ) {
+  cms::DDSpecParRefs filteredSpecParSections;
+  allSpecParSections.filter(filteredSpecParSections, parameterName);
+  for (const auto& mySpecParSection : filteredSpecParSections) {
+    if (mySpecParSection->hasPath(nodePath)) {
+      return mySpecParSection->value<std::vector<std::string>>(parameterName);
     }
+  }
+
+  return std::vector<std::string>();
+}
+
+
+std::string CocoaAnalyzer::getParameterValueFromSpecParSectionsString(const cms::DDSpecParRegistry& allSpecParSections,
+								      const std::string& nodePath,
+								      const std::string& parameterName,
+								      const unsigned int parameterValueIndex
+								      ) {  
+  const std::vector<std::string>& allParameterValues = getAllParameterValuesFromSpecParSectionsString(allSpecParSections, nodePath, parameterName);
+  if (parameterValueIndex < allParameterValues.size()) {
+    return allParameterValues.at(parameterValueIndex);
   }
   return "";
 }
-
