@@ -166,8 +166,6 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
   //  It stores these objects in a private data member, opt
   std::string attribute = "COCOA"; 
   std::string value     = "COCOA";
-  //std::string value     = "MuonCSCHits";
-
   //std::string attribute = "ReadOutName";
   //std::string value     = "TrackerHitsPixelBarrel";
   
@@ -195,10 +193,7 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
   OpticalAlignMeasurementInfo oaMeas;
 
   fv.printFilter();
-  std::cout << "fv.path() = " << fv.path() << std::endl;
   bool doCOCOA = fv.firstChild();
-  std::cout << "doCOCOA = " << doCOCOA << std::endl;
-  std::cout << "after get child fv.path() = " << fv.path() << std::endl;
 
 
   while ( doCOCOA ){
