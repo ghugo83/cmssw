@@ -12,7 +12,8 @@
 #include <cstdlib>
 #include <iomanip>
 
-ALIint ALIUtils::debug = -1;
+//ALIint ALIUtils::debug = -1;
+ALIint ALIUtils::debug = 6;
 ALIint ALIUtils::report = 1;
 ALIdouble ALIUtils::_LengthValueDimensionFactor = 1.;
 ALIdouble ALIUtils::_LengthSigmaDimensionFactor = 1.;

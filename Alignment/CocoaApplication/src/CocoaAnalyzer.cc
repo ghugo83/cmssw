@@ -137,7 +137,8 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
   DDSpecificsMatchesValueFilter filter{DDValue(attribute, value, 0.0)};
   DDFilteredView fv(*cpv, filter);
   bool doCOCOA = fv.firstChild();
-  
+  //std::cout << "doCOCOA = " << doCOCOA << std::endl;
+
   // Loop on parts
   int nObjects=0;
   OpticalAlignParam oaParam;
@@ -186,6 +187,8 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
       ALIUtils::dumprm( rot, "local rotation ");
       ALIUtils::dump3v( transl, "local translation");
       } */
+    std::cout << "transl = " << transl << std::endl;
+    std::cout << "rot = " << rot << std::endl;
 
     oaInfo.x_.name_ = "X";
     oaInfo.x_.dim_type_ = "centre";
@@ -663,9 +666,19 @@ double CocoaAnalyzer::myFetchDbl(const DDsvalues_type& dvst,
 				      const size_t& vecInd ) {
   DDValue val(spName, 0.0);
   if (DDfetch(&dvst,val)) {
-    if ( val.doubles().size() > vecInd ) {
+    //std::cout << "val.doubles().size() = " << val.doubles().size() << std::endl;
+    //if ( val.doubles().size() > vecInd ) {
+    if ( val.strings().size() > vecInd ) {
       //	  std::cout << "about to return: " << val.doubles()[vecInd] << std::endl;
-      return val.doubles()[vecInd];
+      //return val.doubles()[vecInd];
+      
+      std::vector<std::string> input = val.strings();
+      std::vector<double> result;
+
+      std::transform(begin(input), end(input), std::back_inserter(result), [](auto& i) -> double {
+	  return dd4hep::_toDouble(i);
+	});
+      return result[vecInd];
     } else {
       std::cout << "WARNING: OUT OF BOUNDS RETURNING 0 for index " << vecInd << " of SpecPar " << spName << std::endl;
     }

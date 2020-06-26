@@ -1,52 +1,74 @@
 <?xml version="1.0"?>
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../DDLSchema/DDLSchema.xsd">
 
-<MaterialSection label="table2DWithMirror.txt.xml">
+<MaterialSection label="table2DWithMirror.xml">
   <ElementaryMaterial name="Hydrogen" density="70.8*mg/cm3" symbol="H" atomicWeight="1*g/mole" atomicNumber="1"/>
 </MaterialSection>
 
-<SolidSection label="table2DWithMirror.txt.xml">
+<SolidSection label="table2DWithMirror.xml">
+  <Box name="MotherOfAllBoxes" dx="10*m" dy="10*m" dz="10*m"/>
+
  <Tubs name="laser1" rMin="0*fm " rMax="10*mm " dz="5*cm " startPhi="0*deg" deltaPhi="360.00001002*deg"/>
  <Box name="mirror" dx="5*cm " dy="5*cm " dz="10*mm "/>
  <Box name="tilt1" dx="2*cm " dy="2*cm " dz="5*cm "/>
  <Box name="table" dx="5*cm " dy="5*cm " dz="5*cm "/>
  <Box name="sens1" dx="4*cm " dy="4*cm " dz="10*mm "/>
  <Box name="sens2" dx="4*cm " dy="4*cm " dz="10*mm "/>
- <Box name="OCMS" dx="10.*m" dy="10.*m" dz="10.*m"/>
+ <!--<Box name="OCMS" dx="10.*m" dy="10.*m" dz="10.*m"/>-->
 </SolidSection>
 
-<LogicalPartSection label="table2DWithMirror.txt.xml">
- <LogicalPart name="laser1" category="unspecified">
+<LogicalPartSection label="table2DWithMirror.xml">
+  <LogicalPart name="MotherOfAllBoxes">
+    <rSolid name="MotherOfAllBoxes"/>
+    <rMaterial name="table2DWithMirror:Hydrogen"/>
+  </LogicalPart> 
+
+  <LogicalPart name="laser1" category="unspecified">
   <rSolid name="laser1"/>
-  <rMaterial name="Hydrogen"/>
+  <rMaterial name="table2DWithMirror:Hydrogen"/>
  </LogicalPart>
  <LogicalPart name="mirror" category="unspecified">
   <rSolid name="mirror"/>
-  <rMaterial name="Hydrogen"/>
+  <rMaterial name="table2DWithMirror:Hydrogen"/>
  </LogicalPart>
  <LogicalPart name="tilt1" category="unspecified">
   <rSolid name="tilt1"/>
-  <rMaterial name="Hydrogen"/>
+  <rMaterial name="table2DWithMirror:Hydrogen"/>
  </LogicalPart>
  <LogicalPart name="table" category="unspecified">
   <rSolid name="table"/>
-  <rMaterial name="Hydrogen"/>
+  <rMaterial name="table2DWithMirror:Hydrogen"/>
  </LogicalPart>
  <LogicalPart name="sens1" category="unspecified">
   <rSolid name="sens1"/>
-  <rMaterial name="Hydrogen"/>
+  <rMaterial name="table2DWithMirror:Hydrogen"/>
  </LogicalPart>
  <LogicalPart name="sens2" category="unspecified">
   <rSolid name="sens2"/>
-  <rMaterial name="Hydrogen"/>
+  <rMaterial name="table2DWithMirror:Hydrogen"/>
  </LogicalPart>
+<!--
  <LogicalPart name="OCMS" category="unspecified">
   <rSolid name="OCMS"/>
-  <rMaterial name="Hydrogen"/>
+  <rMaterial name="table2DWithMirror:Hydrogen"/>
  </LogicalPart>
+-->
 </LogicalPartSection>
 
-<PosPartSection label="table2DWithMirror.txt.xml">
+
+<PosPartSection label="table2DWithMirror.xml">
+<!--
+  <PosPart copyNumber="1">
+    <rParent name=":world_volume"/>
+    <rChild name="MotherOfAllBoxes"/>
+    </PosPart>
+-->
+<!--
+<PosPart copyNumber="1">
+  <rParent name="cms:OCMS"/>
+  <rChild name="MotherOfAllBoxes"/>
+</PosPart>
+-->
  <PosPart copyNumber="1">
    <rParent name="table"/>
    <rChild name="laser1"/>
@@ -61,36 +83,59 @@
  <PosPart copyNumber="1">
    <rParent name="table"/>
    <rChild name="tilt1"/>
+   <rRotation name="TEST"/>
+   <Translation x="1*mm" y="2*mm" z="3*mm"/>
  </PosPart>
  <PosPart copyNumber="1">
-   <rParent name="OCMS"/>
+   <rParent name="MotherOfAllBoxes"/>
    <rChild name="table"/>
   <rRotation name="R2"/>
   <Translation x="1*cm " y="2*cm " z="0*fm " />
  </PosPart>
  <PosPart copyNumber="1">
-   <rParent name="OCMS"/>
+   <rParent name="MotherOfAllBoxes"/>
    <rChild name="sens1"/>
   <Translation x="0*fm " y="0*fm " z="10*cm " />
  </PosPart>
  <PosPart copyNumber="1">
-   <rParent name="OCMS"/>
+   <rParent name="MotherOfAllBoxes"/>
    <rChild name="sens2"/>
   <rRotation name="R3"/>
   <Translation x="10*cm " y="0*fm " z="20*cm " />
  </PosPart>
 </PosPartSection>
 
-<RotationSection label="table2DWithMirror.txt.xml">
+
+<RotationSection label="table2DWithMirror.xml">
+  <Rotation name="TEST" thetaX="90*deg" phiX="90*deg" thetaY="90*deg" phiY="180*deg" thetaZ="0*deg" phiZ="0*deg"/>
  <Rotation name="R0" phiX="-45*deg" thetaX="90*deg" phiY="45*deg" thetaY="90*deg" phiZ="0*deg" thetaZ="0*deg" />
  <Rotation name="R1" phiX="0*deg" thetaX="45*deg" phiY="90*deg" thetaY="90*deg" phiZ="180*deg" thetaZ="45*deg" />
  <Rotation name="R2" phiX="0*deg" thetaX="90*deg" phiY="90*deg" thetaY="100*deg" phiZ="90*deg" thetaZ="10*deg" />
  <Rotation name="R3" phiX="0*deg" thetaX="0*deg" phiY="90*deg" thetaY="90*deg" phiZ="180*deg" thetaZ="90*deg" />
 </RotationSection>
 
-<SpecParSection label="table2DWithMirror.txt.xml" eval="true">
- <SpecPar name="OCMS/table/laser1_PARAMS">
-   <PartSelector path="/OCMS/table/laser1"/> 
+<!--<SpecParSection label="table2DWithMirror.xml" eval="true">-->
+<SpecParSection label="table2DWithMirror.xml">
+  <!--    Define volumes as COCOA objects --> 
+  <!--<SpecPar name="table2DWithMirror.xml"> -->
+  <SpecPar name="COCOA"> 
+    <!--<PartSelector path="/cmsWorld:OCMS/MotherOfAllBoxes/table/laser1"/> 
+	<PartSelector path="/cmsWorld:OCMS/MotherOfAllBoxes/table/mirror"/> 
+	<PartSelector path="/cmsWorld:OCMS/MotherOfAllBoxes/table/tilt1"/> 
+	<PartSelector path="/cmsWorld:OCMS/MotherOfAllBoxes/table"/> 
+	<PartSelector path="/cmsWorld:OCMS/MotherOfAllBoxes/sens1"/> 
+	<PartSelector path="/cmsWorld:OCMS/MotherOfAllBoxes/sens2"/>-->
+    <PartSelector path="//laser1"/> 
+    <PartSelector path="//mirror"/> 
+    <PartSelector path="//tilt1"/> 
+    <PartSelector path="//table"/> 
+    <PartSelector path="//sens1"/> 
+    <PartSelector path="//sens2"/> 
+    <String name="COCOA" value="COCOA"/>
+    <!--<Parameter name="COCOA" value="COCOA" />-->
+  </SpecPar>
+ <SpecPar name="laser1_PARAMS">
+   <PartSelector path="//laser1"/> 
    <Parameter name="cocoa_type" value="laser"   eval="false" /> 
    <Parameter name="cmssw_ID" value="2" /> 
    <Parameter name="angles_X_value" value="0*deg" /> 
@@ -109,8 +154,8 @@
    <Parameter name="angles_Z_sigma" value="0.57295779513*deg" /> 
    <Parameter name="angles_Z_quality" value="0" /> 
  </SpecPar>
- <SpecPar name="OCMS/table/mirror_PARAMS">
-   <PartSelector path="/OCMS/table/mirror"/> 
+ <SpecPar name="mirror_PARAMS">
+   <PartSelector path="//mirror"/> 
    <Parameter name="cocoa_type" value="mirror"   eval="false" /> 
    <Parameter name="cmssw_ID" value="3" /> 
    <Parameter name="angles_X_value" value="0*deg" /> 
@@ -154,8 +199,8 @@
    <Parameter name="sigma" value="0.57295779513*deg"  eval="true" /> 
    <Parameter name="quality" value="0"  eval="true" /> 
  </SpecPar>
- <SpecPar name="OCMS/table/tilt1_PARAMS">
-   <PartSelector path="/OCMS/table/tilt1"/> 
+ <SpecPar name="tilt1_PARAMS">
+   <PartSelector path="//tilt1"/> 
    <Parameter name="cocoa_type" value="tiltmeter"   eval="false" /> 
    <Parameter name="cmssw_ID" value="4" /> 
    <Parameter name="angles_X_value" value="0*deg" /> 
@@ -174,8 +219,8 @@
    <Parameter name="angles_Z_sigma" value="0.57295779513*deg" /> 
    <Parameter name="angles_Z_quality" value="1" /> 
  </SpecPar>
- <SpecPar name="OCMS/table_PARAMS">
-   <PartSelector path="/OCMS/table"/> 
+ <SpecPar name="table_PARAMS">
+   <PartSelector path="//table"/>
    <Parameter name="cocoa_type" value="table"   eval="false" /> 
    <Parameter name="cmssw_ID" value="1" /> 
    <Parameter name="angles_X_value" value="10*deg" /> 
@@ -194,8 +239,8 @@
    <Parameter name="angles_Z_sigma" value="5.7295779513*deg" /> 
    <Parameter name="angles_Z_quality" value="1" /> 
  </SpecPar>
- <SpecPar name="OCMS/sens1_PARAMS">
-   <PartSelector path="/OCMS/sens1"/> 
+ <SpecPar name="sens1_PARAMS">
+   <PartSelector path="//sens1"/> 
    <Parameter name="cocoa_type" value="sensor2D"   eval="false" /> 
    <Parameter name="cmssw_ID" value="5" /> 
    <Parameter name="angles_X_value" value="0*deg" /> 
@@ -214,8 +259,8 @@
    <Parameter name="angles_Z_sigma" value="0.57295779513*deg" /> 
    <Parameter name="angles_Z_quality" value="1" /> 
  </SpecPar>
- <SpecPar name="OCMS/sens2_PARAMS">
-   <PartSelector path="/OCMS/sens2"/> 
+ <SpecPar name="sens2_PARAMS">
+   <PartSelector path="//sens2"/> 
    <Parameter name="cocoa_type" value="sensor2D"   eval="false" /> 
    <Parameter name="cmssw_ID" value="6" /> 
    <Parameter name="angles_X_value" value="0*deg" /> 
@@ -233,33 +278,23 @@
    <Parameter name="angles_Y_quality" value="1" /> 
    <Parameter name="angles_Z_sigma" value="0.57295779513*deg" /> 
    <Parameter name="angles_Z_quality" value="1" /> 
- </SpecPar>
-<!--    Define volumes as COCOA objects --> 
-  <SpecPar name="COCOA"> 
-    <PartSelector path="/OCMS/table/laser1"/> 
-    <PartSelector path="/OCMS/table/mirror"/> 
-    <PartSelector path="/OCMS/table/tilt1"/> 
-    <PartSelector path="/OCMS/table"/> 
-    <PartSelector path="/OCMS/sens1"/> 
-    <PartSelector path="/OCMS/sens2"/> 
-   <String name="COCOA" value="COCOA"/> 
-  </SpecPar> 
+ </SpecPar> 
  <SpecPar name="tilt1_MEASUREMENT">
-   <PartSelector path="/OCMS/table/tilt1"/> 
+   <PartSelector path="//tilt1"/> 
    <Parameter name="meas_name" value="tilt1"  eval="false" /> 
    <Parameter name="meas_type" value="TILTMETER"  eval="false" /> 
-   <Parameter name="meas_object_name_tilt1" value="OCMS/table/tilt1"  eval="false" /> 
+   <Parameter name="meas_object_name_tilt1" value="//tilt1"  eval="false" /> 
    <Parameter name="meas_value_name_tilt1" value="T"  eval="false" /> 
    <Parameter name="meas_value_tilt1" value="0"  eval="true" /> 
    <Parameter name="meas_sigma_tilt1" value="1e-05"  eval="true" /> 
    <Parameter name="meas_is_simulated_value_tilt1" value="1"  eval="true" /> 
  </SpecPar>
  <SpecPar name="sens1_MEASUREMENT">
-   <PartSelector path="/OCMS/sens1"/> 
+   <PartSelector path="//sens1"/> 
    <Parameter name="meas_name" value="sens1"  eval="false" /> 
    <Parameter name="meas_type" value="SENSOR2D"  eval="false" /> 
-   <Parameter name="meas_object_name_sens1" value="OCMS/table/laser1"  eval="false" /> 
-   <Parameter name="meas_object_name_sens1" value="OCMS/sens1"  eval="false" /> 
+   <Parameter name="meas_object_name_sens1" value="//laser1"  eval="false" /> 
+   <Parameter name="meas_object_name_sens1" value="//sens1"  eval="false" /> 
    <Parameter name="meas_value_name_sens1" value="H"  eval="false" /> 
    <Parameter name="meas_value_sens1" value="0"  eval="true" /> 
    <Parameter name="meas_sigma_sens1" value="0.0001"  eval="true" /> 
@@ -270,8 +305,8 @@
    <Parameter name="meas_is_simulated_value_sens1" value="1"  eval="true" /> 
    <Parameter name="meas_name" value="sens1-b"  eval="false" /> 
    <Parameter name="meas_type" value="SENSOR2D"  eval="false" /> 
-   <Parameter name="meas_object_name_sens1-b" value="OCMS/table/laser1"  eval="false" /> 
-   <Parameter name="meas_object_name_sens1-b" value="OCMS/sens1"  eval="false" /> 
+   <Parameter name="meas_object_name_sens1-b" value="//laser1"  eval="false" /> 
+   <Parameter name="meas_object_name_sens1-b" value="//sens1"  eval="false" /> 
    <Parameter name="meas_value_name_sens1-b" value="H"  eval="false" /> 
    <Parameter name="meas_value_sens1-b" value="0"  eval="true" /> 
    <Parameter name="meas_sigma_sens1-b" value="0.0001"  eval="true" /> 
@@ -282,12 +317,12 @@
    <Parameter name="meas_is_simulated_value_sens1-b" value="1"  eval="true" /> 
  </SpecPar>
  <SpecPar name="sens2_MEASUREMENT">
-   <PartSelector path="/OCMS/sens2"/> 
+   <PartSelector path="//sens2"/> 
    <Parameter name="meas_name" value="sens2"  eval="false" /> 
    <Parameter name="meas_type" value="SENSOR2D"  eval="false" /> 
-   <Parameter name="meas_object_name_sens2" value="OCMS/table/laser1"  eval="false" /> 
-   <Parameter name="meas_object_name_sens2" value="OCMS/table/mirror:DD"  eval="false" /> 
-   <Parameter name="meas_object_name_sens2" value="OCMS/sens2"  eval="false" /> 
+   <Parameter name="meas_object_name_sens2" value="//laser1"  eval="false" /> 
+   <Parameter name="meas_object_name_sens2" value="//mirror"  eval="false" /> 
+   <Parameter name="meas_object_name_sens2" value="//sens2"  eval="false" /> 
    <Parameter name="meas_value_name_sens2" value="H"  eval="false" /> 
    <Parameter name="meas_value_sens2" value="0"  eval="true" /> 
    <Parameter name="meas_sigma_sens2" value="0.0001"  eval="true" /> 

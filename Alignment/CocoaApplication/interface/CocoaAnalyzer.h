@@ -23,6 +23,12 @@
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "DetectorDescription/Core/interface/DDPosData.h" 
 
+#include "DetectorDescription/DDCMS/interface/DDSpecParRegistry.h"
+#include "DD4hep/DetFactoryHelper.h"
+#include "DetectorDescription/DDCMS/interface/DDCompactView.h"
+#include "DetectorDescription/DDCMS/interface/DDFilteredView.h"
+#include "DetectorDescription/DDCMS/interface/DDDetector.h"
+
 class Event;
 class EventSetup;
 class Entry;
