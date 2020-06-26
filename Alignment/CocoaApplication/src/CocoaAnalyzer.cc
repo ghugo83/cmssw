@@ -540,12 +540,13 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 	 && values.size() == errors.size() && errors.size() == quality.size() ) {
       for ( size_t ind = 0; ind < names.size(); ++ind ) {
 	double dimFactor = 1.;
-	std::string type = oaParam.dimType();
+	//std::string type = oaParam.dimType();
+	const std::string& type = dims.at(ind);
 	if( type == "centre" || type == "length" ) {
-	  dimFactor = 0.001; // in XML it is in mm 
+	  dimFactor = 0.01; // was converted to cm with getParameterValueFromSpecPar, COCOA unit is m
 	}else if ( type == "angles" || type == "angle" || type == "nodim" ){
 	  dimFactor = 1.;
-	} 
+	}
 	oaParam.value_ = values[ind]*dimFactor;
 	oaParam.error_ = errors[ind]*dimFactor;
 	oaParam.quality_ = static_cast<int>(quality[ind]);
