@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<DDDefinition>
+  <open_geometry/>
+  <close_geometry/>
+
+  <ConstantsSection label="" eval="true">
+    <Constant name="world_x" value="5*m"/>
+    <Constant name="world_y" value="5*m"/>
+    <Constant name="world_z" value="5*m"/>
+    <Constant name="fm"      value="1e-12*m"/>
+    <Constant name="Air"     value="materials:Air"     type="string"/>
+    <Constant name="Vacuum"  value="materials:Vacuum"  type="string"/>
+  </ConstantsSection>
+
+  <IncludeSection>
+    <Include ref="Geometry/CMSCommonData/data/materials.xml"/>
+    <Include ref="DetectorDescription/DDCMS/data/vacuum.xml"/>
+
+<!--
+    <Include ref="DetectorDescription/DDCMS/data/cmsWorld.xml"/>-->
+
+
+
+    <!--<Include ref='Geometry/CMSCommonData/data/materials/2021/v1/materials.xml'/>
+    <Include ref='Geometry/TrackerCommonData/data/Run2/trackermaterial.xml'/>
+    <Include ref='Geometry/CMSCommonData/data/rotations.xml'/>
+    <Include ref='Geometry/CMSCommonData/data/extend/v2/cmsextent.xml'/>
+    <Include ref="Geometry/CMSCommonData/data/cavernData/2021/v1/cavernData.xml"/>
+    <Include ref='Geometry/CMSCommonData/data/cms/2021/v3/cms.xml'/>
+    <Include ref='Geometry/CMSCommonData/data/cmsMother.xml'/>
+    <Include ref='Geometry/CMSCommonData/data/eta3/etaMax.xml'/>
+    <Include ref='Geometry/CMSCommonData/data/cmsTracker.xml'/>
+    <Include ref='Geometry/CMSCommonData/data/caloBase/2017/v1/caloBase.xml'/>
+    <Include ref='Geometry/CMSCommonData/data/cmsCalo.xml'/>
+    <Include ref='Geometry/CMSCommonData/data/muonBase/2018/v1/muonBase.xml'/>
+    <Include ref='Geometry/CMSCommonData/data/cmsMuon.xml'/>
+    <Include ref='Geometry/CMSCommonData/data/mgnt.xml'/>
+    <Include ref='Geometry/CMSCommonData/data/beampipe/2026/v1/beampipe.xml'/>
+    <Include ref='Geometry/CMSCommonData/data/cmsBeam/2026/v1/cmsBeam.xml'/>
+    <Include ref='Geometry/CMSCommonData/data/muonMB.xml'/>
+    <Include ref='Geometry/CMSCommonData/data/muonMagnet.xml'/>
+    <Include ref='Geometry/CMSCommonData/data/cavern/2021/v1/cavern.xml'/>
+    <Include ref='Geometry/CMSCommonData/data/cavernFloor/2017/v1/cavernFloor.xml'/>-->
+    <Include ref='Alignment/CocoaApplication/test/table2DWithMirror.xml'/>
+  </IncludeSection>
+
+</DDDefinition>
