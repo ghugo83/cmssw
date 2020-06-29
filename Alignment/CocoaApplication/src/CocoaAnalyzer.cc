@@ -2,6 +2,7 @@
 #include "CondCore/DBOutputService/interface/PoolDBOutputService.h"
 #include "CondFormats/DataRecord/interface/OpticalAlignmentsRcd.h"
 #include "CondFormats/OptAlignObjects/interface/OpticalAlignMeasurementInfo.h"
+#include "DataFormats/Math/interface/CMSUnits.h"
 #include "DetectorDescription/DDCMS/interface/DDCompactView.h"
 #include "DetectorDescription/DDCMS/interface/DDFilteredView.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h" 
@@ -21,6 +22,8 @@
 #include "Alignment/CocoaModel/interface/OpticalObject.h"
 #include "Alignment/CocoaUtilities/interface/GlobalOptionMgr.h"
 #include "Alignment/CocoaFit/interface/CocoaDBMgr.h"
+
+using namespace cms_units::operators;
 
 //----------------------------------------------------------------------
 CocoaAnalyzer::CocoaAnalyzer(edm::ParameterSet const& pset) 
@@ -163,7 +166,7 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
     while ( doCOCOA ){
       ++nObjects;
          
-      // Present volume
+      // Current volume
       const dd4hep::PlacedVolume& myPlacedVolume = myFilteredView.volume();
       const std::string& name = myPlacedVolume.name();
       const std::string& nodePath = myFilteredView.path();
@@ -178,79 +181,97 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 	std::cout << " @@ Name built= " << oaInfo.name_ << " short_name= " << name << " parent= " << oaInfo.parentName_ << std::endl;
       }
 
+      
+      // TRANSLATIONS
 
+      // A) GET TRANSLATIONS FROM DDETECTOR.
       // Directly get translation from parent to child volume
       const dd4hep::Position& transl = myPlacedVolume.position();
 
       if(ALIUtils::debug >= 4) {
-	std::cout << "Local translation = " << transl << std::endl;
+	std::cout << "Local translation in cm = " << transl << std::endl;
       }
 
-
-      //----- Read centre and angles
+      // B) READ INFO FROM XMLS
+      // X
       oaInfo.x_.name_ = "X";
       oaInfo.x_.dim_type_ = "centre";
-      oaInfo.x_.value_ = transl.x()*0.01; // COCOA units are m 
+      oaInfo.x_.value_ = transl.x() / (1._m); // COCOA units are m 
       oaInfo.x_.error_ = getParameterValueFromSpecParSections(allSpecParSections,
 							      nodePath,
 							      "centre_X_sigma",
-							      0)*0.01; // COCOA units are m 
+							      0) / (1._m); // COCOA units are m 
       oaInfo.x_.quality_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
 										 nodePath,
 										 "centre_X_quality",
 										 0));
-    
+      // Y
       oaInfo.y_.name_ = "Y";
       oaInfo.y_.dim_type_ = "centre";
-      oaInfo.y_.value_ = transl.y()*0.01; // COCOA units are m 
+      oaInfo.y_.value_ = transl.y() / (1._m); // COCOA units are m 
       oaInfo.y_.error_ = getParameterValueFromSpecParSections(allSpecParSections,
 							      nodePath,
 							      "centre_Y_sigma",
-							      0)*0.01; // COCOA units are m 
+							      0) / (1._m); // COCOA units are m 
       oaInfo.y_.quality_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
 										 nodePath,
 										 "centre_Y_quality",
 										 0));
-
+      // Z
       oaInfo.z_.name_ = "Z";
       oaInfo.z_.dim_type_ = "centre";
-      oaInfo.z_.value_ = transl.z()*0.01; // COCOA units are m 
+      oaInfo.z_.value_ = transl.z() / (1._m); // COCOA units are m 
       oaInfo.z_.error_ = getParameterValueFromSpecParSections(allSpecParSections,
 							      nodePath,
 							      "centre_Z_sigma",
-							      0)*0.01; // COCOA units are m 
+							      0) / (1._m); // COCOA units are m 
       oaInfo.z_.quality_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
 										 nodePath,
 										 "centre_Z_quality",
 										 0));
 
-      // COCOA convention is FROM CHILD TO PARENT      
+
+      // ROTATIONS
+
+      // A) GET ROTATIONS FROM DDETECTOR.
+
+      // Unlike in the initial code, here we manage to directly get the rotation matrix placement 
+      // of the child in parent, EXPRESSED IN THE PARENT FRAME OF REFERENCE.
+      // Hence the (ugly) initial block of code is replaced by just 2 lines.
+      // PlacedVolume::matrix() returns the rotation matrix IN THE PARENT FRAME OF REFERENCE.
+      // NB: Not using DDFilteredView::rotation(), 
+      // because it returns the rotation matrix IN THE WORLD FRAME OF REFERENCE.
       const TGeoHMatrix parentToChild = myPlacedVolume.matrix();
       // COCOA convention is FROM CHILD TO PARENT
       const TGeoHMatrix& childToParent = parentToChild.Inverse();
+
       // Convert it to CLHEP::Matrix
+      // Below is not my code, below block is untouched (apart from bug fix).
+      // I would just directly use childToParent...
       const Double_t* rot = childToParent.GetRotationMatrix();
-      double xx = rot[0];
-      double xy = rot[1];
-      double xz = rot[2];
-      double yx = rot[3];
-      double yy = rot[4];
-      double yz = rot[5];
-      double zx = rot[6];
-      double zy = rot[7];
-      double zz = rot[8];
+      const double xx = rot[0];
+      const double xy = rot[1];
+      const double xz = rot[2];
+      const double yx = rot[3];
+      const double yy = rot[4];
+      const double yz = rot[5];
+      const double zx = rot[6];
+      const double zy = rot[7];
+      const double zz = rot[8];
       if(ALIUtils::debug >= 4) {
 	std::cout << "Local rotation = " << std::endl;
 	std::cout << xx << "  " << xy << "  " << xz << std::endl;
 	std::cout << yx << "  " << yy << "  " << yz << std::endl;
 	std::cout << zx << "  " << zy << "  " << zz << std::endl;
       }
-      CLHEP::Hep3Vector colX(xx,yx,zx);
-      CLHEP::Hep3Vector colY(xy,yy,zy);
-      CLHEP::Hep3Vector colZ(xz,yz,zz);
-      CLHEP::HepRotation rotclhep( colX, colY, colZ );
-      std::vector<double> angles = ALIUtils::getRotationAnglesFromMatrix( rotclhep,0., 0., 0. );
+      const CLHEP::Hep3Vector colX(xx,yx,zx);
+      const CLHEP::Hep3Vector colY(xy,yy,zy);
+      const CLHEP::Hep3Vector colZ(xz,yz,zz);
+      const CLHEP::HepRotation rotclhep( colX, colY, colZ );
+      const std::vector<double>& angles = ALIUtils::getRotationAnglesFromMatrix(rotclhep, 0., 0., 0.);
 
+      // B) READ INFO FROM XMLS
+      // X
       oaInfo.angx_.name_ = "X";
       oaInfo.angx_.dim_type_ = "angles";
       oaInfo.angx_.value_ = getParameterValueFromSpecParSections(allSpecParSections,
@@ -265,7 +286,7 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 										    nodePath,
 										    "angles_X_quality",
 										    0));
-
+      // Y
       oaInfo.angy_.name_ = "Y";
       oaInfo.angy_.dim_type_ = "angles";
       oaInfo.angy_.value_ = getParameterValueFromSpecParSections(allSpecParSections,
@@ -280,7 +301,7 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 										    nodePath,
 										    "angles_Y_quality",
 										    0));
-
+      // Z
       oaInfo.angz_.name_ = "Z";
       oaInfo.angz_.dim_type_ = "angles";
       oaInfo.angz_.value_ = getParameterValueFromSpecParSections(allSpecParSections,
@@ -310,6 +331,8 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 	std::cout << "CocoaAnalyzer::ReadXML OBJECT " << oaInfo.name_ << " pos/angles read " << std::endl;
       }
 
+      // Check that rotations match with values from XMLs.
+      // Same, that ugly code is not mine ;p
       if( fabs( oaInfo.angx_.value_ - angles[0] ) > 1.E-9 || 
 	  fabs( oaInfo.angy_.value_ - angles[1] ) > 1.E-9 || 
 	  fabs( oaInfo.angz_.value_ - angles[2] ) > 1.E-9 ) {
@@ -319,10 +342,9 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 	  oaInfo.angz_.value_ << " =? " << angles[2] << std::endl;
       }
 
-
-      //----- Read extra entries and measurements
  
-      // extra entries
+      // EXTRA PARAM ENTRIES (FROM XMLS)
+      // Here initial code to define the containers was fully removed, this is much more compact.
       const std::vector<std::string>& names = getAllParameterValuesFromSpecParSectionsString(allSpecParSections,
 											     nodePath,
 											     "extra_entry"
@@ -339,14 +361,47 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
       const std::vector<double>& quality = getAllParameterValuesFromSpecParSections(allSpecParSections,
 										    nodePath,
 										    "quality");
-      //--- measurements variables
+
+      if(ALIUtils::debug >= 4) {
+	std::cout << " CocoaAnalyzer::ReadXML:  Fill extra entries with read parameters " << std::endl;
+      }
+
+      //--- Fill extra entries with read parameters    
+      if ( names.size() == dims.size() && dims.size() == values.size() 
+	   && values.size() == errors.size() && errors.size() == quality.size() ) {
+	for ( size_t ind = 0; ind < names.size(); ++ind ) {
+	  double dimFactor = 1.;
+	  //std::string type = oaParam.dimType();
+	  const std::string& type = dims.at(ind);
+	  if( type == "centre" || type == "length" ) {
+	    dimFactor = 1./ (1._m); // was converted to cm with getParameterValueFromSpecPar, COCOA unit is m
+	  } else if ( type == "angles" || type == "angle" || type == "nodim" ){
+	    dimFactor = 1.;
+	  }
+	  oaParam.value_ = values[ind]*dimFactor;
+	  oaParam.error_ = errors[ind]*dimFactor;
+	  oaParam.quality_ = static_cast<int>(quality[ind]);
+	  oaParam.name_ = names[ind];
+	  oaParam.dim_type_ = dims[ind];
+	  oaInfo.extraEntries_.push_back (oaParam);
+	  oaParam.clear();
+	}
+
+	oaList_.opticalAlignments_.push_back(oaInfo);
+      } else {
+	std::cout << "WARNING FOR NOW: sizes of extra parameters (names, dimType, value, quality) do"
+		  << " not match!  Did not add " << nObjects << " item to OpticalAlignments." 
+		  << std::endl;
+      }
+
+
+      // MEASUREMENTS (FROM XMLS)
       const std::vector<std::string>& measNames = getAllParameterValuesFromSpecParSectionsString(allSpecParSections,
 												 nodePath,
 												 "meas_name");
       const std::vector<std::string>& measTypes = getAllParameterValuesFromSpecParSectionsString(allSpecParSections,
 												 nodePath,
 												 "meas_type");
-
 	
       std::map<std::string, std::vector<std::string> > measObjectNames;
       std::map<std::string, std::vector<std::string> > measParamNames;
@@ -366,52 +421,15 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 	measParamSigmas[name] = getAllParameterValuesFromSpecParSections(allSpecParSections,
 									 nodePath,
 									 "meas_sigma_" + name);
-	// this is not in OptAlignParam info
 	measIsSimulatedValue[name] = getAllParameterValuesFromSpecParSections(allSpecParSections,
 									      nodePath,
 									      "meas_is_simulated_value_" + name);
-
-	if(ALIUtils::debug >= 5) {
-	  std::cout << "CocoaAnalyser: looped measObjectNames " << "meas_object_name_" + name << " n obj " << measObjectNames.at(name).size() << std::endl;
-	}
-
       }
     
       if(ALIUtils::debug >= 4) {
-	std::cout << " CocoaAnalyzer::ReadXML:  Fill extra entries with read parameters " << std::endl;
-      }
-
-      //--- Fill extra entries with read parameters    
-      if ( names.size() == dims.size() && dims.size() == values.size() 
-	   && values.size() == errors.size() && errors.size() == quality.size() ) {
-	for ( size_t ind = 0; ind < names.size(); ++ind ) {
-	  double dimFactor = 1.;
-	  //std::string type = oaParam.dimType();
-	  const std::string& type = dims.at(ind);
-	  if( type == "centre" || type == "length" ) {
-	    dimFactor = 0.01; // was converted to cm with getParameterValueFromSpecPar, COCOA unit is m
-	  }else if ( type == "angles" || type == "angle" || type == "nodim" ){
-	    dimFactor = 1.;
-	  }
-	  oaParam.value_ = values[ind]*dimFactor;
-	  oaParam.error_ = errors[ind]*dimFactor;
-	  oaParam.quality_ = static_cast<int>(quality[ind]);
-	  oaParam.name_ = names[ind];
-	  oaParam.dim_type_ = dims[ind];
-	  oaInfo.extraEntries_.push_back (oaParam);
-	  oaParam.clear();
-	}
-
-	oaList_.opticalAlignments_.push_back(oaInfo);
-      } else {
-	std::cout << "WARNING FOR NOW: sizes of extra parameters (names, dimType, value, quality) do"
-		  << " not match!  Did not add " << nObjects << " item to OpticalAlignments." 
-		  << std::endl;
-      }
-
-      if(ALIUtils::debug >= 4) {
 	std::cout << " CocoaAnalyzer::ReadXML:  Fill measurements with read parameters " << std::endl;
       }
+
       //--- Fill measurements with read parameters    
       if ( measNames.size() == measTypes.size() ) {
 	for ( size_t ind = 0; ind < measNames.size(); ++ind ) {
@@ -462,11 +480,6 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 	}
       }
 
-      //       std::cout << "sizes are values=" << values.size();
-      //       std::cout << "  sigma(errors)=" << errors.size();
-      //       std::cout << "  quality=" << quality.size();
-      //       std::cout << "  names=" << names.size();
-      //       std::cout << "  dimType=" << dims.size() << std::endl;
       oaInfo.clear();
       doCOCOA = myFilteredView.firstChild();
     } // while (doCOCOA)
