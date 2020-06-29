@@ -84,378 +84,391 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
 
   // STEP ONE:  Initial COCOA objects will be built from a DDL geometry
   // description.  
-  edm::ESTransientHandle<cms::DDCompactView> cpv;
-  evts.get<IdealGeometryRecord>().get(cpv);
-  const cms::DDDetector& det = *(cpv->detector());
+  edm::ESTransientHandle<cms::DDCompactView> myCompactView;
+  evts.get<IdealGeometryRecord>().get(myCompactView);
 
+
+  const cms::DDDetector* mySystem = myCompactView->detector();
+  if (mySystem) {
   
-  // Build OpticalAlignInfo "system"
-  const dd4hep::Volume rootVolume = det.worldVolume();
+    // First oaInfo to be stored is about the world volume.
+    const dd4hep::Volume& worldVolume = mySystem->worldVolume();
 
-  if(ALIUtils::debug >= 3) {
-    std::cout << std::endl << "$$$ CocoaAnalyzer::ReadXML: root object= " << rootVolume.name() << std::endl;
-  }
+    if(ALIUtils::debug >= 3) {
+      std::cout << std::endl << "$$$ CocoaAnalyzer::ReadXML: world object= " << worldVolume.name() << std::endl;
+    }
   
-  OpticalAlignInfo oaInfo;
-  oaInfo.ID_ = 0;
-  oaInfo.name_ = rootVolume.name();
-  oaInfo.parentName_ = "";
-  oaInfo.x_.quality_  = 0;    
-  oaInfo.x_.value_ = 0.;
-  oaInfo.x_.error_ = 0.;
-  oaInfo.x_.quality_  = 0;
-  oaInfo.y_.value_ = 0.;
-  oaInfo.y_.error_ = 0.;
-  oaInfo.y_.quality_  = 0;
-  oaInfo.z_.value_ = 0.;
-  oaInfo.z_.error_ = 0.;
-  oaInfo.z_.quality_  = 0;
-  oaInfo.angx_.value_ = 0.;
-  oaInfo.angx_.error_ = 0.;
-  oaInfo.angx_.quality_  = 0;
-  oaInfo.angy_.value_ = 0.;
-  oaInfo.angy_.error_ = 0.;
-  oaInfo.angy_.quality_  = 0;
-  oaInfo.angz_.value_ = 0.;
-  oaInfo.angz_.error_ = 0.;
-  oaInfo.angz_.quality_  = 0;
+    OpticalAlignInfo oaInfo;
+    oaInfo.ID_ = 0;
+    oaInfo.name_ = worldVolume.name();
+    oaInfo.parentName_ = "";
+    oaInfo.x_.quality_  = 0;    
+    oaInfo.x_.value_ = 0.;
+    oaInfo.x_.error_ = 0.;
+    oaInfo.x_.quality_  = 0;
+    oaInfo.y_.value_ = 0.;
+    oaInfo.y_.error_ = 0.;
+    oaInfo.y_.quality_  = 0;
+    oaInfo.z_.value_ = 0.;
+    oaInfo.z_.error_ = 0.;
+    oaInfo.z_.quality_  = 0;
+    oaInfo.angx_.value_ = 0.;
+    oaInfo.angx_.error_ = 0.;
+    oaInfo.angx_.quality_  = 0;
+    oaInfo.angy_.value_ = 0.;
+    oaInfo.angy_.error_ = 0.;
+    oaInfo.angy_.quality_  = 0;
+    oaInfo.angz_.value_ = 0.;
+    oaInfo.angz_.error_ = 0.;
+    oaInfo.angz_.quality_  = 0;
     
-  oaInfo.type_ = "system";
+    oaInfo.type_ = "system";
 
-  oaList_.opticalAlignments_.push_back(oaInfo);
-  oaInfo.clear();
+    oaList_.opticalAlignments_.push_back(oaInfo);
+    oaInfo.clear();
 
-  // Example of traversing the whole optical alignment geometry.
-  // At each node we get specpars as variables and use them in 
-  // constructing COCOA objects. 
-  //  It stores these objects in a private data member, opt
-  std::string attribute = "COCOA"; 
-  std::string value     = "COCOA";  
-  
-  // get all parts labelled with COCOA using a SpecPar
-  cms::DDFilteredView fv(cpv->detector(), cpv->detector()->worldVolume()); 
-  const cms::DDSpecParRegistry& mypar = cpv->specpars();
-  cms::DDSpecParRefs ref;
-  mypar.filter(ref, attribute, value);
-  fv.mergedSpecifics(ref);
-
-  // Loop on parts
-  int nObjects=0;
-  OpticalAlignParam oaParam;
-  OpticalAlignMeasurementInfo oaMeas;
-
-  fv.printFilter();
-  bool doCOCOA = fv.firstChild();
+    // This gathers all the 'SpecPar' sections from the loaded XMLs.
+    // NB: Definition of a SpecPar section:
+    // It is a block in the XML file(s), containing paths to specific volumes, 
+    // and ALLOWING THE ASSOCIATION OF SPECIFIC PARAMETERS AND VALUES TO THESE VOLUMES.
+    const cms::DDSpecParRegistry& allSpecParSections = myCompactView->specpars();
 
 
-  while ( doCOCOA ){
-    ++nObjects;
+    // CREATION OF A COCOA FILTERED VIEW
+    // Creation of the dd4hep-based filtered view.
+    // NB: not filtered yet!
+    cms::DDFilteredView myFilteredView(mySystem, worldVolume);
+    // Declare a container which will gather all the filtered SpecPar sections.
+    cms::DDSpecParRefs cocoaParameterSpecParSections;
+    // Define a COCOA filter
+    const std::string cocoaParameterAttribute = "COCOA"; 
+    const std::string cocoaParameterValue     = "COCOA";
+    // All the COCOA SpecPar sections are filtered from allSpecParSections,
+    // and assigned to cocoaParameterSpecParSections.
+    allSpecParSections.filter(cocoaParameterSpecParSections, cocoaParameterAttribute, cocoaParameterValue);
+    // This finally allows to filter the filtered view, with the COCOA filter.
+    // This means that we now have, in myFilteredView, all volumes whose paths were selected:
+    // ie all volumes with "COCOA" parameter and value in a SpecPar section from a loaded XML.
+    myFilteredView.mergedSpecifics(cocoaParameterSpecParSections);
 
-    const cms::DDSpecParRegistry& allSpecParSections = cpv->specpars();
-    const std::string nodePath = fv.path();
-    const dd4hep::PlacedVolume myPlacedVolume = fv.volume();
+
+    // Loop on parts
+    int nObjects=0;
+    OpticalAlignParam oaParam;
+    OpticalAlignMeasurementInfo oaMeas;
+
+
+    bool doCOCOA = myFilteredView.firstChild();
+    // Loop on all COCOA volumes from filtered view
+    while ( doCOCOA ){
+      ++nObjects;
+         
+      // Present volume
+      const dd4hep::PlacedVolume& myPlacedVolume = myFilteredView.volume();
+      const std::string& name = myPlacedVolume.name();
+      const std::string& nodePath = myFilteredView.path();
+      oaInfo.name_ = nodePath;
     
-
-    const std::string name = myPlacedVolume.name();
-    oaInfo.name_ = nodePath;
-    
-    const dd4hep::Volume parentVolume = myPlacedVolume.motherVol();
-    oaInfo.parentName_ = parentVolume.name();
+      // Parent volume
+      const dd4hep::Volume& parentVolume = myPlacedVolume.motherVol();
+      oaInfo.parentName_ = parentVolume.name();
  
-    if(ALIUtils::debug >= 4) {
-      std::cout << " CocoaAnalyzer::ReadXML reading object " << name << std::endl;
-      std::cout << " @@ Name built= " << oaInfo.name_ << " short_name= " << name << " parent= " << oaInfo.parentName_ << std::endl;
-    }
-
-   
-    const dd4hep::Position& transl = myPlacedVolume.position();
-    if(ALIUtils::debug >= 4) {
-      std::cout << "Local translation = " << transl << std::endl;
-    }
+      if(ALIUtils::debug >= 4) {
+	std::cout << " CocoaAnalyzer::ReadXML reading object " << name << std::endl;
+	std::cout << " @@ Name built= " << oaInfo.name_ << " short_name= " << name << " parent= " << oaInfo.parentName_ << std::endl;
+      }
 
 
-    //----- Read centre and angles
-    oaInfo.x_.name_ = "X";
-    oaInfo.x_.dim_type_ = "centre";
-    oaInfo.x_.value_ = transl.x()*0.01; // COCOA units are m 
-    oaInfo.x_.error_ = getParameterValueFromSpecParSections(allSpecParSections,
-							    nodePath,
-							    "centre_X_sigma",
-							    0)*0.01; // COCOA units are m 
-    //oaInfo.x_.quality_  = int (myFetchDbl(params, "centre_X_quality"));
-    oaInfo.x_.quality_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
-									       nodePath,
-									       "centre_X_quality",
-									       0));
-    
-    oaInfo.y_.name_ = "Y";
-    oaInfo.y_.dim_type_ = "centre";
-    oaInfo.y_.value_ = transl.y()*0.01; // COCOA units are m 
-    oaInfo.y_.error_ = getParameterValueFromSpecParSections(allSpecParSections,
-							    nodePath,
-							    "centre_Y_sigma",
-							    0)*0.01; // COCOA units are m 
-    oaInfo.y_.quality_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
-									       nodePath,
-									       "centre_Y_quality",
-									       0));
+      // Directly get translation from parent to child volume
+      const dd4hep::Position& transl = myPlacedVolume.position();
 
-    oaInfo.z_.name_ = "Z";
-    oaInfo.z_.dim_type_ = "centre";
-    oaInfo.z_.value_ = transl.z()*0.01; // COCOA units are m 
-    oaInfo.z_.error_ = getParameterValueFromSpecParSections(allSpecParSections,
-							    nodePath,
-							    "centre_Z_sigma",
-							    0)*0.01; // COCOA units are m 
-    oaInfo.z_.quality_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
-									       nodePath,
-									       "centre_Z_quality",
-									       0));
+      if(ALIUtils::debug >= 4) {
+	std::cout << "Local translation = " << transl << std::endl;
+      }
 
-    //---- DDD convention is to use the inverse matrix, COCOA is the direct one!!!
-    //---- convert it to CLHEP::Matrix
-    const TGeoHMatrix a = myPlacedVolume.matrix();
-    const TGeoHMatrix b = a.Inverse();
-    const Double_t* rot = b.GetRotationMatrix();
-    double xx = rot[0];
-    double xy = rot[1];
-    double xz = rot[2];
-    double yx = rot[3];
-    double yy = rot[4];
-    double yz = rot[5];
-    double zx = rot[6];
-    double zy = rot[7];
-    double zz = rot[8];
-    if(ALIUtils::debug >= 4) {
-      std::cout << "Local rotation = " << std::endl;
-      std::cout << xx << "  " << xy << "  " << xz << std::endl;
-      std::cout << yx << "  " << yy << "  " << yz << std::endl;
-      std::cout << zx << "  " << zy << "  " << zz << std::endl;
-    }
-    CLHEP::Hep3Vector colX(xx,yx,zx);
-    CLHEP::Hep3Vector colY(xy,yy,zy);
-    CLHEP::Hep3Vector colZ(xz,yz,zz);
-    CLHEP::HepRotation rotclhep( colX, colY, colZ );
-    std::vector<double> angles = ALIUtils::getRotationAnglesFromMatrix( rotclhep,0., 0., 0. );
 
-    oaInfo.angx_.name_ = "X";
-    oaInfo.angx_.dim_type_ = "angles";
-    oaInfo.angx_.value_ = getParameterValueFromSpecParSections(allSpecParSections,
-							       nodePath,
-							       "angles_X_value",
-							       0);
-    oaInfo.angx_.error_ = getParameterValueFromSpecParSections(allSpecParSections,
-							       nodePath,
-							       "angles_X_sigma",
-							       0);
-    oaInfo.angx_.quality_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
-										   nodePath,
-										   "angles_X_quality",
-										   0));
-
-    oaInfo.angy_.name_ = "Y";
-    oaInfo.angy_.dim_type_ = "angles";
-    oaInfo.angy_.value_ = getParameterValueFromSpecParSections(allSpecParSections,
-							       nodePath,
-							       "angles_Y_value",
-							       0);
-    oaInfo.angy_.error_ = getParameterValueFromSpecParSections(allSpecParSections,
-							       nodePath,
-							       "angles_Y_sigma",
-							       0);
-    oaInfo.angy_.quality_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
-										   nodePath,
-										   "angles_Y_quality",
-										   0));
-
-    oaInfo.angz_.name_ = "Z";
-    oaInfo.angz_.dim_type_ = "angles";
-    oaInfo.angz_.value_ = getParameterValueFromSpecParSections(allSpecParSections,
-							       nodePath,
-							       "angles_Z_value",
-							       0);
-    oaInfo.angz_.error_ = getParameterValueFromSpecParSections(allSpecParSections,
-							       nodePath,
-							       "angles_Z_sigma",
-							       0);
-    oaInfo.angz_.quality_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
-										   nodePath,
-										   "angles_Z_quality",
-										   0));
-
-    oaInfo.type_ = getParameterValueFromSpecParSectionsString(allSpecParSections,
+      //----- Read centre and angles
+      oaInfo.x_.name_ = "X";
+      oaInfo.x_.dim_type_ = "centre";
+      oaInfo.x_.value_ = transl.x()*0.01; // COCOA units are m 
+      oaInfo.x_.error_ = getParameterValueFromSpecParSections(allSpecParSections,
 							      nodePath,
-							      "cocoa_type",
-							      0);
+							      "centre_X_sigma",
+							      0)*0.01; // COCOA units are m 
+      oaInfo.x_.quality_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
+										 nodePath,
+										 "centre_X_quality",
+										 0));
+    
+      oaInfo.y_.name_ = "Y";
+      oaInfo.y_.dim_type_ = "centre";
+      oaInfo.y_.value_ = transl.y()*0.01; // COCOA units are m 
+      oaInfo.y_.error_ = getParameterValueFromSpecParSections(allSpecParSections,
+							      nodePath,
+							      "centre_Y_sigma",
+							      0)*0.01; // COCOA units are m 
+      oaInfo.y_.quality_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
+										 nodePath,
+										 "centre_Y_quality",
+										 0));
 
-    oaInfo.ID_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
-								       nodePath,
-								       "cmssw_ID",
-								       0));
+      oaInfo.z_.name_ = "Z";
+      oaInfo.z_.dim_type_ = "centre";
+      oaInfo.z_.value_ = transl.z()*0.01; // COCOA units are m 
+      oaInfo.z_.error_ = getParameterValueFromSpecParSections(allSpecParSections,
+							      nodePath,
+							      "centre_Z_sigma",
+							      0)*0.01; // COCOA units are m 
+      oaInfo.z_.quality_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
+										 nodePath,
+										 "centre_Z_quality",
+										 0));
 
-    if(ALIUtils::debug >= 4) {
-      std::cout << "CocoaAnalyzer::ReadXML OBJECT " << oaInfo.name_ << " pos/angles read " << std::endl;
-    }
+      // COCOA convention is FROM CHILD TO PARENT      
+      const TGeoHMatrix parentToChild = myPlacedVolume.matrix();
+      // COCOA convention is FROM CHILD TO PARENT
+      const TGeoHMatrix& childToParent = parentToChild.Inverse();
+      // Convert it to CLHEP::Matrix
+      const Double_t* rot = childToParent.GetRotationMatrix();
+      double xx = rot[0];
+      double xy = rot[1];
+      double xz = rot[2];
+      double yx = rot[3];
+      double yy = rot[4];
+      double yz = rot[5];
+      double zx = rot[6];
+      double zy = rot[7];
+      double zz = rot[8];
+      if(ALIUtils::debug >= 4) {
+	std::cout << "Local rotation = " << std::endl;
+	std::cout << xx << "  " << xy << "  " << xz << std::endl;
+	std::cout << yx << "  " << yy << "  " << yz << std::endl;
+	std::cout << zx << "  " << zy << "  " << zz << std::endl;
+      }
+      CLHEP::Hep3Vector colX(xx,yx,zx);
+      CLHEP::Hep3Vector colY(xy,yy,zy);
+      CLHEP::Hep3Vector colZ(xz,yz,zz);
+      CLHEP::HepRotation rotclhep( colX, colY, colZ );
+      std::vector<double> angles = ALIUtils::getRotationAnglesFromMatrix( rotclhep,0., 0., 0. );
 
-    if( fabs( oaInfo.angx_.value_ - angles[0] ) > 1.E-9 || 
-	fabs( oaInfo.angy_.value_ - angles[1] ) > 1.E-9 || 
-	fabs( oaInfo.angz_.value_ - angles[2] ) > 1.E-9 ) {
-      std::cerr << " WRONG ANGLE IN OBJECT " << oaInfo.name_<< 
-	oaInfo.angx_.value_ << " =? " << angles[0] <<
-	oaInfo.angy_.value_ << " =? " << angles[1] <<
-	oaInfo.angz_.value_ << " =? " << angles[2] << std::endl;
-	}
+      oaInfo.angx_.name_ = "X";
+      oaInfo.angx_.dim_type_ = "angles";
+      oaInfo.angx_.value_ = getParameterValueFromSpecParSections(allSpecParSections,
+								 nodePath,
+								 "angles_X_value",
+								 0);
+      oaInfo.angx_.error_ = getParameterValueFromSpecParSections(allSpecParSections,
+								 nodePath,
+								 "angles_X_sigma",
+								 0);
+      oaInfo.angx_.quality_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
+										    nodePath,
+										    "angles_X_quality",
+										    0));
+
+      oaInfo.angy_.name_ = "Y";
+      oaInfo.angy_.dim_type_ = "angles";
+      oaInfo.angy_.value_ = getParameterValueFromSpecParSections(allSpecParSections,
+								 nodePath,
+								 "angles_Y_value",
+								 0);
+      oaInfo.angy_.error_ = getParameterValueFromSpecParSections(allSpecParSections,
+								 nodePath,
+								 "angles_Y_sigma",
+								 0);
+      oaInfo.angy_.quality_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
+										    nodePath,
+										    "angles_Y_quality",
+										    0));
+
+      oaInfo.angz_.name_ = "Z";
+      oaInfo.angz_.dim_type_ = "angles";
+      oaInfo.angz_.value_ = getParameterValueFromSpecParSections(allSpecParSections,
+								 nodePath,
+								 "angles_Z_value",
+								 0);
+      oaInfo.angz_.error_ = getParameterValueFromSpecParSections(allSpecParSections,
+								 nodePath,
+								 "angles_Z_sigma",
+								 0);
+      oaInfo.angz_.quality_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
+										    nodePath,
+										    "angles_Z_quality",
+										    0));
+
+      oaInfo.type_ = getParameterValueFromSpecParSectionsString(allSpecParSections,
+								nodePath,
+								"cocoa_type",
+								0);
+
+      oaInfo.ID_ = static_cast<int>(getParameterValueFromSpecParSections(allSpecParSections,
+									 nodePath,
+									 "cmssw_ID",
+									 0));
+
+      if(ALIUtils::debug >= 4) {
+	std::cout << "CocoaAnalyzer::ReadXML OBJECT " << oaInfo.name_ << " pos/angles read " << std::endl;
+      }
+
+      if( fabs( oaInfo.angx_.value_ - angles[0] ) > 1.E-9 || 
+	  fabs( oaInfo.angy_.value_ - angles[1] ) > 1.E-9 || 
+	  fabs( oaInfo.angz_.value_ - angles[2] ) > 1.E-9 ) {
+	std::cerr << " WRONG ANGLE IN OBJECT " << oaInfo.name_<< 
+	  oaInfo.angx_.value_ << " =? " << angles[0] <<
+	  oaInfo.angy_.value_ << " =? " << angles[1] <<
+	  oaInfo.angz_.value_ << " =? " << angles[2] << std::endl;
+      }
 
 
-    //----- Read extra entries and measurements
+      //----- Read extra entries and measurements
  
-    // extra entries
-    const std::vector<std::string>& names = getAllParameterValuesFromSpecParSectionsString(allSpecParSections,
-											   nodePath,
-											   "extra_entry"
-											   );
-    const std::vector<std::string>& dims = getAllParameterValuesFromSpecParSectionsString(allSpecParSections,
-											  nodePath,
-											  "dimType");
-    const std::vector<double>& values = getAllParameterValuesFromSpecParSections(allSpecParSections,
-										 nodePath,
-										 "value");
-    const std::vector<double>& errors = getAllParameterValuesFromSpecParSections(allSpecParSections,
-										 nodePath,
-										 "sigma");
-    const std::vector<double>& quality = getAllParameterValuesFromSpecParSections(allSpecParSections,
-										  nodePath,
-										  "quality");
-    //--- measurements variables
-    const std::vector<std::string>& measNames = getAllParameterValuesFromSpecParSectionsString(allSpecParSections,
-											       nodePath,
-											       "meas_name");
-    const std::vector<std::string>& measTypes = getAllParameterValuesFromSpecParSectionsString(allSpecParSections,
-											       nodePath,
-											       "meas_type");
+      // extra entries
+      const std::vector<std::string>& names = getAllParameterValuesFromSpecParSectionsString(allSpecParSections,
+											     nodePath,
+											     "extra_entry"
+											     );
+      const std::vector<std::string>& dims = getAllParameterValuesFromSpecParSectionsString(allSpecParSections,
+											    nodePath,
+											    "dimType");
+      const std::vector<double>& values = getAllParameterValuesFromSpecParSections(allSpecParSections,
+										   nodePath,
+										   "value");
+      const std::vector<double>& errors = getAllParameterValuesFromSpecParSections(allSpecParSections,
+										   nodePath,
+										   "sigma");
+      const std::vector<double>& quality = getAllParameterValuesFromSpecParSections(allSpecParSections,
+										    nodePath,
+										    "quality");
+      //--- measurements variables
+      const std::vector<std::string>& measNames = getAllParameterValuesFromSpecParSectionsString(allSpecParSections,
+												 nodePath,
+												 "meas_name");
+      const std::vector<std::string>& measTypes = getAllParameterValuesFromSpecParSectionsString(allSpecParSections,
+												 nodePath,
+												 "meas_type");
 
 	
-    std::map<std::string, std::vector<std::string> > measObjectNames;
-    std::map<std::string, std::vector<std::string> > measParamNames;
-    std::map<std::string, std::vector<double> > measParamValues;
-    std::map<std::string, std::vector<double> > measParamSigmas;
-    std::map<std::string, std::vector<double> > measIsSimulatedValue;
-    for (const auto& name : measNames) {
-      measObjectNames[name] = getAllParameterValuesFromSpecParSectionsString(allSpecParSections,
-									     nodePath,
-									     "meas_object_name_" + name);
-      measParamNames[name] = getAllParameterValuesFromSpecParSectionsString(allSpecParSections,
-									    nodePath,
-									    "meas_value_name_" + name);
-      measParamValues[name] = getAllParameterValuesFromSpecParSections(allSpecParSections,
-								       nodePath,
-								       "meas_value_" + name);
-      measParamSigmas[name] = getAllParameterValuesFromSpecParSections(allSpecParSections,
-								       nodePath,
-								       "meas_sigma_" + name);
-      // this is not in OptAlignParam info
-      measIsSimulatedValue[name] = getAllParameterValuesFromSpecParSections(allSpecParSections,
-									    nodePath,
-									    "meas_is_simulated_value_" + name);
+      std::map<std::string, std::vector<std::string> > measObjectNames;
+      std::map<std::string, std::vector<std::string> > measParamNames;
+      std::map<std::string, std::vector<double> > measParamValues;
+      std::map<std::string, std::vector<double> > measParamSigmas;
+      std::map<std::string, std::vector<double> > measIsSimulatedValue;
+      for (const auto& name : measNames) {
+	measObjectNames[name] = getAllParameterValuesFromSpecParSectionsString(allSpecParSections,
+									       nodePath,
+									       "meas_object_name_" + name);
+	measParamNames[name] = getAllParameterValuesFromSpecParSectionsString(allSpecParSections,
+									      nodePath,
+									      "meas_value_name_" + name);
+	measParamValues[name] = getAllParameterValuesFromSpecParSections(allSpecParSections,
+									 nodePath,
+									 "meas_value_" + name);
+	measParamSigmas[name] = getAllParameterValuesFromSpecParSections(allSpecParSections,
+									 nodePath,
+									 "meas_sigma_" + name);
+	// this is not in OptAlignParam info
+	measIsSimulatedValue[name] = getAllParameterValuesFromSpecParSections(allSpecParSections,
+									      nodePath,
+									      "meas_is_simulated_value_" + name);
 
-      if(ALIUtils::debug >= 5) {
-	std::cout << "CocoaAnalyser: looped measObjectNames " << "meas_object_name_" + name << " n obj " << measObjectNames.at(name).size() << std::endl;
-      }
-
-    }
-    
-    if(ALIUtils::debug >= 4) {
-      std::cout << " CocoaAnalyzer::ReadXML:  Fill extra entries with read parameters " << std::endl;
-    }
-
-    //--- Fill extra entries with read parameters    
-    if ( names.size() == dims.size() && dims.size() == values.size() 
-	 && values.size() == errors.size() && errors.size() == quality.size() ) {
-      for ( size_t ind = 0; ind < names.size(); ++ind ) {
-	double dimFactor = 1.;
-	//std::string type = oaParam.dimType();
-	const std::string& type = dims.at(ind);
-	if( type == "centre" || type == "length" ) {
-	  dimFactor = 0.01; // was converted to cm with getParameterValueFromSpecPar, COCOA unit is m
-	}else if ( type == "angles" || type == "angle" || type == "nodim" ){
-	  dimFactor = 1.;
-	}
-	oaParam.value_ = values[ind]*dimFactor;
-	oaParam.error_ = errors[ind]*dimFactor;
-	oaParam.quality_ = static_cast<int>(quality[ind]);
-	oaParam.name_ = names[ind];
-	oaParam.dim_type_ = dims[ind];
-	oaInfo.extraEntries_.push_back (oaParam);
-	oaParam.clear();
-      }
-
-      oaList_.opticalAlignments_.push_back(oaInfo);
-    } else {
-      std::cout << "WARNING FOR NOW: sizes of extra parameters (names, dimType, value, quality) do"
-		<< " not match!  Did not add " << nObjects << " item to OpticalAlignments." 
-		<< std::endl;
-    }
-
-    if(ALIUtils::debug >= 4) {
-      std::cout << " CocoaAnalyzer::ReadXML:  Fill measurements with read parameters " << std::endl;
-    }
-    //--- Fill measurements with read parameters    
-    if ( measNames.size() == measTypes.size() ) {
-      for ( size_t ind = 0; ind < measNames.size(); ++ind ) {
-	oaMeas.ID_ = ind;
-	oaMeas.name_ = measNames[ind];
-	oaMeas.type_ = measTypes[ind];
-	oaMeas.measObjectNames_ = measObjectNames[oaMeas.name_];
-	if( measParamNames.size() == measParamValues.size() && measParamValues.size() == measParamSigmas.size() ) { 
-	  for( size_t ind2 = 0; ind2 < measParamNames[oaMeas.name_].size(); ind2++ ){
-	    oaParam.name_ = measParamNames[oaMeas.name_][ind2];
-	    oaParam.value_ = measParamValues[oaMeas.name_][ind2];
-	    oaParam.error_ = measParamSigmas[oaMeas.name_][ind2];
-	    if( oaMeas.type_ == "SENSOR2D" || oaMeas.type_ == "COPS" || oaMeas.type_ == "DISTANCEMETER" || oaMeas.type_ == "DISTANCEMETER!DIM" || oaMeas.type_ == "DISTANCEMETER3DIM" ) {
-	      oaParam.dim_type_ = "length";
-	    } else if( oaMeas.type_ == "TILTMETER" ) {
-	      oaParam.dim_type_ = "angle";
-	    } else {
-	      std::cerr << "CocoaAnalyzer::ReadXMLFile. Invalid measurement type: " <<  oaMeas.type_ << std::endl;
-	      std::exception();
-	    }
-	    
-	    oaMeas.values_.push_back( oaParam );
-	    oaMeas.isSimulatedValue_.push_back( measIsSimulatedValue[oaMeas.name_][ind2] );
-	    if(ALIUtils::debug >= 5) {
-	      std::cout << oaMeas.name_ << " copying issimu " << oaMeas.isSimulatedValue_[oaMeas.isSimulatedValue_.size()-1]  << " = " << measIsSimulatedValue[oaMeas.name_][ind2] << std::endl;
-	    //-           std::cout << ind2 << " adding meas value " << oaParam << std::endl;
-	    }
-            oaParam.clear();	
-	  }
-	} else {
-	  if(ALIUtils::debug >= 2) {
-	    std::cout << "WARNING FOR NOW: sizes of measurement parameters (name, value, sigma) do"
-		      << " not match! for measurement " << oaMeas.name_ << " !Did not fill parameters for this measurement " << std::endl;
-	  }
-	}
-	measList_.oaMeasurements_.push_back (oaMeas);
 	if(ALIUtils::debug >= 5) {
-	  std::cout << "CocoaAnalyser: MEASUREMENT " << oaMeas.name_ << " extra entries read " << oaMeas << std::endl;
+	  std::cout << "CocoaAnalyser: looped measObjectNames " << "meas_object_name_" + name << " n obj " << measObjectNames.at(name).size() << std::endl;
 	}
-	oaMeas.clear();
+
       }
-      
-    } else {
-      if(ALIUtils::debug >= 2) {
-	std::cout << "WARNING FOR NOW: sizes of measurements (names, types do"
-		  << " not match!  Did not add " << nObjects << " item to XXXMeasurements" 
+    
+      if(ALIUtils::debug >= 4) {
+	std::cout << " CocoaAnalyzer::ReadXML:  Fill extra entries with read parameters " << std::endl;
+      }
+
+      //--- Fill extra entries with read parameters    
+      if ( names.size() == dims.size() && dims.size() == values.size() 
+	   && values.size() == errors.size() && errors.size() == quality.size() ) {
+	for ( size_t ind = 0; ind < names.size(); ++ind ) {
+	  double dimFactor = 1.;
+	  //std::string type = oaParam.dimType();
+	  const std::string& type = dims.at(ind);
+	  if( type == "centre" || type == "length" ) {
+	    dimFactor = 0.01; // was converted to cm with getParameterValueFromSpecPar, COCOA unit is m
+	  }else if ( type == "angles" || type == "angle" || type == "nodim" ){
+	    dimFactor = 1.;
+	  }
+	  oaParam.value_ = values[ind]*dimFactor;
+	  oaParam.error_ = errors[ind]*dimFactor;
+	  oaParam.quality_ = static_cast<int>(quality[ind]);
+	  oaParam.name_ = names[ind];
+	  oaParam.dim_type_ = dims[ind];
+	  oaInfo.extraEntries_.push_back (oaParam);
+	  oaParam.clear();
+	}
+
+	oaList_.opticalAlignments_.push_back(oaInfo);
+      } else {
+	std::cout << "WARNING FOR NOW: sizes of extra parameters (names, dimType, value, quality) do"
+		  << " not match!  Did not add " << nObjects << " item to OpticalAlignments." 
 		  << std::endl;
       }
-    }
 
-//       std::cout << "sizes are values=" << values.size();
-//       std::cout << "  sigma(errors)=" << errors.size();
-//       std::cout << "  quality=" << quality.size();
-//       std::cout << "  names=" << names.size();
-//       std::cout << "  dimType=" << dims.size() << std::endl;
-    oaInfo.clear();
-    doCOCOA = fv.firstChild();
+      if(ALIUtils::debug >= 4) {
+	std::cout << " CocoaAnalyzer::ReadXML:  Fill measurements with read parameters " << std::endl;
+      }
+      //--- Fill measurements with read parameters    
+      if ( measNames.size() == measTypes.size() ) {
+	for ( size_t ind = 0; ind < measNames.size(); ++ind ) {
+	  oaMeas.ID_ = ind;
+	  oaMeas.name_ = measNames[ind];
+	  oaMeas.type_ = measTypes[ind];
+	  oaMeas.measObjectNames_ = measObjectNames[oaMeas.name_];
+	  if( measParamNames.size() == measParamValues.size() && measParamValues.size() == measParamSigmas.size() ) { 
+	    for( size_t ind2 = 0; ind2 < measParamNames[oaMeas.name_].size(); ind2++ ){
+	      oaParam.name_ = measParamNames[oaMeas.name_][ind2];
+	      oaParam.value_ = measParamValues[oaMeas.name_][ind2];
+	      oaParam.error_ = measParamSigmas[oaMeas.name_][ind2];
+	      if( oaMeas.type_ == "SENSOR2D" || oaMeas.type_ == "COPS" || oaMeas.type_ == "DISTANCEMETER" || oaMeas.type_ == "DISTANCEMETER!DIM" || oaMeas.type_ == "DISTANCEMETER3DIM" ) {
+		oaParam.dim_type_ = "length";
+	      } else if( oaMeas.type_ == "TILTMETER" ) {
+		oaParam.dim_type_ = "angle";
+	      } else {
+		std::cerr << "CocoaAnalyzer::ReadXMLFile. Invalid measurement type: " <<  oaMeas.type_ << std::endl;
+		std::exception();
+	      }
+	    
+	      oaMeas.values_.push_back( oaParam );
+	      oaMeas.isSimulatedValue_.push_back( measIsSimulatedValue[oaMeas.name_][ind2] );
+	      if(ALIUtils::debug >= 5) {
+		std::cout << oaMeas.name_ << " copying issimu " << oaMeas.isSimulatedValue_[oaMeas.isSimulatedValue_.size()-1]  << " = " << measIsSimulatedValue[oaMeas.name_][ind2] << std::endl;
+		//-           std::cout << ind2 << " adding meas value " << oaParam << std::endl;
+	      }
+	      oaParam.clear();	
+	    }
+	  } else {
+	    if(ALIUtils::debug >= 2) {
+	      std::cout << "WARNING FOR NOW: sizes of measurement parameters (name, value, sigma) do"
+			<< " not match! for measurement " << oaMeas.name_ << " !Did not fill parameters for this measurement " << std::endl;
+	    }
+	  }
+	  measList_.oaMeasurements_.push_back (oaMeas);
+	  if(ALIUtils::debug >= 5) {
+	    std::cout << "CocoaAnalyser: MEASUREMENT " << oaMeas.name_ << " extra entries read " << oaMeas << std::endl;
+	  }
+	  oaMeas.clear();
+	}
+      
+      } else {
+	if(ALIUtils::debug >= 2) {
+	  std::cout << "WARNING FOR NOW: sizes of measurements (names, types do"
+		    << " not match!  Did not add " << nObjects << " item to XXXMeasurements" 
+		    << std::endl;
+	}
+      }
+
+      //       std::cout << "sizes are values=" << values.size();
+      //       std::cout << "  sigma(errors)=" << errors.size();
+      //       std::cout << "  quality=" << quality.size();
+      //       std::cout << "  names=" << names.size();
+      //       std::cout << "  dimType=" << dims.size() << std::endl;
+      oaInfo.clear();
+      doCOCOA = myFilteredView.firstChild();
     } // while (doCOCOA)
  
     if(ALIUtils::debug >= 3) {
@@ -466,7 +479,7 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
       std::cout << " @@@@@@ OpticalMeasurements " << measList_ << std::endl;
     }
 
- 
+  }
 }
 
 //------------------------------------------------------------------------
