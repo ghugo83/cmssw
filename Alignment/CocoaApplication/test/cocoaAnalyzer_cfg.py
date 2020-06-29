@@ -3,12 +3,13 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("TestCocoa")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
+
 process.source = cms.Source("EmptySource")   
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
 
 
 process.DDDetectorESProducer = cms.ESSource("DDDetectorESProducer",
-                                            confGeomXMLFiles = cms.FileInPath('Alignment/CocoaApplication/test/table2DWithMirror_dd4hep.xml'),
+                                            confGeomXMLFiles = cms.FileInPath('Alignment/CocoaApplication/test/cmsCocoaTable2DWithMirror.xml'),
                                             appendToDataLabel = cms.string('')
                                             )
                                             
