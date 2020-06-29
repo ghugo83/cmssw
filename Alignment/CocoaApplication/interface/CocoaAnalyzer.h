@@ -50,6 +50,7 @@ class CocoaAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>
   // see note on endJob() at the bottom of the file.
   // virtual void endJob() ;
 
+
  private:
   void ReadXMLFile( const edm::EventSetup& evts );
   std::vector<OpticalAlignInfo> ReadCalibrationDB( const edm::EventSetup& evts );
@@ -61,26 +62,18 @@ class CocoaAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>
   void RunCocoa();
 
   OpticalAlignInfo GetOptAlignInfoFromOptO( OpticalObject* opto );
-
-  std::vector<double> getAllParameterValuesFromSpecParSections(const cms::DDSpecParRegistry& allSpecParSections,
-							       const std::string& nodePath,
-							       const std::string& parameterName
-							       );
-  double getParameterValueFromSpecParSections(const cms::DDSpecParRegistry& allSpecParSections,
-					      const std::string& nodePath,
-					      const std::string& parameterName,
-					      const unsigned int parameterValueIndex
-					      );
-
-  std::vector<std::string> getAllParameterValuesFromSpecParSectionsString(const cms::DDSpecParRegistry& allSpecParSections,
-									  const std::string& nodePath,
-									  const std::string& parameterName
-									  );
-  std::string getParameterValueFromSpecParSectionsString(const cms::DDSpecParRegistry& allSpecParSections,
-							 const std::string& nodePath,
-							 const std::string& parameterName,
-							 const unsigned int parameterValueIndex
-							 );
+ 
+  template<typename T>
+    std::vector<T> getAllParameterValuesFromSpecParSections(const cms::DDSpecParRegistry& allSpecParSections,
+							    const std::string& nodePath,
+							    const std::string& parameterName
+							    );
+  template<typename T>
+    T getParameterValueFromSpecParSections(const cms::DDSpecParRegistry& allSpecParSections,
+					   const std::string& nodePath,
+					   const std::string& parameterName,
+					   const unsigned int parameterValueIndex
+					   );
 
  private:
   OpticalAlignments oaList_;
