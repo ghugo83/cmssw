@@ -1,14 +1,7 @@
 <use   name="clhep"/>
 <use   name="root"/>
 <use   name="dd4hep"/>
-<use   name="Alignment/CocoaDaq"/>
 <use   name="Alignment/CocoaFit"/>
-<use   name="Alignment/CocoaModel"/>
 <use   name="CondCore/DBOutputService"/>
-<use   name="CondFormats/DataRecord"/>
-<use   name="CondFormats/OptAlignObjects"/>
 <use   name="DetectorDescription/DDCMS"/>
-<use   name="FWCore/Framework"/>
-<use   name="FWCore/ParameterSet"/>
-<use   name="Geometry/Records"/>
 <flags   EDM_PLUGIN="1"/>
