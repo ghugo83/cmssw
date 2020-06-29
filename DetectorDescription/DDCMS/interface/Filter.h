@@ -23,27 +23,12 @@
 #include <memory>
 #include <vector>
 #include <regex>
-#include <iostream>
 
 namespace cms {
   struct DDSpecPar;
 
   struct Filter {
     void print() const {
-      for (const auto& it : skeys) {
-	std::cout << it << ", ";
-      }
-      if (next) {
-	std::cout << "Next:\n";
-	print(next);
-      }
-      if (up) {
-	std::cout << "Up:\n";
-	up->print();
-      }
-      std::cout << std::endl;
-
-
       edm::LogVerbatim("Geometry").log([&](auto& log) {
         for (const auto& it : skeys) {
           log << it << ", ";

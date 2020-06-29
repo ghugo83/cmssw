@@ -43,7 +43,7 @@ process.maxEvents = cms.untracked.PSet(
     )
 
 process.DDDetectorESProducer = cms.ESSource("DDDetectorESProducer",
-                                            confGeomXMLFiles = cms.FileInPath('Geometry/TrackerCommonData/data/dd4hep/cms-tracker-geometry-2021.xml'),
+                                            confGeomXMLFiles = cms.FileInPath('DetectorDescription/DDCMS/data/cms-tracker-2021.xml'),
                                             appendToDataLabel = cms.string('CMS')
                                             )
 
@@ -67,14 +67,8 @@ process.testGeoIter = cms.EDAnalyzer("DDTestDumpGeometry",
                                      DDDetector = cms.ESInputTag('','CMS')
                                      )
 
-process.demo = cms.EDAnalyzer('CocoaAnalyzer',
-				maxEvents = cms.int32(1),
-				cocoaDaqRootFile = cms.string("cocoaDaqTest.root"),
-                                DDDetector = cms.ESInputTag('','CMS')
-                              )
 process.p = cms.Path(
     process.test
     +process.testVectors
     +process.testDump
-    +process.testGeoIter
-    +process.demo)
+    +process.testGeoIter)

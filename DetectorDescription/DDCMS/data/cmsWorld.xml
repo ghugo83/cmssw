@@ -20,11 +20,10 @@
     </LogicalPart>
   </LogicalPartSection>
 
-
   <PosPartSection label="cmsWorld.xml">
     <PosPart copyNumber="0">
       <rParent name="OCMS"/>
-      <rChild name="table2DWithMirror:MotherOfAllBoxes"/>
+      <rChild name="testLogicalParts:MotherOfAllBoxes"/>
     </PosPart>
   </PosPartSection>
 
