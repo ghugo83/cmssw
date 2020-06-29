@@ -331,9 +331,9 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
     std::cout << xx << "  " << xy << "  " << xz << std::endl;
     std::cout << yx << "  " << yy << "  " << yz << std::endl;
     std::cout << zx << "  " << zy << "  " << zz << std::endl;
-    CLHEP::Hep3Vector colX(xx,xy,xz);
-    CLHEP::Hep3Vector colY(yx,yy,yz);
-    CLHEP::Hep3Vector colZ(zx,zy,zz);
+    CLHEP::Hep3Vector colX(xx,yx,zx);
+    CLHEP::Hep3Vector colY(xy,yy,zy);
+    CLHEP::Hep3Vector colZ(xz,yz,zz);
     CLHEP::HepRotation rotclhep( colX, colY, colZ );
     std::vector<double> angles = ALIUtils::getRotationAnglesFromMatrix( rotclhep,0., 0., 0. );
 
