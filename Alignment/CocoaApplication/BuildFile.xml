@@ -1,23 +1,14 @@
 <use   name="clhep"/>
 <use   name="root"/>
-
-<use name="rootmath"/>
-<use name="rootgeom"/>
-<use name="DataFormats/GeometryVector"/>
-
 <use   name="dd4hep"/>
-<use   name="DetectorDescription/Core"/>
+<use   name="Alignment/CocoaDaq"/>
+<use   name="Alignment/CocoaFit"/>
+<use   name="Alignment/CocoaModel"/>
+<use   name="CondCore/DBOutputService"/>
+<use   name="CondFormats/DataRecord"/>
+<use   name="CondFormats/OptAlignObjects"/>
 <use   name="DetectorDescription/DDCMS"/>
 <use   name="FWCore/Framework"/>
 <use   name="FWCore/ParameterSet"/>
 <use   name="Geometry/Records"/>
-<use   name="CondFormats/OptAlignObjects"/>
-<use   name="CondFormats/DataRecord"/>
-<use   name="CondFormats/Alignment"/>
-<use   name="CondFormats/AlignmentRecord"/>
-<use   name="Alignment/CocoaModel"/>
-<use   name="Alignment/CocoaFit"/>
-<use   name="meschach"/>
-<use   name="Alignment/CocoaDaq"/>
-<use   name="CondCore/DBOutputService"/>
 <flags   EDM_PLUGIN="1"/>
