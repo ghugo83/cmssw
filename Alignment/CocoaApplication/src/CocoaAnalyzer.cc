@@ -61,7 +61,7 @@ void CocoaAnalyzer::RunCocoa()
   if(ALIUtils::debug >= 3) {
     std::cout << "$$ CocoaAnalyzer::RunCocoa: geometry built " << std::endl;
   }
-
+  
   model.BuildMeasurementsFromOA( measList_ );
 
   if(ALIUtils::debug >= 3) {
@@ -172,9 +172,8 @@ void CocoaAnalyzer::ReadXMLFile( const edm::EventSetup& evts )
       const std::string& nodePath = myFilteredView.path();
       oaInfo.name_ = nodePath;
     
-      // Parent volume
-      const dd4hep::Volume& parentVolume = myPlacedVolume.motherVol();
-      oaInfo.parentName_ = parentVolume.name();
+      // Parent name
+      oaInfo.parentName_ = nodePath.substr(0, nodePath.rfind('/', nodePath.length()) );
  
       if(ALIUtils::debug >= 4) {
 	std::cout << " CocoaAnalyzer::ReadXML reading object " << name << std::endl;
@@ -641,12 +640,15 @@ void CocoaAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& evts)
 
   ReadXMLFile( evts );
 
-  std::vector<OpticalAlignInfo> oaListCalib = ReadCalibrationDB( evts );
 
+  std::vector<OpticalAlignInfo> oaListCalib = ReadCalibrationDB( evts );
   CorrectOptAlignments( oaListCalib );
 
-  new CocoaDaqReaderRoot( theCocoaDaqRootFileName );
- 
+  //new CocoaDaqReaderRoot( theCocoaDaqRootFileName );
+
+  RunCocoa();
+
+
   /*-
   int nEvents = daqReader->GetNEvents();
   for( int ii = 0; ii < nEvents; ii++) {
@@ -654,7 +656,7 @@ void CocoaAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& evts)
   }
   */ 
 
-  RunCocoa();
+  
 
   //  std::cout << "!!!! NOT  DumpCocoaResults() " << std::endl;  
 

@@ -6,9 +6,7 @@
     <ElementaryMaterial name="Hydrogen" density="70.8*mg/cm3" symbol="H" atomicWeight="1*g/mole" atomicNumber="1"/>
   </MaterialSection>
 
-
   <SolidSection label="table2DWithMirror.xml">
-    <Box name="MotherOfAllBoxes" dx="10*m" dy="10*m" dz="10*m"/>
     <Tubs name="laser1" rMin="0*fm " rMax="10*mm " dz="5*cm " startPhi="0*deg" deltaPhi="360.00001002*deg"/>
     <Box name="mirror" dx="5*cm " dy="5*cm " dz="10*mm "/>
     <Box name="tilt1" dx="2*cm " dy="2*cm " dz="5*cm "/>
@@ -19,10 +17,6 @@
 
 
   <LogicalPartSection label="table2DWithMirror.xml">
-    <LogicalPart name="MotherOfAllBoxes">
-      <rSolid name="MotherOfAllBoxes"/>
-      <rMaterial name="table2DWithMirror:Hydrogen"/>
-    </LogicalPart>
     <LogicalPart name="laser1" category="unspecified">
       <rSolid name="laser1"/>
       <rMaterial name="table2DWithMirror:Hydrogen"/>
@@ -52,10 +46,6 @@
 
   <PosPartSection label="table2DWithMirror.xml">
     <PosPart copyNumber="1">
-      <rParent name=":world_volume"/>
-      <rChild name="MotherOfAllBoxes"/>
-    </PosPart>
-    <PosPart copyNumber="1">
       <rParent name="table"/>
       <rChild name="laser1"/>
       <rRotation name="R0"/>
@@ -71,18 +61,18 @@
       <rChild name="tilt1"/>
     </PosPart>
     <PosPart copyNumber="1">
-      <rParent name="MotherOfAllBoxes"/>
+      <rParent name=":world_volume"/>
       <rChild name="table"/>
       <rRotation name="R2"/>
       <Translation x="1*cm " y="2*cm " z="0*fm " />
     </PosPart>
     <PosPart copyNumber="1">
-      <rParent name="MotherOfAllBoxes"/>
+      <rParent name=":world_volume"/>
       <rChild name="sens1"/>
       <Translation x="0*fm " y="0*fm " z="10*cm " />
     </PosPart>
     <PosPart copyNumber="1">
-      <rParent name="MotherOfAllBoxes"/>
+      <rParent name=":world_volume"/>
       <rChild name="sens2"/>
       <rRotation name="R3"/>
       <Translation x="10*cm " y="0*fm " z="20*cm " />
@@ -111,7 +101,7 @@
     </SpecPar>
 
     <SpecPar name="laser1_PARAMS">
-      <PartSelector path="world_volume/MotherOfAllBoxes_1/table_1/laser1_1"/> 
+      <PartSelector path="world_volume/table_1/laser1_1"/> 
       <Parameter name="cocoa_type" value="laser"   eval="false" /> 
       <Parameter name="cmssw_ID" value="2" /> 
       <Parameter name="angles_X_value" value="0*deg" /> 
@@ -132,7 +122,7 @@
     </SpecPar>
 
     <SpecPar name="mirror_PARAMS">
-      <PartSelector path="world_volume/MotherOfAllBoxes_1/table_1/mirror_1"/> 
+      <PartSelector path="world_volume/table_1/mirror_1"/> 
       <Parameter name="cocoa_type" value="mirror"   eval="false" /> 
       <Parameter name="cmssw_ID" value="3" /> 
       <Parameter name="angles_X_value" value="0*deg" /> 
@@ -178,7 +168,7 @@
     </SpecPar>
 
     <SpecPar name="tilt1_PARAMS">
-      <PartSelector path="world_volume/MotherOfAllBoxes_1/table_1/tilt1_1"/> 
+      <PartSelector path="world_volume/table_1/tilt1_1"/> 
       <Parameter name="cocoa_type" value="tiltmeter"   eval="false" /> 
       <Parameter name="cmssw_ID" value="4" /> 
       <Parameter name="angles_X_value" value="0*deg" /> 
@@ -199,7 +189,7 @@
     </SpecPar>
 
     <SpecPar name="table_PARAMS">
-      <PartSelector path="world_volume/MotherOfAllBoxes_1/table_1"/>
+      <PartSelector path="world_volume/table_1"/>
       <Parameter name="cocoa_type" value="table"   eval="false" /> 
       <Parameter name="cmssw_ID" value="1" /> 
       <Parameter name="angles_X_value" value="10*deg" /> 
@@ -220,7 +210,7 @@
     </SpecPar>
 
     <SpecPar name="sens1_PARAMS">
-      <PartSelector path="world_volume/MotherOfAllBoxes_1/sens1_1"/> 
+      <PartSelector path="world_volume/sens1_1"/> 
       <Parameter name="cocoa_type" value="sensor2D"   eval="false" /> 
       <Parameter name="cmssw_ID" value="5" /> 
       <Parameter name="angles_X_value" value="0*deg" /> 
@@ -241,7 +231,7 @@
     </SpecPar>
 
     <SpecPar name="sens2_PARAMS">
-      <PartSelector path="world_volume/MotherOfAllBoxes_1/sens2_1"/> 
+      <PartSelector path="world_volume/sens2_1"/> 
       <Parameter name="cocoa_type" value="sensor2D"   eval="false" /> 
       <Parameter name="cmssw_ID" value="6" /> 
       <Parameter name="angles_X_value" value="0*deg" /> 
@@ -262,10 +252,10 @@
     </SpecPar> 
 
     <SpecPar name="tilt1_MEASUREMENT">
-      <PartSelector path="world_volume/MotherOfAllBoxes_1/table_1/tilt1_1"/> 
+      <PartSelector path="world_volume/table_1/tilt1_1"/> 
       <Parameter name="meas_name" value="tilt1"  eval="false" /> 
       <Parameter name="meas_type" value="TILTMETER"  eval="false" /> 
-      <Parameter name="meas_object_name_tilt1" value="world_volume/MotherOfAllBoxes_1/table_1/tilt1_1"  eval="false" /> 
+      <Parameter name="meas_object_name_tilt1" value="world_volume/table_1/tilt1_1"  eval="false" /> 
       <Parameter name="meas_value_name_tilt1" value="T"  eval="false" /> 
       <Parameter name="meas_value_tilt1" value="0"  eval="true" /> 
       <Parameter name="meas_sigma_tilt1" value="1e-05"  eval="true" /> 
@@ -273,11 +263,11 @@
     </SpecPar>
 
     <SpecPar name="sens1_MEASUREMENT">
-      <PartSelector path="world_volume/MotherOfAllBoxes_1/sens1_1"/> 
+      <PartSelector path="world_volume/sens1_1"/> 
       <Parameter name="meas_name" value="sens1"  eval="false" /> 
       <Parameter name="meas_type" value="SENSOR2D"  eval="false" /> 
-      <Parameter name="meas_object_name_sens1" value="world_volume/MotherOfAllBoxes_1/table_1/laser1_1"  eval="false" /> 
-      <Parameter name="meas_object_name_sens1" value="world_volume/MotherOfAllBoxes_1/sens1_1"  eval="false" /> 
+      <Parameter name="meas_object_name_sens1" value="world_volume/table_1/laser1_1"  eval="false" /> 
+      <Parameter name="meas_object_name_sens1" value="world_volume/sens1_1"  eval="false" /> 
       <Parameter name="meas_value_name_sens1" value="H"  eval="false" /> 
       <Parameter name="meas_value_sens1" value="0"  eval="true" /> 
       <Parameter name="meas_sigma_sens1" value="0.0001"  eval="true" /> 
@@ -288,8 +278,8 @@
       <Parameter name="meas_is_simulated_value_sens1" value="1"  eval="true" /> 
       <Parameter name="meas_name" value="sens1-b"  eval="false" /> 
       <Parameter name="meas_type" value="SENSOR2D"  eval="false" /> 
-      <Parameter name="meas_object_name_sens1-b" value="world_volume/MotherOfAllBoxes_1/table_1/laser1_1"  eval="false" /> 
-      <Parameter name="meas_object_name_sens1-b" value="world_volume/MotherOfAllBoxes_1/sens1_1"  eval="false" /> 
+      <Parameter name="meas_object_name_sens1-b" value="world_volume/table_1/laser1_1"  eval="false" /> 
+      <Parameter name="meas_object_name_sens1-b" value="world_volume/sens1_1"  eval="false" /> 
       <Parameter name="meas_value_name_sens1-b" value="H"  eval="false" /> 
       <Parameter name="meas_value_sens1-b" value="0"  eval="true" /> 
       <Parameter name="meas_sigma_sens1-b" value="0.0001"  eval="true" /> 
@@ -301,12 +291,12 @@
     </SpecPar>
 
     <SpecPar name="sens2_MEASUREMENT">
-      <PartSelector path="world_volume/MotherOfAllBoxes_1/sens2_1"/> 
+      <PartSelector path="world_volume/sens2_1"/> 
       <Parameter name="meas_name" value="sens2"  eval="false" /> 
       <Parameter name="meas_type" value="SENSOR2D"  eval="false" /> 
-      <Parameter name="meas_object_name_sens2" value="world_volume/MotherOfAllBoxes_1/table_1/laser1_1"  eval="false" /> 
-      <Parameter name="meas_object_name_sens2" value="world_volume/MotherOfAllBoxes_1/table_1/mirror_1"  eval="false" /> 
-      <Parameter name="meas_object_name_sens2" value="world_volume/MotherOfAllBoxes_1/sens2_1"  eval="false" /> 
+      <Parameter name="meas_object_name_sens2" value="world_volume/table_1/laser1_1"  eval="false" /> 
+      <Parameter name="meas_object_name_sens2" value="world_volume/table_1/mirror_1"  eval="false" /> 
+      <Parameter name="meas_object_name_sens2" value="world_volume/sens2_1"  eval="false" /> 
       <Parameter name="meas_value_name_sens2" value="H"  eval="false" /> 
       <Parameter name="meas_value_sens2" value="0"  eval="true" /> 
       <Parameter name="meas_sigma_sens2" value="0.0001"  eval="true" /> 

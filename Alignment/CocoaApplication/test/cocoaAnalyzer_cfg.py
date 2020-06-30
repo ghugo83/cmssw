@@ -16,18 +16,48 @@ process.DDDetectorESProducer = cms.ESSource("DDDetectorESProducer",
 process.DDCompactViewESProducer = cms.ESProducer("DDCompactViewESProducer",
                                                  appendToDataLabel = cms.string('')
                                                 )
-                                                   
-                         
-#process.load("CondCore.CondDB.CondDB_cfi")
-#process.CondDB.connect = 'sqlite_file:OpticalAlignments.db'
-#process.PoolDBESSource = cms.ESSource("PoolDBESSource",
-#    process.CondDB,
-#    DumpStat=cms.untracked.bool(True),
-#    toGet = cms.VPSet(cms.PSet(
-#        record = cms.string('OpticalAlignmentsRcd'),
-#        tag = cms.string("OpticalAlignmentsRcd")
-#    )),
-#)
+                                                                  
+# Read DB
+process.load("CondCore.CondDB.CondDB_cfi")
+process.CondDB.connect = 'sqlite_file:OpticalAlignments_testInput.db'
+process.PoolDBESSource = cms.ESSource("PoolDBESSource",
+    process.CondDB,
+    DumpStat=cms.untracked.bool(True),
+    toGet = cms.VPSet(cms.PSet(
+        record = cms.string('OpticalAlignmentsRcd'),
+        tag = cms.string("OpticalAlignmentsRcd")
+    )),
+)
+
+# Write DB
+import CondCore.DBCommon.CondDBSetup_cfi
+process.PoolDBOutputService = cms.Service("PoolDBOutputService",
+    CondCore.DBCommon.CondDBSetup_cfi.CondDBSetup,
+    timetype = cms.untracked.string('runnumber'),
+    connect = cms.string('sqlite_file:dump.db'),
+    toPut = cms.VPSet(
+    	cms.PSet(
+        	record = cms.string('OpticalAlignmentsRcd'),
+        	tag = cms.string('OpticalAlignmentsRcd')
+    	), 
+    	cms.PSet(
+        	record = cms.string('DTAlignmentRcd'),
+        	tag = cms.string('DTAlignmentRcd')
+    	),
+    	cms.PSet(
+        	record = cms.string('DTAlignmentErrorExtendedRcd'),
+        	tag = cms.string('DTAlignmentErrorExtendedRcd')
+    	),
+    	cms.PSet(
+        	record = cms.string('CSCAlignmentRcd'),
+        	tag = cms.string('CSCAlignmentRcd')
+    	),
+    	cms.PSet(
+        	record = cms.string('CSCAlignmentErrorExtendedRcd'),
+        	tag = cms.string('CSCAlignmentErrorExtendedRcd')
+    	),
+    )
+)
                                                 
 process.cocoa = cms.EDAnalyzer('CocoaAnalyzer',
 				maxEvents = cms.int32(1),
