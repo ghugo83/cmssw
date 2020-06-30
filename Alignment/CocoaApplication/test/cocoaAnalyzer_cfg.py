@@ -18,16 +18,16 @@ process.DDCompactViewESProducer = cms.ESProducer("DDCompactViewESProducer",
                                                 )
                                                    
                          
-process.load("CondCore.CondDB.CondDB_cfi")
-process.CondDB.connect = 'sqlite_file:/home/ghugo/CMSSW/CMSSW_11_2_0_pre1/src/Alignment/CocoaApplication/test/OpticalAlignments.db'
-process.PoolDBESSource = cms.ESSource("PoolDBESSource",
-    process.CondDB,
-    DumpStat=cms.untracked.bool(True),
-    toGet = cms.VPSet(cms.PSet(
-        record = cms.string('OpticalAlignmentsRcd'),
-        tag = cms.string("OpticalAlignmentsRcd")
-    )),
-)
+#process.load("CondCore.CondDB.CondDB_cfi")
+#process.CondDB.connect = 'sqlite_file:OpticalAlignments.db'
+#process.PoolDBESSource = cms.ESSource("PoolDBESSource",
+#    process.CondDB,
+#    DumpStat=cms.untracked.bool(True),
+#    toGet = cms.VPSet(cms.PSet(
+#        record = cms.string('OpticalAlignmentsRcd'),
+#        tag = cms.string("OpticalAlignmentsRcd")
+#    )),
+#)
                                                 
 process.cocoa = cms.EDAnalyzer('CocoaAnalyzer',
 				maxEvents = cms.int32(1),
