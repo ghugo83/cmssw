@@ -4,7 +4,7 @@
 //
 // Package:    Alignment/CocoaApplication
 // Class:      CocoaAnalyzer
-// 
+//
 /*
 
  Description: test access to the OpticalAlignMeasurements via OpticalAlignMeasurementsGeneratedSource
@@ -36,46 +36,40 @@ class DDCompactView;
 class DDSpecifics;
 class OpticalObject;
 
+class CocoaAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources> {
+public:
+  explicit CocoaAnalyzer(edm::ParameterSet const& p);
+  explicit CocoaAnalyzer(int i) {}
+  ~CocoaAnalyzer() override {}
 
-class CocoaAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>
-{
- public:
-  
-  explicit  CocoaAnalyzer(edm::ParameterSet const& p);
-  explicit  CocoaAnalyzer(int i) { }
-  virtual ~ CocoaAnalyzer() { }
-  
-  virtual void beginJob() override;
-  virtual void analyze(const edm::Event& e, const edm::EventSetup& c) override;
+  void beginJob() override;
+  void analyze(const edm::Event& e, const edm::EventSetup& c) override;
   // see note on endJob() at the bottom of the file.
   // virtual void endJob() ;
 
+private:
+  void ReadXMLFile(const edm::EventSetup& evts);
+  std::vector<OpticalAlignInfo> ReadCalibrationDB(const edm::EventSetup& evts);
 
- private:
-  void ReadXMLFile( const edm::EventSetup& evts );
-  std::vector<OpticalAlignInfo> ReadCalibrationDB( const edm::EventSetup& evts );
-
-  void CorrectOptAlignments( std::vector<OpticalAlignInfo>& oaListCalib );
-  OpticalAlignInfo* FindOpticalAlignInfoXML( const OpticalAlignInfo& oaInfo );
-  bool CorrectOaParam( OpticalAlignParam* oaParamXML, const OpticalAlignParam& oaParamDB );
+  void CorrectOptAlignments(std::vector<OpticalAlignInfo>& oaListCalib);
+  OpticalAlignInfo* FindOpticalAlignInfoXML(const OpticalAlignInfo& oaInfo);
+  bool CorrectOaParam(OpticalAlignParam* oaParamXML, const OpticalAlignParam& oaParamDB);
 
   void RunCocoa();
 
-  OpticalAlignInfo GetOptAlignInfoFromOptO( OpticalObject* opto );
- 
-  template<typename T>
-    std::vector<T> getAllParameterValuesFromSpecParSections(const cms::DDSpecParRegistry& allSpecParSections,
-							    const std::string& nodePath,
-							    const std::string& parameterName
-							    );
-  template<typename T>
-    T getParameterValueFromSpecParSections(const cms::DDSpecParRegistry& allSpecParSections,
-					   const std::string& nodePath,
-					   const std::string& parameterName,
-					   const unsigned int parameterValueIndex
-					   );
+  OpticalAlignInfo GetOptAlignInfoFromOptO(OpticalObject* opto);
 
- private:
+  template <typename T>
+  std::vector<T> getAllParameterValuesFromSpecParSections(const cms::DDSpecParRegistry& allSpecParSections,
+                                                          const std::string& nodePath,
+                                                          const std::string& parameterName);
+  template <typename T>
+  T getParameterValueFromSpecParSections(const cms::DDSpecParRegistry& allSpecParSections,
+                                         const std::string& nodePath,
+                                         const std::string& parameterName,
+                                         const unsigned int parameterValueIndex);
+
+private:
   OpticalAlignments oaList_;
   OpticalAlignMeasurements measList_;
   std::string theCocoaDaqRootFileName;
