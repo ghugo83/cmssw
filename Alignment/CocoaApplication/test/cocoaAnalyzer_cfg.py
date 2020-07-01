@@ -34,7 +34,7 @@ import CondCore.DBCommon.CondDBSetup_cfi
 process.PoolDBOutputService = cms.Service("PoolDBOutputService",
     CondCore.DBCommon.CondDBSetup_cfi.CondDBSetup,
     timetype = cms.untracked.string('runnumber'),
-    connect = cms.string('sqlite_file:dump.db'),
+    connect = cms.string('sqlite_file:final.db'),
     toPut = cms.VPSet(
     	cms.PSet(
         	record = cms.string('OpticalAlignmentsRcd'),
