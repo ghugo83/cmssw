@@ -178,63 +178,65 @@ OpticalAlignInfo CocoaDBMgr::GetOptAlignInfoFromOptO(OpticalObject* opto) {
 
   const std::vector<Entry*>& theCoordinateEntryVector = opto->CoordinateEntryList();
   std::cout << " CocoaDBMgr::GetOptAlignInfoFromOptO starting coord " << std::endl;
-
-  data.x_.value_ = centreLocal.x() * 100.;  // in cm
-  std::cout << " matrix " << Fit::GetAtWAMatrix() << std::endl;
-  std::cout << " matrix " << Fit::GetAtWAMatrix()->Mat() << " " << theCoordinateEntryVector[0]->fitPos() << std::endl;
-  data.x_.error_ = GetEntryError(theCoordinateEntryVector[0]) * 100.;  // in cm
-
-  data.y_.value_ = centreLocal.y() * 100.;  // in cm
-  std::cout << " matrix " << Fit::GetAtWAMatrix()->Mat() << " " << theCoordinateEntryVector[1]->fitPos() << std::endl;
-  data.y_.error_ = GetEntryError(theCoordinateEntryVector[1]) * 100.;  // in cm
-
-  data.z_.value_ = centreLocal.z() * 100.;  // in cm
-  std::cout << " matrix " << Fit::GetAtWAMatrix()->Mat() << " " << theCoordinateEntryVector[2]->fitPos() << std::endl;
-  data.z_.error_ = GetEntryError(theCoordinateEntryVector[2]) * 100.;  // in cm
-
   
-  /*const Entry* const translationX = theCoordinateEntryVector.at(0);
-  OpticalAlignParam xParam;
-  xParam.name_ = translationX->name();
-  xParam.dim_type_ = translationX->type();
-  xParam.error_ = translationX->sigma();
-  xParam.value_ = centreLocal.x() * 100.; // store in cm to DB
-  xParam.error_ = translationX->sigma() * 100.;
-  xParam.quality_ = translationX->quality();
-  data.x_ = xParam;
+  const Entry* const translationX = theCoordinateEntryVector.at(0);
+  OpticalAlignParam translationXDataForDB;
+  translationXDataForDB.name_ = translationX->name();
+  translationXDataForDB.dim_type_ = translationX->type();
+  translationXDataForDB.value_ = centreLocal.x() * 100.; // store in cm to DB
+  translationXDataForDB.error_ = GetEntryError(translationX) * 100.;
+  translationXDataForDB.quality_ = translationX->quality();
+  data.x_ = translationXDataForDB;
 
-  OpticalAlignParam yParam;
-  yParam.name_ = theCoordinateEntryVector[1]->name();
-  yParam.dim_type_ = theCoordinateEntryVector[1]->type();
-  yParam.error_ = theCoordinateEntryVector[1]->sigma();
-  yParam.value_ = centreLocal.y() * 100.;
-  yParam.error_ = theCoordinateEntryVector[1]->sigma() * 100.;
-  yParam.quality_ = theCoordinateEntryVector[1]->quality();
-  data.y_ = yParam;
+  const Entry* const translationY = theCoordinateEntryVector.at(1);
+  OpticalAlignParam translationYDataForDB;
+  translationYDataForDB.name_ = translationY->name();
+  translationYDataForDB.dim_type_ = translationY->type();
+  translationYDataForDB.value_ = centreLocal.y() * 100.; // store in cm to DB
+  translationYDataForDB.error_ = GetEntryError(translationY) * 100.;
+  translationYDataForDB.quality_ = translationY->quality();
+  data.y_ = translationYDataForDB;
 
-  OpticalAlignParam zParam;
-  zParam.name_ = theCoordinateEntryVector[2]->name();
-  zParam.dim_type_ = theCoordinateEntryVector[2]->type();
-  zParam.error_ = theCoordinateEntryVector[2]->sigma();
-  zParam.value_ = centreLocal.z() * 100.;
-  zParam.error_ = theCoordinateEntryVector[2]->sigma() * 100.;
-  zParam.quality_ = theCoordinateEntryVector[2]->quality();
-  data.z_ = zParam;*/
+  const Entry* const translationZ = theCoordinateEntryVector.at(2);
+  OpticalAlignParam translationZDataForDB;
+  translationZDataForDB.name_ = translationZ->name();
+  translationZDataForDB.dim_type_ = translationZ->type();
+  translationZDataForDB.value_ = centreLocal.z() * 100.; // store in cm to DB
+  translationZDataForDB.error_ = GetEntryError(translationZ) * 100.;
+  translationZDataForDB.quality_ = translationZ->quality();
+  data.z_ = translationZDataForDB;
+
 
   //----- angles in local coordinates
   std::vector<double> anglocal = opto->getLocalRotationAngles(theCoordinateEntryVector);
 
-  data.angx_.value_ = anglocal[0] * 180. / M_PI;  // in deg
-  std::cout << " matrix " << Fit::GetAtWAMatrix()->Mat() << theCoordinateEntryVector[3]->fitPos() << std::endl;
-  data.angx_.error_ = GetEntryError(theCoordinateEntryVector[3]) * 180. / M_PI;  // in deg;
+  const Entry* const rotationX = theCoordinateEntryVector.at(3);
+  OpticalAlignParam rotationXDataForDB;
+  rotationXDataForDB.name_ = rotationX->name();
+  rotationXDataForDB.dim_type_ = rotationX->type();
+  rotationXDataForDB.value_ = anglocal.at(0);
+  rotationXDataForDB.error_ = GetEntryError(rotationX);
+  rotationXDataForDB.quality_ = rotationX->quality();
+  data.angx_ = rotationXDataForDB;
 
-  data.angy_.value_ = anglocal[1] * 180. / M_PI;  // in deg
-  std::cout << " matrix " << Fit::GetAtWAMatrix()->Mat() << theCoordinateEntryVector[4]->fitPos() << std::endl;
-  data.angy_.error_ = GetEntryError(theCoordinateEntryVector[4]) * 180. / M_PI;  // in deg;;
+  const Entry* const rotationY = theCoordinateEntryVector.at(4);
+  OpticalAlignParam rotationYDataForDB;
+  rotationYDataForDB.name_ = rotationY->name();
+  rotationYDataForDB.dim_type_ = rotationY->type();
+  rotationYDataForDB.value_ = anglocal.at(1);
+  rotationYDataForDB.error_ = GetEntryError(rotationY);
+  rotationYDataForDB.quality_ = rotationY->quality();
+  data.angy_ = rotationYDataForDB;
 
-  data.angz_.value_ = anglocal[2] * 180. / M_PI;  // in deg
-  std::cout << " matrix " << Fit::GetAtWAMatrix()->Mat() << theCoordinateEntryVector[5]->fitPos() << std::endl;
-  data.angz_.error_ = GetEntryError(theCoordinateEntryVector[5]) * 180. / M_PI;  // in deg;
+  const Entry* const rotationZ = theCoordinateEntryVector.at(5);
+  OpticalAlignParam rotationZDataForDB;
+  rotationZDataForDB.name_ = rotationZ->name();
+  rotationZDataForDB.dim_type_ = rotationZ->type();
+  rotationZDataForDB.value_ = anglocal.at(2);
+  rotationZDataForDB.error_ = GetEntryError(rotationZ);
+  rotationZDataForDB.quality_ = rotationZ->quality();
+  data.angz_ = rotationZDataForDB;
+
 
   const std::vector<Entry*>& theExtraEntryVector = opto->ExtraEntryList();
   std::cout << " CocoaDBMgr::GetOptAlignInfoFromOptO starting entry " << std::endl;
