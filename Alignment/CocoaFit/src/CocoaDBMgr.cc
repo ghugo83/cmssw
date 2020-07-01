@@ -182,24 +182,24 @@ OpticalAlignInfo CocoaDBMgr::GetOptAlignInfoFromOptO(OpticalObject* opto) {
   OpticalAlignParam xParam;
   xParam.name_ = theCoordinateEntryVector[0]->name();
   xParam.dim_type_ = theCoordinateEntryVector[0]->type();
-  xParam.value_ = centreLocal.x();
-  xParam.error_ = theCoordinateEntryVector[0]->sigma();
+  xParam.value_ = centreLocal.x() * 100.; // store in cm to DB
+  xParam.error_ = theCoordinateEntryVector[0]->sigma() * 100.;
   xParam.quality_ = theCoordinateEntryVector[0]->quality();
   data.x_ = xParam;
 
   OpticalAlignParam yParam;
   yParam.name_ = theCoordinateEntryVector[1]->name();
   yParam.dim_type_ = theCoordinateEntryVector[1]->type();
-  yParam.value_ = centreLocal.y();
-  yParam.error_ = theCoordinateEntryVector[1]->sigma();
+  yParam.value_ = centreLocal.y() * 100.;
+  yParam.error_ = theCoordinateEntryVector[1]->sigma() * 100.;
   yParam.quality_ = theCoordinateEntryVector[1]->quality();
   data.y_ = yParam;
 
   OpticalAlignParam zParam;
   zParam.name_ = theCoordinateEntryVector[2]->name();
   zParam.dim_type_ = theCoordinateEntryVector[2]->type();
-  zParam.value_ = centreLocal.z();
-  zParam.error_ = theCoordinateEntryVector[2]->sigma();
+  zParam.value_ = centreLocal.z() * 100.;
+  zParam.error_ = theCoordinateEntryVector[2]->sigma() * 100.;
   zParam.quality_ = theCoordinateEntryVector[2]->quality();
   data.z_ = zParam;
 
