@@ -44,20 +44,16 @@ public:
 
   void beginJob() override;
   void analyze(const edm::Event& e, const edm::EventSetup& c) override;
-  // see note on endJob() at the bottom of the file.
-  // virtual void endJob() ;
 
 private:
-  void ReadXMLFile(const edm::EventSetup& evts);
-  std::vector<OpticalAlignInfo> ReadCalibrationDB(const edm::EventSetup& evts);
+  void readXMLFile(const edm::EventSetup& evts);
+  std::vector<OpticalAlignInfo> readCalibrationDB(const edm::EventSetup& evts);
 
-  void CorrectOptAlignments(std::vector<OpticalAlignInfo>& oaListCalib);
-  OpticalAlignInfo* FindOpticalAlignInfoXML(const OpticalAlignInfo& oaInfo);
-  bool CorrectOaParam(OpticalAlignParam* oaParamXML, const OpticalAlignParam& oaParamDB);
+  void correctOptAlignments(std::vector<OpticalAlignInfo>& oaListCalib);
+  OpticalAlignInfo* findOpticalAlignInfoXML(const OpticalAlignInfo& oaInfo);
+  bool correctOaParam(OpticalAlignParam* oaParamXML, const OpticalAlignParam& oaParamDB);
 
-  void RunCocoa();
-
-  OpticalAlignInfo GetOptAlignInfoFromOptO(OpticalObject* opto);
+  void runCocoa();
 
   template <typename T>
   std::vector<T> getAllParameterValuesFromSpecParSections(const cms::DDSpecParRegistry& allSpecParSections,
