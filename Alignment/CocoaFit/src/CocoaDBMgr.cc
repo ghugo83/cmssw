@@ -179,22 +179,72 @@ OpticalAlignInfo CocoaDBMgr::GetOptAlignInfoFromOptO(OpticalObject* opto) {
   const std::vector<Entry*>& theCoordinateEntryVector = opto->CoordinateEntryList();
   std::cout << " CocoaDBMgr::GetOptAlignInfoFromOptO starting coord " << std::endl;
 
-  data.x_.value_ = centreLocal.x() / 100.;  // in cm
-  std::cout << " matrix " << Fit::GetAtWAMatrix() << std::endl;
-  std::cout << " matrix " << Fit::GetAtWAMatrix()->Mat() << " " << theCoordinateEntryVector[0]->fitPos() << std::endl;
-  data.x_.error_ = GetEntryError(theCoordinateEntryVector[0]) / 100.;  // in cm
+  OpticalAlignParam xParam;
+  xParam.name_ = theCoordinateEntryVector[0]->name();
+  xParam.dim_type_ = theCoordinateEntryVector[0]->type();
+  xParam.value_ = centreLocal.x();
+  xParam.error_ = theCoordinateEntryVector[0]->sigma();
+  xParam.quality_ = theCoordinateEntryVector[0]->quality();
+  data.x_ = xParam;
 
+  OpticalAlignParam yParam;
+  yParam.name_ = theCoordinateEntryVector[1]->name();
+  yParam.dim_type_ = theCoordinateEntryVector[1]->type();
+  yParam.value_ = centreLocal.y();
+  yParam.error_ = theCoordinateEntryVector[1]->sigma();
+  yParam.quality_ = theCoordinateEntryVector[1]->quality();
+  data.y_ = yParam;
+
+  OpticalAlignParam zParam;
+  zParam.name_ = theCoordinateEntryVector[2]->name();
+  zParam.dim_type_ = theCoordinateEntryVector[2]->type();
+  zParam.value_ = centreLocal.z();
+  zParam.error_ = theCoordinateEntryVector[2]->sigma();
+  zParam.quality_ = theCoordinateEntryVector[2]->quality();
+  data.z_ = zParam;
+
+
+
+  /*
   data.y_.value_ = centreLocal.y() / 100.;  // in cm
   std::cout << " matrix " << Fit::GetAtWAMatrix()->Mat() << " " << theCoordinateEntryVector[1]->fitPos() << std::endl;
   data.y_.error_ = GetEntryError(theCoordinateEntryVector[1]) / 100.;  // in cm
 
   data.z_.value_ = centreLocal.z() / 100.;  // in cm
   std::cout << " matrix " << Fit::GetAtWAMatrix()->Mat() << " " << theCoordinateEntryVector[2]->fitPos() << std::endl;
-  data.z_.error_ = GetEntryError(theCoordinateEntryVector[2]) / 100.;  // in cm
+  data.z_.error_ = GetEntryError(theCoordinateEntryVector[2]) / 100.;  // in cm*/
 
   //----- angles in local coordinates
   std::vector<double> anglocal = opto->getLocalRotationAngles(theCoordinateEntryVector);
 
+
+  OpticalAlignParam angxParam;
+  angxParam.name_ = theCoordinateEntryVector[3]->name();
+  angxParam.dim_type_ = theCoordinateEntryVector[3]->type();
+  angxParam.value_ = anglocal[0];
+  angxParam.error_ = theCoordinateEntryVector[3]->sigma();
+  angxParam.quality_ = theCoordinateEntryVector[3]->quality();
+  data.angx_ = angxParam;
+
+  OpticalAlignParam angyParam;
+  angyParam.name_ = theCoordinateEntryVector[4]->name();
+  angyParam.dim_type_ = theCoordinateEntryVector[4]->type();
+  angyParam.value_ = anglocal[1];
+  angyParam.error_ = theCoordinateEntryVector[4]->sigma();
+  angyParam.quality_ = theCoordinateEntryVector[4]->quality();
+  data.angy_ = angyParam;
+
+  OpticalAlignParam angzParam;
+  angzParam.name_ = theCoordinateEntryVector[5]->name();
+  angzParam.dim_type_ = theCoordinateEntryVector[5]->type();
+  angzParam.value_ = anglocal[2];
+  angzParam.error_ = theCoordinateEntryVector[5]->sigma();
+  angzParam.quality_ = theCoordinateEntryVector[5]->quality();
+  data.angz_ = angzParam;
+
+
+
+  /*
   data.angx_.value_ = anglocal[0] * 180. / M_PI;  // in deg
   std::cout << " matrix " << Fit::GetAtWAMatrix()->Mat() << theCoordinateEntryVector[3]->fitPos() << std::endl;
   data.angx_.error_ = GetEntryError(theCoordinateEntryVector[3]) * 180. / M_PI;  // in deg;
@@ -205,7 +255,7 @@ OpticalAlignInfo CocoaDBMgr::GetOptAlignInfoFromOptO(OpticalObject* opto) {
 
   data.angz_.value_ = anglocal[2] * 180. / M_PI;  // in deg
   std::cout << " matrix " << Fit::GetAtWAMatrix()->Mat() << theCoordinateEntryVector[5]->fitPos() << std::endl;
-  data.angz_.error_ = GetEntryError(theCoordinateEntryVector[5]) * 180. / M_PI;  // in deg;
+  data.angz_.error_ = GetEntryError(theCoordinateEntryVector[5]) * 180. / M_PI;  // in deg;*/
 
   const std::vector<Entry*>& theExtraEntryVector = opto->ExtraEntryList();
   std::cout << " CocoaDBMgr::GetOptAlignInfoFromOptO starting entry " << std::endl;

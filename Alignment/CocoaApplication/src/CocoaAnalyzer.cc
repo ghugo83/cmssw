@@ -578,13 +578,23 @@ void CocoaAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& evts) 
 
   readXMLFile(evts);
 
-  std::vector<OpticalAlignInfo> oaListCalib = readCalibrationDB(evts);
-  correctOptAlignments(oaListCalib);
+  // Write DB
+  Model& model = Model::getInstance();
+  model.BuildSystemDescriptionFromOA( oaList_ );
+  CocoaDBMgr::getInstance()->DumpCocoaResults();
+
+  //std::vector<OpticalAlignInfo> oaListCalib = readCalibrationDB(evts);
+  //correctOptAlignments(oaListCalib);
+
+  
+
+  //runCocoa();
+
+
+
+
 
   //new CocoaDaqReaderRoot( theCocoaDaqRootFileName );
-
-  runCocoa();
-
   /*-
   int nEvents = daqReader->GetNEvents();
   for( int ii = 0; ii < nEvents; ii++) {
