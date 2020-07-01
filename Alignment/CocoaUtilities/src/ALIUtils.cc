@@ -778,43 +778,18 @@ int ALIUtils::checkMatrixEquations(double angleX, double angleY, double angleZ, 
   double rotzz = cx * cy;
 
   int matrixElemBad = 0;
-  if (!eq2ang(rot.xx(), rotxx)) {
-    std::cerr << " EQUATION for xx() IS BAD " << rot.xx() << " <> " << rotxx << std::endl;
-    matrixElemBad++;
-  }
-  if (!eq2ang(rot.xy(), rotxy)) {
-    std::cerr << " EQUATION for xy() IS BAD " << rot.xy() << " <> " << rotxy << std::endl;
-    matrixElemBad++;
-  }
-  if (!eq2ang(rot.xz(), rotxz)) {
-    std::cerr << " EQUATION for xz() IS BAD " << rot.xz() << " <> " << rotxz << std::endl;
-    matrixElemBad++;
-  }
-  if (!eq2ang(rot.yx(), rotyx)) {
-    std::cerr << " EQUATION for yx() IS BAD " << rot.yx() << " <> " << rotyx << std::endl;
-    matrixElemBad++;
-  }
-  if (!eq2ang(rot.yy(), rotyy)) {
-    std::cerr << " EQUATION for yy() IS BAD " << rot.yy() << " <> " << rotyy << std::endl;
-    matrixElemBad++;
-  }
-  if (!eq2ang(rot.yz(), rotyz)) {
-    std::cerr << " EQUATION for yz() IS BAD " << rot.yz() << " <> " << rotyz << std::endl;
-    matrixElemBad++;
-  }
-  if (!eq2ang(rot.zx(), rotzx)) {
-    std::cerr << " EQUATION for zx() IS BAD " << rot.zx() << " <> " << rotzx << std::endl;
-    matrixElemBad++;
-  }
-  if (!eq2ang(rot.zy(), rotzy)) {
-    std::cerr << " EQUATION for zy() IS BAD " << rot.zy() << " <> " << rotzy << std::endl;
-    matrixElemBad++;
-  }
-  if (!eq2ang(rot.zz(), rotzz)) {
-    std::cerr << " EQUATION for zz() IS BAD " << rot.zz() << " <> " << rotzz << std::endl;
+  if ( !eq2ang(rot.xx(), rotxx)
+       || !eq2ang(rot.xy(), rotxy)
+       || !eq2ang(rot.xz(), rotxz)
+       || !eq2ang(rot.yx(), rotyx)
+       || !eq2ang(rot.yy(), rotyy)
+       || !eq2ang(rot.yz(), rotyz)
+       || !eq2ang(rot.zx(), rotzx)
+       || !eq2ang(rot.zy(), rotzy)
+       || !eq2ang(rot.zz(), rotzz)
+       ) {
     matrixElemBad++;
   }
 
-  //-  std::cout << " cme: matrixElemBad " << matrixElemBad << std::endl;
   return matrixElemBad;
 }
