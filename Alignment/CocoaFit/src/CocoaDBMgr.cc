@@ -179,18 +179,18 @@ OpticalAlignInfo CocoaDBMgr::GetOptAlignInfoFromOptO(OpticalObject* opto) {
   const std::vector<Entry*>& theCoordinateEntryVector = opto->CoordinateEntryList();
   std::cout << " CocoaDBMgr::GetOptAlignInfoFromOptO starting coord " << std::endl;
 
-  data.x_.value_ = centreLocal.x() / 100.;  // in cm
+  data.x_.value_ = centreLocal.x() * 100.;  // in cm
   std::cout << " matrix " << Fit::GetAtWAMatrix() << std::endl;
   std::cout << " matrix " << Fit::GetAtWAMatrix()->Mat() << " " << theCoordinateEntryVector[0]->fitPos() << std::endl;
-  data.x_.error_ = GetEntryError(theCoordinateEntryVector[0]) / 100.;  // in cm
+  data.x_.error_ = GetEntryError(theCoordinateEntryVector[0]) * 100.;  // in cm
 
-  data.y_.value_ = centreLocal.y() / 100.;  // in cm
+  data.y_.value_ = centreLocal.y() * 100.;  // in cm
   std::cout << " matrix " << Fit::GetAtWAMatrix()->Mat() << " " << theCoordinateEntryVector[1]->fitPos() << std::endl;
-  data.y_.error_ = GetEntryError(theCoordinateEntryVector[1]) / 100.;  // in cm
+  data.y_.error_ = GetEntryError(theCoordinateEntryVector[1]) * 100.;  // in cm
 
-  data.z_.value_ = centreLocal.z() / 100.;  // in cm
+  data.z_.value_ = centreLocal.z() * 100.;  // in cm
   std::cout << " matrix " << Fit::GetAtWAMatrix()->Mat() << " " << theCoordinateEntryVector[2]->fitPos() << std::endl;
-  data.z_.error_ = GetEntryError(theCoordinateEntryVector[2]) / 100.;  // in cm
+  data.z_.error_ = GetEntryError(theCoordinateEntryVector[2]) * 100.;  // in cm
 
   
   /*const Entry* const translationX = theCoordinateEntryVector.at(0);
@@ -359,12 +359,12 @@ AlignTransformErrorExtended* CocoaDBMgr::GetAlignInfoErrorFromOptO(OpticalObject
   CLHEP::HepMatrix errm(3, 3);
   const std::vector<Entry*>& theCoordinateEntryVector = opto->CoordinateEntryList();
   std::cout << "@@@ CocoaDBMgr::GetAlignInfoFromOptOfill errm " << opto->name() << std::endl;
-  errm(0, 0) = GetEntryError(theCoordinateEntryVector[0]) * 100.;                               // in cm
-  errm(1, 1) = GetEntryError(theCoordinateEntryVector[1]) * 100.;                               // in cm
-  errm(2, 2) = GetEntryError(theCoordinateEntryVector[2]) * 100.;                               // in cm
-  errm(0, 1) = GetEntryError(theCoordinateEntryVector[0], theCoordinateEntryVector[1]) * 100.;  // in cm
-  errm(0, 2) = GetEntryError(theCoordinateEntryVector[0], theCoordinateEntryVector[2]) * 100.;  // in cm
-  errm(1, 2) = GetEntryError(theCoordinateEntryVector[1], theCoordinateEntryVector[2]) * 100.;  // in cm
+  errm(0, 0) = GetEntryError(theCoordinateEntryVector[0]) / 100.;                               // in cm
+  errm(1, 1) = GetEntryError(theCoordinateEntryVector[1]) / 100.;                               // in cm
+  errm(2, 2) = GetEntryError(theCoordinateEntryVector[2]) / 100.;                               // in cm
+  errm(0, 1) = GetEntryError(theCoordinateEntryVector[0], theCoordinateEntryVector[1]) / 100.;  // in cm
+  errm(0, 2) = GetEntryError(theCoordinateEntryVector[0], theCoordinateEntryVector[2]) / 100.;  // in cm
+  errm(1, 2) = GetEntryError(theCoordinateEntryVector[1], theCoordinateEntryVector[2]) / 100.;  // in cm
   //   errm(1,0) = errm(0,1);
   // errm(2,0) = errm(0,2);
   // errm(2,1) = errm(1,2);
