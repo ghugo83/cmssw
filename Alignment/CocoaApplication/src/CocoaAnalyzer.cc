@@ -496,9 +496,9 @@ void CocoaAnalyzer::correctOptAlignments(std::vector<OpticalAlignInfo>& oaListCa
       for (itoap1 = extraEntDB.begin(); itoap1 != extraEntDB.end(); ++itoap1) {
         bool pFound = false;
         //----- Look for the extra parameter in XML oaInfo that has the same name
-        std::string oaName = (*itoap1).name_.substr(1, (*itoap1).name_.size() - 2);
+	std::string oaName = (*itoap1).name_;
         for (itoap2 = extraEntXML->begin(); itoap2 != extraEntXML->end(); ++itoap2) {
-          if (oaName == (*itoap2).name_) {
+          if (oaName == itoap2->name_) {
             correctOaParam(&(*itoap2), *itoap1);
             pFound = true;
             break;
@@ -524,7 +524,7 @@ OpticalAlignInfo* CocoaAnalyzer::findOpticalAlignInfoXML(const OpticalAlignInfo&
   OpticalAlignInfo* oaInfoXML = nullptr;
   std::vector<OpticalAlignInfo>::iterator it;
   for (it = oaList_.opticalAlignments_.begin(); it != oaList_.opticalAlignments_.end(); ++it) {
-    std::string oaName = oaInfo.name_.substr(1, oaInfo.name_.size() - 2);
+    std::string oaName = oaInfo.name_;
 
     if (ALIUtils::debug >= 5) {
       std::cout << "CocoaAnalyzer::findOpticalAlignInfoXML:  looking for OAI " << (*it).name_ << " =? " << oaName
