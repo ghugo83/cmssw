@@ -4,7 +4,7 @@ process = cms.Process("TestCocoa")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 
-process.source = cms.Source("EmptySource")   
+#process.source = cms.Source("EmptySource")   
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
 
 
@@ -16,9 +16,20 @@ process.DDDetectorESProducer = cms.ESSource("DDDetectorESProducer",
 process.DDCompactViewESProducer = cms.ESProducer("DDCompactViewESProducer",
                                                  appendToDataLabel = cms.string('')
                                                 )
+
                                                                   
-# Read DB
 process.load("CondCore.CondDB.CondDB_cfi")
+
+
+# A data source must always be defined. We don't need it, so here's a dummy one.
+process.source = cms.Source("EmptyIOVSource",
+    timetype = cms.string('runnumber'),
+    firstValue = cms.uint64(1),
+    lastValue = cms.uint64(1),
+    interval = cms.uint64(1)
+)
+
+# Read DB
 process.CondDB.connect = 'sqlite_file:OpticalAlignments_testInput.db'
 process.PoolDBESSource = cms.ESSource("PoolDBESSource",
     process.CondDB,
@@ -58,6 +69,8 @@ process.PoolDBOutputService = cms.Service("PoolDBOutputService",
     	),
     )
 )
+
+
                                                 
 process.cocoa = cms.EDAnalyzer('CocoaAnalyzer',
 				maxEvents = cms.int32(1),

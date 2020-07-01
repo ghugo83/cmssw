@@ -472,7 +472,6 @@ void CocoaAnalyzer::correctOptAlignments(std::vector<OpticalAlignInfo>& oaListCa
   for (it = oaListCalib.begin(); it != oaListCalib.end(); ++it) {
     OpticalAlignInfo oaInfoDB = *it;
     OpticalAlignInfo* oaInfoXML = findOpticalAlignInfoXML(oaInfoDB);
-    std::cerr << "error " << (*it).name_ << std::endl;
     if (oaInfoXML == nullptr) {
       if (ALIUtils::debug >= 2) {
         std::cerr << "@@@@@ WARNING CocoaAnalyzer::correctOptAlignments:  OpticalAlignInfo read from DB is not present "
