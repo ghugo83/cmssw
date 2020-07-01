@@ -3,11 +3,19 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("TestCocoa")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-
-#process.source = cms.Source("EmptySource")   
+ 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
 
+# A data source must always be defined. We don't need it, so here's a dummy one.
+process.source = cms.Source("EmptyIOVSource",
+    timetype = cms.string('runnumber'),
+    firstValue = cms.uint64(1),
+    lastValue = cms.uint64(1),
+    interval = cms.uint64(1)
+)
 
+
+# dd4hep-based geometry
 process.DDDetectorESProducer = cms.ESSource("DDDetectorESProducer",
                                             confGeomXMLFiles = cms.FileInPath('Alignment/CocoaApplication/test/cmsCocoaTable2DWithMirror.xml'),
                                             appendToDataLabel = cms.string('')
@@ -19,18 +27,10 @@ process.DDCompactViewESProducer = cms.ESProducer("DDCompactViewESProducer",
 
                                                                   
 process.load("CondCore.CondDB.CondDB_cfi")
+process.CondDB.connect = 'sqlite_file:OpticalAlignments.db'
 
 
-# A data source must always be defined. We don't need it, so here's a dummy one.
-process.source = cms.Source("EmptyIOVSource",
-    timetype = cms.string('runnumber'),
-    firstValue = cms.uint64(1),
-    lastValue = cms.uint64(1),
-    interval = cms.uint64(1)
-)
-
-# Read DB
-process.CondDB.connect = 'sqlite_file:OpticalAlignments_testInput.db'
+# Read DB: this is used to correct internal geometry with geo from DB.
 process.PoolDBESSource = cms.ESSource("PoolDBESSource",
     process.CondDB,
     DumpStat=cms.untracked.bool(True),
@@ -40,38 +40,37 @@ process.PoolDBESSource = cms.ESSource("PoolDBESSource",
     )),
 )
 
-# Write DB
-import CondCore.DBCommon.CondDBSetup_cfi
+
+# Write COCOA output to DB ('Output tag')
 process.PoolDBOutputService = cms.Service("PoolDBOutputService",
-    CondCore.DBCommon.CondDBSetup_cfi.CondDBSetup,
+    process.CondDB,
     timetype = cms.untracked.string('runnumber'),
-    connect = cms.string('sqlite_file:dump.db'),
     toPut = cms.VPSet(
     	cms.PSet(
         	record = cms.string('OpticalAlignmentsRcd'),
-        	tag = cms.string('OpticalAlignmentsRcd')
+        	tag = cms.string('Output')
     	), 
     	cms.PSet(
         	record = cms.string('DTAlignmentRcd'),
-        	tag = cms.string('DTAlignmentRcd')
+        	tag = cms.string('Output')
     	),
     	cms.PSet(
         	record = cms.string('DTAlignmentErrorExtendedRcd'),
-        	tag = cms.string('DTAlignmentErrorExtendedRcd')
+        	tag = cms.string('Output')
     	),
     	cms.PSet(
         	record = cms.string('CSCAlignmentRcd'),
-        	tag = cms.string('CSCAlignmentRcd')
+        	tag = cms.string('Output')
     	),
     	cms.PSet(
         	record = cms.string('CSCAlignmentErrorExtendedRcd'),
-        	tag = cms.string('CSCAlignmentErrorExtendedRcd')
+        	tag = cms.string('Output')
     	),
     )
 )
 
 
-                                                
+# Run COCOA                                                
 process.cocoa = cms.EDAnalyzer('CocoaAnalyzer',
 				maxEvents = cms.int32(1),
 				cocoaDaqRootFile = cms.string("cocoaDaqTest.root"),
