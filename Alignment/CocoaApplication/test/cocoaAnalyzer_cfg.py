@@ -48,23 +48,23 @@ process.PoolDBOutputService = cms.Service("PoolDBOutputService",
     toPut = cms.VPSet(
     	cms.PSet(
         	record = cms.string('OpticalAlignmentsRcd'),
-        	tag = cms.string('Output')
+        	tag = cms.string('OpticalAlignmentsRcdOutput')
     	), 
     	cms.PSet(
         	record = cms.string('DTAlignmentRcd'),
-        	tag = cms.string('Output')
+        	tag = cms.string('DTAlignmentRcdOutput')
     	),
     	cms.PSet(
         	record = cms.string('DTAlignmentErrorExtendedRcd'),
-        	tag = cms.string('Output')
+        	tag = cms.string('DTAlignmentErrorExtendedRcdOutput')
     	),
     	cms.PSet(
         	record = cms.string('CSCAlignmentRcd'),
-        	tag = cms.string('Output')
+        	tag = cms.string('CSCAlignmentRcdOutput')
     	),
     	cms.PSet(
         	record = cms.string('CSCAlignmentErrorExtendedRcd'),
-        	tag = cms.string('Output')
+        	tag = cms.string('CSCAlignmentErrorExtendedRcdOutput')
     	),
     )
 )
