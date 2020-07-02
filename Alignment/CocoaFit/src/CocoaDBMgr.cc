@@ -3,6 +3,7 @@
 #include "CondFormats/Alignment/interface/AlignTransform.h"
 #include "CondFormats/Alignment/interface/AlignTransformErrorExtended.h"
 #include "DataFormats/GeometryCommonDetAlgo/interface/GlobalError.h"
+#include "DataFormats/Math/interface/CMSUnits.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CondCore/DBOutputService/interface/PoolDBOutputService.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -30,6 +31,9 @@
 #include "CondFormats/OptAlignObjects/interface/OpticalAlignMeasurements.h"
 
 #include "CondCore/CondDB/interface/Serialization.h"
+
+using namespace cms_units::operators;
+
 
 CocoaDBMgr* CocoaDBMgr::instance = nullptr;
 
@@ -183,8 +187,8 @@ OpticalAlignInfo CocoaDBMgr::GetOptAlignInfoFromOptO(OpticalObject* opto) {
   OpticalAlignParam translationXDataForDB;
   translationXDataForDB.name_ = translationX->name();
   translationXDataForDB.dim_type_ = translationX->type();
-  translationXDataForDB.value_ = centreLocal.x() * 100.; // store in cm to DB
-  translationXDataForDB.error_ = GetEntryError(translationX) * 100.;
+  translationXDataForDB.value_ = centreLocal.x() * 1._m;               // m in COCOA, cm in DB
+  translationXDataForDB.error_ = GetEntryError(translationX) * 1._m;   // m in COCOA, cm in DB
   translationXDataForDB.quality_ = translationX->quality();
   data.x_ = translationXDataForDB;
 
@@ -192,8 +196,8 @@ OpticalAlignInfo CocoaDBMgr::GetOptAlignInfoFromOptO(OpticalObject* opto) {
   OpticalAlignParam translationYDataForDB;
   translationYDataForDB.name_ = translationY->name();
   translationYDataForDB.dim_type_ = translationY->type();
-  translationYDataForDB.value_ = centreLocal.y() * 100.; // store in cm to DB
-  translationYDataForDB.error_ = GetEntryError(translationY) * 100.;
+  translationYDataForDB.value_ = centreLocal.y() * 1._m;                // m in COCOA, cm in DB
+  translationYDataForDB.error_ = GetEntryError(translationY) * 1._m;    // m in COCOA, cm in DB
   translationYDataForDB.quality_ = translationY->quality();
   data.y_ = translationYDataForDB;
 
@@ -201,8 +205,8 @@ OpticalAlignInfo CocoaDBMgr::GetOptAlignInfoFromOptO(OpticalObject* opto) {
   OpticalAlignParam translationZDataForDB;
   translationZDataForDB.name_ = translationZ->name();
   translationZDataForDB.dim_type_ = translationZ->type();
-  translationZDataForDB.value_ = centreLocal.z() * 100.; // store in cm to DB
-  translationZDataForDB.error_ = GetEntryError(translationZ) * 100.;
+  translationZDataForDB.value_ = centreLocal.z() * 1._m;                // m in COCOA, cm in DB
+  translationZDataForDB.error_ = GetEntryError(translationZ) * 1._m;    // m in COCOA, cm in DB
   translationZDataForDB.quality_ = translationZ->quality();
   data.z_ = translationZDataForDB;
 
@@ -361,12 +365,12 @@ AlignTransformErrorExtended* CocoaDBMgr::GetAlignInfoErrorFromOptO(OpticalObject
   CLHEP::HepMatrix errm(3, 3);
   const std::vector<Entry*>& theCoordinateEntryVector = opto->CoordinateEntryList();
   std::cout << "@@@ CocoaDBMgr::GetAlignInfoFromOptOfill errm " << opto->name() << std::endl;
-  errm(0, 0) = GetEntryError(theCoordinateEntryVector[0]) / 100.;                               // in cm
-  errm(1, 1) = GetEntryError(theCoordinateEntryVector[1]) / 100.;                               // in cm
-  errm(2, 2) = GetEntryError(theCoordinateEntryVector[2]) / 100.;                               // in cm
-  errm(0, 1) = GetEntryError(theCoordinateEntryVector[0], theCoordinateEntryVector[1]) / 100.;  // in cm
-  errm(0, 2) = GetEntryError(theCoordinateEntryVector[0], theCoordinateEntryVector[2]) / 100.;  // in cm
-  errm(1, 2) = GetEntryError(theCoordinateEntryVector[1], theCoordinateEntryVector[2]) / 100.;  // in cm
+  errm(0, 0) = GetEntryError(theCoordinateEntryVector[0]) * 1._m;                               // m in COCOA, cm in DB
+  errm(1, 1) = GetEntryError(theCoordinateEntryVector[1]) * 1._m;                               // m in COCOA, cm in DB
+  errm(2, 2) = GetEntryError(theCoordinateEntryVector[2]) * 1._m;                               // m in COCOA, cm in DB
+  errm(0, 1) = GetEntryError(theCoordinateEntryVector[0], theCoordinateEntryVector[1]) * 1._m;  // m in COCOA, cm in DB
+  errm(0, 2) = GetEntryError(theCoordinateEntryVector[0], theCoordinateEntryVector[2]) * 1._m;  // m in COCOA, cm in DB
+  errm(1, 2) = GetEntryError(theCoordinateEntryVector[1], theCoordinateEntryVector[2]) * 1._m;  // m in COCOA, cm in DB
   //   errm(1,0) = errm(0,1);
   // errm(2,0) = errm(0,2);
   // errm(2,1) = errm(1,2);
