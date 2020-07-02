@@ -32,6 +32,7 @@
 
 #include "CondCore/CondDB/interface/Serialization.h"
 
+
 using namespace cms_units::operators;
 
 
@@ -182,64 +183,68 @@ OpticalAlignInfo CocoaDBMgr::GetOptAlignInfoFromOptO(OpticalObject* opto) {
 
   const std::vector<Entry*>& theCoordinateEntryVector = opto->CoordinateEntryList();
   std::cout << " CocoaDBMgr::GetOptAlignInfoFromOptO starting coord " << std::endl;
+  if (theCoordinateEntryVector.size() == 6) {
   
-  const Entry* const translationX = theCoordinateEntryVector.at(0);
-  OpticalAlignParam translationXDataForDB;
-  translationXDataForDB.name_ = translationX->name();
-  translationXDataForDB.dim_type_ = translationX->type();
-  translationXDataForDB.value_ = centreLocal.x() * 1._m;               // m in COCOA, cm in DB
-  translationXDataForDB.error_ = GetEntryError(translationX) * 1._m;   // m in COCOA, cm in DB
-  translationXDataForDB.quality_ = translationX->quality();
-  data.x_ = translationXDataForDB;
+    const Entry* const translationX = theCoordinateEntryVector.at(0);
+    OpticalAlignParam translationXDataForDB;
+    translationXDataForDB.name_ = translationX->name();
+    translationXDataForDB.dim_type_ = translationX->type();
+    translationXDataForDB.value_ = centreLocal.x() * 1._m;               // m in COCOA, cm in DB
+    translationXDataForDB.error_ = GetEntryError(translationX) * 1._m;   // m in COCOA, cm in DB
+    translationXDataForDB.quality_ = translationX->quality();
+    data.x_ = translationXDataForDB;
 
-  const Entry* const translationY = theCoordinateEntryVector.at(1);
-  OpticalAlignParam translationYDataForDB;
-  translationYDataForDB.name_ = translationY->name();
-  translationYDataForDB.dim_type_ = translationY->type();
-  translationYDataForDB.value_ = centreLocal.y() * 1._m;                // m in COCOA, cm in DB
-  translationYDataForDB.error_ = GetEntryError(translationY) * 1._m;    // m in COCOA, cm in DB
-  translationYDataForDB.quality_ = translationY->quality();
-  data.y_ = translationYDataForDB;
+    const Entry* const translationY = theCoordinateEntryVector.at(1);
+    OpticalAlignParam translationYDataForDB;
+    translationYDataForDB.name_ = translationY->name();
+    translationYDataForDB.dim_type_ = translationY->type();
+    translationYDataForDB.value_ = centreLocal.y() * 1._m;                // m in COCOA, cm in DB
+    translationYDataForDB.error_ = GetEntryError(translationY) * 1._m;    // m in COCOA, cm in DB
+    translationYDataForDB.quality_ = translationY->quality();
+    data.y_ = translationYDataForDB;
 
-  const Entry* const translationZ = theCoordinateEntryVector.at(2);
-  OpticalAlignParam translationZDataForDB;
-  translationZDataForDB.name_ = translationZ->name();
-  translationZDataForDB.dim_type_ = translationZ->type();
-  translationZDataForDB.value_ = centreLocal.z() * 1._m;                // m in COCOA, cm in DB
-  translationZDataForDB.error_ = GetEntryError(translationZ) * 1._m;    // m in COCOA, cm in DB
-  translationZDataForDB.quality_ = translationZ->quality();
-  data.z_ = translationZDataForDB;
+    const Entry* const translationZ = theCoordinateEntryVector.at(2);
+    OpticalAlignParam translationZDataForDB;
+    translationZDataForDB.name_ = translationZ->name();
+    translationZDataForDB.dim_type_ = translationZ->type();
+    translationZDataForDB.value_ = centreLocal.z() * 1._m;                // m in COCOA, cm in DB
+    translationZDataForDB.error_ = GetEntryError(translationZ) * 1._m;    // m in COCOA, cm in DB
+    translationZDataForDB.quality_ = translationZ->quality();
+    data.z_ = translationZDataForDB;
 
 
-  //----- angles in local coordinates
-  std::vector<double> anglocal = opto->getLocalRotationAngles(theCoordinateEntryVector);
+    //----- angles in local coordinates
+    std::vector<double> anglocal = opto->getLocalRotationAngles(theCoordinateEntryVector);
+    if (anglocal.size() == 3) {
 
-  const Entry* const rotationX = theCoordinateEntryVector.at(3);
-  OpticalAlignParam rotationXDataForDB;
-  rotationXDataForDB.name_ = rotationX->name();
-  rotationXDataForDB.dim_type_ = rotationX->type();
-  rotationXDataForDB.value_ = anglocal.at(0);
-  rotationXDataForDB.error_ = GetEntryError(rotationX);
-  rotationXDataForDB.quality_ = rotationX->quality();
-  data.angx_ = rotationXDataForDB;
+      const Entry* const rotationX = theCoordinateEntryVector.at(3);
+      OpticalAlignParam rotationXDataForDB;
+      rotationXDataForDB.name_ = rotationX->name();
+      rotationXDataForDB.dim_type_ = rotationX->type();
+      rotationXDataForDB.value_ = anglocal.at(0);
+      rotationXDataForDB.error_ = GetEntryError(rotationX);
+      rotationXDataForDB.quality_ = rotationX->quality();
+      data.angx_ = rotationXDataForDB;
 
-  const Entry* const rotationY = theCoordinateEntryVector.at(4);
-  OpticalAlignParam rotationYDataForDB;
-  rotationYDataForDB.name_ = rotationY->name();
-  rotationYDataForDB.dim_type_ = rotationY->type();
-  rotationYDataForDB.value_ = anglocal.at(1);
-  rotationYDataForDB.error_ = GetEntryError(rotationY);
-  rotationYDataForDB.quality_ = rotationY->quality();
-  data.angy_ = rotationYDataForDB;
+      const Entry* const rotationY = theCoordinateEntryVector.at(4);
+      OpticalAlignParam rotationYDataForDB;
+      rotationYDataForDB.name_ = rotationY->name();
+      rotationYDataForDB.dim_type_ = rotationY->type();
+      rotationYDataForDB.value_ = anglocal.at(1);
+      rotationYDataForDB.error_ = GetEntryError(rotationY);
+      rotationYDataForDB.quality_ = rotationY->quality();
+      data.angy_ = rotationYDataForDB;
 
-  const Entry* const rotationZ = theCoordinateEntryVector.at(5);
-  OpticalAlignParam rotationZDataForDB;
-  rotationZDataForDB.name_ = rotationZ->name();
-  rotationZDataForDB.dim_type_ = rotationZ->type();
-  rotationZDataForDB.value_ = anglocal.at(2);
-  rotationZDataForDB.error_ = GetEntryError(rotationZ);
-  rotationZDataForDB.quality_ = rotationZ->quality();
-  data.angz_ = rotationZDataForDB;
+      const Entry* const rotationZ = theCoordinateEntryVector.at(5);
+      OpticalAlignParam rotationZDataForDB;
+      rotationZDataForDB.name_ = rotationZ->name();
+      rotationZDataForDB.dim_type_ = rotationZ->type();
+      rotationZDataForDB.value_ = anglocal.at(2);
+      rotationZDataForDB.error_ = GetEntryError(rotationZ);
+      rotationZDataForDB.quality_ = rotationZ->quality();
+      data.angz_ = rotationZDataForDB;
+    }
+  }
 
 
   const std::vector<Entry*>& theExtraEntryVector = opto->ExtraEntryList();

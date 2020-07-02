@@ -23,12 +23,12 @@
 #include "Alignment/CocoaUtilities/interface/GlobalOptionMgr.h"
 #include "Alignment/CocoaFit/interface/CocoaDBMgr.h"
 
+
 using namespace cms_units::operators;
 
 
 CocoaAnalyzer::CocoaAnalyzer(edm::ParameterSet const& pset) {
   theCocoaDaqRootFileName = pset.getParameter<std::string>("cocoaDaqRootFile");
-  m_tag = pset.getParameter<edm::ESInputTag>("DDDetector");
   int maxEvents = pset.getParameter<int32_t>("maxEvents");
   GlobalOptionMgr::getInstance()->setDefaultGlobalOptions();
   GlobalOptionMgr::getInstance()->setGlobalOption("maxEvents", maxEvents);
@@ -41,81 +41,65 @@ CocoaAnalyzer::CocoaAnalyzer(edm::ParameterSet const& pset) {
 void CocoaAnalyzer::beginJob() {}
 
 
-void CocoaAnalyzer::runCocoa() {
-  if (ALIUtils::debug >= 3) {
-    std::cout << std::endl << "$$$ CocoaAnalyzer::runCocoa: " << std::endl;
-  }
+void CocoaAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& evts) {
+  ALIUtils::setDebugVerbosity(5);
 
-  // Build the Model out of the system description text or XML file
-  Model& model = Model::getInstance();
-  model.BuildSystemDescriptionFromOA(oaList_);
-  if (ALIUtils::debug >= 3) {
-    std::cout << "$$ CocoaAnalyzer::runCocoa: geometry built " << std::endl;
-  }
+  // Get ideal geometry description + measurements for simulation.
+  readXMLFile(evts);
 
-  model.BuildMeasurementsFromOA(measList_);
+  // Correct ideal geometry with data from DB.
+  std::vector<OpticalAlignInfo> oaListCalib = readCalibrationDB(evts);
+  correctOptAlignments(oaListCalib);
 
-  if (ALIUtils::debug >= 3) {
-    std::cout << "$$ CocoaAnalyzer::runCocoa: measurements built " << std::endl;
-  }
-
-  Fit::getInstance();
-
-  Fit::startFit();
-
-  if (ALIUtils::debug >= 0)
-    std::cout << "............ program ended OK" << std::endl;
-  if (ALIUtils::report >= 1) {
-    ALIFileOut& fileout = ALIFileOut::getInstance(Model::ReportFName());
-    fileout << "............ program ended OK" << std::endl;
-  }
-
+  // Run the least-squared fit and store results in DB.
+  runCocoa();
 }
 
 
+/*
+ * This is used to create the ideal geometry description from the XMLs.
+ * Also get measurements from XMLs for simulation.
+ * Resulting optical alignment info is stored in oaList_ and measList_.
+ */
 void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
-  // STEP ONE:  Initial COCOA objects will be built from a DDL geometry
-  // description.
   edm::ESTransientHandle<cms::DDCompactView> myCompactView;
   evts.get<IdealGeometryRecord>().get(myCompactView);
 
   const cms::DDDetector* mySystem = myCompactView->detector();
+
   if (mySystem) {
-    // First oaInfo to be stored is about the world volume.
+    // Always store world volume first.
     const dd4hep::Volume& worldVolume = mySystem->worldVolume();
 
     if (ALIUtils::debug >= 3) {
       std::cout << std::endl << "$$$ CocoaAnalyzer::ReadXML: world object= " << worldVolume.name() << std::endl;
     }
 
-    OpticalAlignInfo oaInfo;
-    oaInfo.ID_ = 0;
-    oaInfo.name_ = worldVolume.name();
-    oaInfo.parentName_ = "";
-    oaInfo.x_.quality_ = 0;
-    oaInfo.x_.value_ = 0.;
-    oaInfo.x_.error_ = 0.;
-    oaInfo.x_.quality_ = 0;
-    oaInfo.y_.value_ = 0.;
-    oaInfo.y_.error_ = 0.;
-    oaInfo.y_.quality_ = 0;
-    oaInfo.z_.value_ = 0.;
-    oaInfo.z_.error_ = 0.;
-    oaInfo.z_.quality_ = 0;
-    oaInfo.angx_.value_ = 0.;
-    oaInfo.angx_.error_ = 0.;
-    oaInfo.angx_.quality_ = 0;
-    oaInfo.angy_.value_ = 0.;
-    oaInfo.angy_.error_ = 0.;
-    oaInfo.angy_.quality_ = 0;
-    oaInfo.angz_.value_ = 0.;
-    oaInfo.angz_.error_ = 0.;
-    oaInfo.angz_.quality_ = 0;
+    OpticalAlignInfo worldInfo;
+    worldInfo.ID_ = 0;
+    worldInfo.name_ = worldVolume.name();
+    worldInfo.type_ = "system";
+    worldInfo.parentName_ = "";
+    worldInfo.x_.value_ = 0.;
+    worldInfo.x_.error_ = 0.;
+    worldInfo.x_.quality_ = 0;
+    worldInfo.y_.value_ = 0.;
+    worldInfo.y_.error_ = 0.;
+    worldInfo.y_.quality_ = 0;
+    worldInfo.z_.value_ = 0.;
+    worldInfo.z_.error_ = 0.;
+    worldInfo.z_.quality_ = 0;
+    worldInfo.angx_.value_ = 0.;
+    worldInfo.angx_.error_ = 0.;
+    worldInfo.angx_.quality_ = 0;
+    worldInfo.angy_.value_ = 0.;
+    worldInfo.angy_.error_ = 0.;
+    worldInfo.angy_.quality_ = 0;
+    worldInfo.angz_.value_ = 0.;
+    worldInfo.angz_.error_ = 0.;
+    worldInfo.angz_.quality_ = 0;
+    oaList_.opticalAlignments_.push_back(worldInfo);
 
-    oaInfo.type_ = "system";
-
-    oaList_.opticalAlignments_.push_back(oaInfo);
-    oaInfo.clear();
 
     // This gathers all the 'SpecPar' sections from the loaded XMLs.
     // NB: Definition of a SpecPar section:
@@ -142,18 +126,21 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
 
     // Loop on parts
     int nObjects = 0;
-    OpticalAlignParam oaParam;
-    OpticalAlignMeasurementInfo oaMeas;
-
     bool doCOCOA = myFilteredView.firstChild();
+
+
     // Loop on all COCOA volumes from filtered view
     while (doCOCOA) {
       ++nObjects;
 
+      OpticalAlignInfo oaInfo;
+      OpticalAlignParam oaParam;
+      OpticalAlignMeasurementInfo oaMeas;
+
       // Current volume
       const dd4hep::PlacedVolume& myPlacedVolume = myFilteredView.volume();
       const std::string& name = myPlacedVolume.name();
-      const std::string& nodePath = myFilteredView.path();
+      const std::string& nodePath = myFilteredView.path();    
       oaInfo.name_ = nodePath;
 
       // Parent name
@@ -164,6 +151,7 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
         std::cout << " @@ Name built= " << oaInfo.name_ << " short_name= " << name << " parent= " << oaInfo.parentName_
                   << std::endl;
       }
+
 
       // TRANSLATIONS
 
@@ -209,6 +197,7 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
                          (1._m);  // COCOA units are m
       oaInfo.z_.quality_ = static_cast<int>(
           getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "centre_Z_quality", 0));
+
 
       // ROTATIONS
 
@@ -313,23 +302,24 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
         std::cout << " CocoaAnalyzer::ReadXML:  Fill extra entries with read parameters " << std::endl;
       }
 
-      //--- Fill extra entries with read parameters
-      if (names.size() == dims.size() && dims.size() == values.size() && values.size() == errors.size() &&
-          errors.size() == quality.size()) {
-        for (size_t ind = 0; ind < names.size(); ++ind) {
+      if (names.size() == dims.size() 
+	  && dims.size() == values.size() 
+	  && values.size() == errors.size() 
+	  && errors.size() == quality.size()
+	  ) {
+        for (size_t i = 0; i < names.size(); ++i) {
           double dimFactor = 1.;
-          //std::string type = oaParam.dimType();
-          const std::string& type = dims.at(ind);
+          const std::string& type = dims.at(i);
           if (type == "centre" || type == "length") {
             dimFactor = 1. / (1._m);  // was converted to cm with getParameterValueFromSpecPar, COCOA unit is m
           } else if (type == "angles" || type == "angle" || type == "nodim") {
             dimFactor = 1.;
           }
-          oaParam.value_ = values[ind] * dimFactor;
-          oaParam.error_ = errors[ind] * dimFactor;
-          oaParam.quality_ = static_cast<int>(quality[ind]);
-          oaParam.name_ = names[ind];
-          oaParam.dim_type_ = dims[ind];
+          oaParam.value_ = values.at(i) * dimFactor;
+          oaParam.error_ = errors.at(i) * dimFactor;
+          oaParam.quality_ = static_cast<int>(quality.at(i));
+          oaParam.name_ = names.at(i);
+          oaParam.dim_type_ = dims.at(i);
           oaInfo.extraEntries_.push_back(oaParam);
           oaParam.clear();
         }
@@ -339,6 +329,7 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
         std::cout << "WARNING FOR NOW: sizes of extra parameters (names, dimType, value, quality) do"
                   << " not match!  Did not add " << nObjects << " item to OpticalAlignments." << std::endl;
       }
+
 
       // MEASUREMENTS (FROM XMLS)
       const std::vector<std::string>& measNames =
@@ -368,18 +359,20 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
         std::cout << " CocoaAnalyzer::ReadXML:  Fill measurements with read parameters " << std::endl;
       }
 
-      //--- Fill measurements with read parameters
       if (measNames.size() == measTypes.size()) {
-        for (size_t ind = 0; ind < measNames.size(); ++ind) {
-          oaMeas.ID_ = ind;
-          oaMeas.name_ = measNames[ind];
-          oaMeas.type_ = measTypes[ind];
+        for (size_t i = 0; i < measNames.size(); ++i) {
+          oaMeas.ID_ = i;
+          oaMeas.name_ = measNames.at(i);
+          oaMeas.type_ = measTypes.at(i);
           oaMeas.measObjectNames_ = measObjectNames[oaMeas.name_];
-          if (measParamNames.size() == measParamValues.size() && measParamValues.size() == measParamSigmas.size()) {
-            for (size_t ind2 = 0; ind2 < measParamNames[oaMeas.name_].size(); ind2++) {
-              oaParam.name_ = measParamNames[oaMeas.name_][ind2];
-              oaParam.value_ = measParamValues[oaMeas.name_][ind2];
-              oaParam.error_ = measParamSigmas[oaMeas.name_][ind2];
+          if (measParamNames.size() == measParamValues.size() 
+	      && measParamValues.size() == measParamSigmas.size()
+	      ) {
+            for (size_t i2 = 0; i2 < measParamNames[oaMeas.name_].size(); i2++) {
+              oaParam.name_ = measParamNames[oaMeas.name_].at(i2);
+              oaParam.value_ = measParamValues[oaMeas.name_].at(i2);
+              oaParam.error_ = measParamSigmas[oaMeas.name_].at(i2);
+	      oaParam.quality_ = 2;
               if (oaMeas.type_ == "SENSOR2D" || oaMeas.type_ == "COPS" || oaMeas.type_ == "DISTANCEMETER" ||
                   oaMeas.type_ == "DISTANCEMETER!DIM" || oaMeas.type_ == "DISTANCEMETER3DIM") {
                 oaParam.dim_type_ = "length";
@@ -391,12 +384,11 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
               }
 
               oaMeas.values_.push_back(oaParam);
-              oaMeas.isSimulatedValue_.push_back(measIsSimulatedValue[oaMeas.name_][ind2]);
+              oaMeas.isSimulatedValue_.push_back(measIsSimulatedValue[oaMeas.name_].at(i2));
               if (ALIUtils::debug >= 5) {
                 std::cout << oaMeas.name_ << " copying issimu "
                           << oaMeas.isSimulatedValue_[oaMeas.isSimulatedValue_.size() - 1] << " = "
-                          << measIsSimulatedValue[oaMeas.name_][ind2] << std::endl;
-                //-           std::cout << ind2 << " adding meas value " << oaParam << std::endl;
+                          << measIsSimulatedValue[oaMeas.name_].at(i2) << std::endl;
               }
               oaParam.clear();
             }
@@ -436,7 +428,11 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
   }
 }
 
-//------------------------------------------------------------------------
+
+/*
+ * This is used to get the OpticalAlignInfo from DB, 
+ * which can be used to correct the OpticalAlignInfo from IdealGeometry.
+ */
 std::vector<OpticalAlignInfo> CocoaAnalyzer::readCalibrationDB(const edm::EventSetup& evts) {
   if (ALIUtils::debug >= 3) {
     std::cout << std::endl << "$$$ CocoaAnalyzer::readCalibrationDB: " << std::endl;
@@ -445,24 +441,23 @@ std::vector<OpticalAlignInfo> CocoaAnalyzer::readCalibrationDB(const edm::EventS
   using namespace edm::eventsetup;
   edm::ESHandle<OpticalAlignments> pObjs;
   evts.get<OpticalAlignmentsRcd>().get(pObjs);
-  const OpticalAlignments* dbObj = pObjs.product();
+  const std::vector<OpticalAlignInfo>& infoFromDB = pObjs.product()->opticalAlignments_;
 
   if (ALIUtils::debug >= 5) {
-    std::vector<OpticalAlignInfo>::const_iterator it;
-    for (it = dbObj->opticalAlignments_.begin(); it != dbObj->opticalAlignments_.end(); ++it) {
-      std::cout << "CocoaAnalyzer::readCalibrationDB:  OpticalAlignInfo READ " << *it << std::endl;
-    }
-  }
-
-  if (ALIUtils::debug >= 4) {
     std::cout << "CocoaAnalyzer::readCalibrationDB:  Number of OpticalAlignInfo READ "
-              << dbObj->opticalAlignments_.size() << std::endl;
+	      << infoFromDB.size() << std::endl;
+    for (const auto& myInfoFromDB : infoFromDB) {
+      std::cout << "CocoaAnalyzer::readCalibrationDB:  OpticalAlignInfo READ " << myInfoFromDB << std::endl;
+    } 
   }
 
-  return dbObj->opticalAlignments_;
+  return infoFromDB;
 }
 
-//------------------------------------------------------------------------
+
+/*
+ * Correct the OpticalAlignInfo from IdealGeometry with values from DB.
+ */
 void CocoaAnalyzer::correctOptAlignments(std::vector<OpticalAlignInfo>& oaListCalib) {
   if (ALIUtils::debug >= 3) {
     std::cout << std::endl << "$$$ CocoaAnalyzer::correctOptAlignments: " << std::endl;
@@ -518,7 +513,7 @@ void CocoaAnalyzer::correctOptAlignments(std::vector<OpticalAlignInfo>& oaListCa
   }
 }
 
-//------------------------------------------------------------------------
+
 OpticalAlignInfo* CocoaAnalyzer::findOpticalAlignInfoXML(const OpticalAlignInfo& oaInfo) {
   OpticalAlignInfo* oaInfoXML = nullptr;
   std::vector<OpticalAlignInfo>::iterator it;
@@ -541,7 +536,7 @@ OpticalAlignInfo* CocoaAnalyzer::findOpticalAlignInfoXML(const OpticalAlignInfo&
   return oaInfoXML;
 }
 
-//------------------------------------------------------------------------
+
 bool CocoaAnalyzer::correctOaParam(OpticalAlignParam* oaParamXML, const OpticalAlignParam& oaParamDB) {
   if (ALIUtils::debug >= 4) {
     std::cout << "CocoaAnalyzer::correctOaParam  old value= " << oaParamXML->value_
@@ -550,11 +545,10 @@ bool CocoaAnalyzer::correctOaParam(OpticalAlignParam* oaParamXML, const OpticalA
   if (oaParamDB.value_ == -9.999E9)
     return false;
 
-  double dimFactor = 1.;
-  //loop for an Entry with equal type to entries to know which is the
   std::string type = oaParamDB.dimType();
+  double dimFactor = 1.;
   if (type == "centre" || type == "length") {
-    dimFactor = 0.01;  // in DB it is in cm
+    dimFactor = 1. / 1._m;  // in DB it is in cm
   } else if (type == "angles" || type == "angle" || type == "nodim") {
     dimFactor = 1.;
   } else {
@@ -568,88 +562,44 @@ bool CocoaAnalyzer::correctOaParam(OpticalAlignParam* oaParamXML, const OpticalA
   return true;
 }
 
-//-#include "Alignment/CocoaUtilities/interface/GlobalOptionMgr.h"
-//-#include "Alignment/CocoaUtilities/interface/ALIFileIn.h"
 
-//-----------------------------------------------------------------------
-void CocoaAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& evts) {
-  ALIUtils::setDebugVerbosity(5);
-
-  readXMLFile(evts);
-
-  std::vector<OpticalAlignInfo> oaListCalib = readCalibrationDB(evts);
-  correctOptAlignments(oaListCalib);
-
-  //new CocoaDaqReaderRoot( theCocoaDaqRootFileName );
-
-  runCocoa();
-
-  /*-
-  int nEvents = daqReader->GetNEvents();
-  for( int ii = 0; ii < nEvents; ii++) {
-    if( ! daqReader->ReadEvent( ii ) ) break;
+/*
+ * Collect all information, do the fitting, and store results in DB.
+ */
+void CocoaAnalyzer::runCocoa() {
+  if (ALIUtils::debug >= 3) {
+    std::cout << std::endl << "$$$ CocoaAnalyzer::runCocoa: " << std::endl;
   }
-  */
 
-  //  std::cout << "!!!! NOT  DumpCocoaResults() " << std::endl;
+  // Geometry model built from XML file (corrected with values from DB)
+  Model& model = Model::getInstance();
+  model.BuildSystemDescriptionFromOA(oaList_);
 
-  //  CocoaDBMgr::getInstance()->DumpCocoaResults();
+  if (ALIUtils::debug >= 3) {
+    std::cout << "$$ CocoaAnalyzer::runCocoa: geometry built " << std::endl;
+  }
 
-  return;
+  // Build measurements
+  model.BuildMeasurementsFromOA(measList_);
 
-  //  using namespace edm::eventsetup;
-  //  std::cout <<" I AM IN RUN NUMBER "<<evt.id().run() <<std::endl;
-  //  std::cout <<" ---EVENT NUMBER "<<evt.id().event() <<std::endl;
+  if (ALIUtils::debug >= 3) {
+    std::cout << "$$ CocoaAnalyzer::runCocoa: measurements built " << std::endl;
+  }
 
-  // just a quick dump of the private OpticalAlignments object
-  //  std::cout << oaList_ << std::endl;
+  // Do fit and store results in DB
+  Fit::getInstance();
+  Fit::startFit();
 
-  // STEP 2:
-  // Get calibrated OpticalAlignments.  In this case I'm using
-  // some sqlite database examples that are generated using
-  // testOptAlignWriter.cc
-  // from CondFormats/OptAlignObjects/test/
+  if (ALIUtils::debug >= 0)
+    std::cout << "............ program ended OK" << std::endl;
+  if (ALIUtils::report >= 1) {
+    ALIFileOut& fileout = ALIFileOut::getInstance(Model::ReportFName());
+    fileout << "............ program ended OK" << std::endl;
+  }
 
-  //   edm::ESHandle<OpticalAlignments> oaESHandle;
-  //   context.get<OpticalAlignmentsRcd>().get(oaESHandle);
+}
 
-  //   // This assumes they ALL come in together.  This may not be
-  //   // the "real" case.  One could envision different objects coming
-  //   // in and we would get by label each one (type).
 
-  //   std::cout << "========== eventSetup data changes with IOV =========" << std::endl;
-  //   std::cout << *oaESHandle << std::endl;
-  //   //============== COCOA WORK!
-  //   //  calibrated values should be used to "correct" the ones read in during beginJob
-  //   //==============
-
-  //   //
-  //   // to see how to iterate over the OpticalAlignments, please
-  //   // refer to the << operator of OpticalAlignments, OpticalAlignInfo
-  //   // and OpticalAlignParam.
-  //   //     const OpticalAlignments* myoa=oa.product();
-
-  //   // STEP 3:
-  //   // This retrieves the Measurements
-  //   // for each event, a new set of measurements is available.
-  //  edm::Handle<OpticalAlignMeasurements> measHandle;
-  //  evt.getByLabel("OptAlignGeneratedSource", measHandle);
-
-  //  std::cout << "========== event data product changes with every event =========" << std::endl;
-  //  std::cout << *measHandle << std::endl;
-
-  //============== COCOA WORK!
-  //  Each set of optical alignment measurements can be used
-  //  in whatever type of analysis COCOA does.
-  //==============
-
-}  //end of ::analyze()
-
-// STEP 4:  one could use ::endJob() to write out the OpticalAlignments
-// generated by the analysis. Example code of writing is in
-// CondFormats/Alignment/test/testOptAlignWriter.cc
-
-//-----------------------------------------------------------------------
 /* Helper: For a given node, get the values associated to a given parameter, from the XMLs SpecPar sections.
  * NB: The same parameter can appear several times WITHIN the same SpecPar section (hence, we have a std::vector).
  * WARNING: This stops at the first relevant SpecPar section encountered.
@@ -670,6 +620,7 @@ std::vector<T> CocoaAnalyzer::getAllParameterValuesFromSpecParSections(const cms
 
   return std::vector<T>();
 }
+
 
 /* Helper: For a given node, get the value associated to a given parameter, from the XMLs SpecPar sections.
  * This is the parameterValueIndex-th value (within a XML SpecPar block.) of the desired parameter. 

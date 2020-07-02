@@ -73,8 +73,7 @@ process.PoolDBOutputService = cms.Service("PoolDBOutputService",
 # Run COCOA                                                
 process.cocoa = cms.EDAnalyzer('CocoaAnalyzer',
 				maxEvents = cms.int32(1),
-				cocoaDaqRootFile = cms.string("cocoaDaqTest.root"),
-				DDDetector = cms.ESInputTag('','')
+				cocoaDaqRootFile = cms.string("cocoaDaqTest.root")
                               )
 
 process.p = cms.Path(process.cocoa)
