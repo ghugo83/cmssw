@@ -32,9 +32,7 @@
 
 #include "CondCore/CondDB/interface/Serialization.h"
 
-
 using namespace cms_units::operators;
-
 
 CocoaDBMgr* CocoaDBMgr::instance = nullptr;
 
@@ -184,13 +182,12 @@ OpticalAlignInfo CocoaDBMgr::GetOptAlignInfoFromOptO(OpticalObject* opto) {
   const std::vector<Entry*>& theCoordinateEntryVector = opto->CoordinateEntryList();
   std::cout << " CocoaDBMgr::GetOptAlignInfoFromOptO starting coord " << std::endl;
   if (theCoordinateEntryVector.size() == 6) {
-  
     const Entry* const translationX = theCoordinateEntryVector.at(0);
     OpticalAlignParam translationXDataForDB;
     translationXDataForDB.name_ = translationX->name();
     translationXDataForDB.dim_type_ = translationX->type();
-    translationXDataForDB.value_ = centreLocal.x() * 1._m;               // m in COCOA, cm in DB
-    translationXDataForDB.error_ = GetEntryError(translationX) * 1._m;   // m in COCOA, cm in DB
+    translationXDataForDB.value_ = centreLocal.x() * 1._m;              // m in COCOA, cm in DB
+    translationXDataForDB.error_ = GetEntryError(translationX) * 1._m;  // m in COCOA, cm in DB
     translationXDataForDB.quality_ = translationX->quality();
     data.x_ = translationXDataForDB;
 
@@ -198,8 +195,8 @@ OpticalAlignInfo CocoaDBMgr::GetOptAlignInfoFromOptO(OpticalObject* opto) {
     OpticalAlignParam translationYDataForDB;
     translationYDataForDB.name_ = translationY->name();
     translationYDataForDB.dim_type_ = translationY->type();
-    translationYDataForDB.value_ = centreLocal.y() * 1._m;                // m in COCOA, cm in DB
-    translationYDataForDB.error_ = GetEntryError(translationY) * 1._m;    // m in COCOA, cm in DB
+    translationYDataForDB.value_ = centreLocal.y() * 1._m;              // m in COCOA, cm in DB
+    translationYDataForDB.error_ = GetEntryError(translationY) * 1._m;  // m in COCOA, cm in DB
     translationYDataForDB.quality_ = translationY->quality();
     data.y_ = translationYDataForDB;
 
@@ -207,16 +204,14 @@ OpticalAlignInfo CocoaDBMgr::GetOptAlignInfoFromOptO(OpticalObject* opto) {
     OpticalAlignParam translationZDataForDB;
     translationZDataForDB.name_ = translationZ->name();
     translationZDataForDB.dim_type_ = translationZ->type();
-    translationZDataForDB.value_ = centreLocal.z() * 1._m;                // m in COCOA, cm in DB
-    translationZDataForDB.error_ = GetEntryError(translationZ) * 1._m;    // m in COCOA, cm in DB
+    translationZDataForDB.value_ = centreLocal.z() * 1._m;              // m in COCOA, cm in DB
+    translationZDataForDB.error_ = GetEntryError(translationZ) * 1._m;  // m in COCOA, cm in DB
     translationZDataForDB.quality_ = translationZ->quality();
     data.z_ = translationZDataForDB;
-
 
     //----- angles in local coordinates
     std::vector<double> anglocal = opto->getLocalRotationAngles(theCoordinateEntryVector);
     if (anglocal.size() == 3) {
-
       const Entry* const rotationX = theCoordinateEntryVector.at(3);
       OpticalAlignParam rotationXDataForDB;
       rotationXDataForDB.name_ = rotationX->name();
@@ -245,7 +240,6 @@ OpticalAlignInfo CocoaDBMgr::GetOptAlignInfoFromOptO(OpticalObject* opto) {
       data.angz_ = rotationZDataForDB;
     }
   }
-
 
   const std::vector<Entry*>& theExtraEntryVector = opto->ExtraEntryList();
   std::cout << " CocoaDBMgr::GetOptAlignInfoFromOptO starting entry " << std::endl;

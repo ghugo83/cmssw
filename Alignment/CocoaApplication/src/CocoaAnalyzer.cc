@@ -23,9 +23,7 @@
 #include "Alignment/CocoaUtilities/interface/GlobalOptionMgr.h"
 #include "Alignment/CocoaFit/interface/CocoaDBMgr.h"
 
-
 using namespace cms_units::operators;
-
 
 CocoaAnalyzer::CocoaAnalyzer(edm::ParameterSet const& pset) {
   theCocoaDaqRootFileName = pset.getParameter<std::string>("cocoaDaqRootFile");
@@ -37,9 +35,7 @@ CocoaAnalyzer::CocoaAnalyzer(edm::ParameterSet const& pset) {
   usesResource("CocoaAnalyzer");
 }
 
-
 void CocoaAnalyzer::beginJob() {}
-
 
 void CocoaAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& evts) {
   ALIUtils::setDebugVerbosity(5);
@@ -54,7 +50,6 @@ void CocoaAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& evts) 
   // Run the least-squared fit and store results in DB.
   runCocoa();
 }
-
 
 /*
  * This is used to create the ideal geometry description from the XMLs.
@@ -100,7 +95,6 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
     worldInfo.angz_.quality_ = 0;
     oaList_.opticalAlignments_.push_back(worldInfo);
 
-
     // This gathers all the 'SpecPar' sections from the loaded XMLs.
     // NB: Definition of a SpecPar section:
     // It is a block in the XML file(s), containing paths to specific volumes,
@@ -128,7 +122,6 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
     int nObjects = 0;
     bool doCOCOA = myFilteredView.firstChild();
 
-
     // Loop on all COCOA volumes from filtered view
     while (doCOCOA) {
       ++nObjects;
@@ -140,7 +133,7 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
       // Current volume
       const dd4hep::PlacedVolume& myPlacedVolume = myFilteredView.volume();
       const std::string& name = myPlacedVolume.name();
-      const std::string& nodePath = myFilteredView.path();    
+      const std::string& nodePath = myFilteredView.path();
       oaInfo.name_ = nodePath;
 
       // Parent name
@@ -152,12 +145,11 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
                   << std::endl;
       }
 
-
       // TRANSLATIONS
 
       // A) GET TRANSLATIONS FROM DDETECTOR.
       // Directly get translation from parent to child volume
-      const dd4hep::Position& transl = myPlacedVolume.position();
+      const dd4hep::Direction& transl = myPlacedVolume.position();
 
       if (ALIUtils::debug >= 4) {
         std::cout << "Local translation in cm = " << transl << std::endl;
@@ -197,7 +189,6 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
                          (1._m);  // COCOA units are m
       oaInfo.z_.quality_ = static_cast<int>(
           getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "centre_Z_quality", 0));
-
 
       // ROTATIONS
 
@@ -302,11 +293,8 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
         std::cout << " CocoaAnalyzer::ReadXML:  Fill extra entries with read parameters " << std::endl;
       }
 
-      if (names.size() == dims.size() 
-	  && dims.size() == values.size() 
-	  && values.size() == errors.size() 
-	  && errors.size() == quality.size()
-	  ) {
+      if (names.size() == dims.size() && dims.size() == values.size() && values.size() == errors.size() &&
+          errors.size() == quality.size()) {
         for (size_t i = 0; i < names.size(); ++i) {
           double dimFactor = 1.;
           const std::string& type = dims.at(i);
@@ -329,7 +317,6 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
         std::cout << "WARNING FOR NOW: sizes of extra parameters (names, dimType, value, quality) do"
                   << " not match!  Did not add " << nObjects << " item to OpticalAlignments." << std::endl;
       }
-
 
       // MEASUREMENTS (FROM XMLS)
       const std::vector<std::string>& measNames =
@@ -365,14 +352,12 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
           oaMeas.name_ = measNames.at(i);
           oaMeas.type_ = measTypes.at(i);
           oaMeas.measObjectNames_ = measObjectNames[oaMeas.name_];
-          if (measParamNames.size() == measParamValues.size() 
-	      && measParamValues.size() == measParamSigmas.size()
-	      ) {
+          if (measParamNames.size() == measParamValues.size() && measParamValues.size() == measParamSigmas.size()) {
             for (size_t i2 = 0; i2 < measParamNames[oaMeas.name_].size(); i2++) {
               oaParam.name_ = measParamNames[oaMeas.name_].at(i2);
               oaParam.value_ = measParamValues[oaMeas.name_].at(i2);
               oaParam.error_ = measParamSigmas[oaMeas.name_].at(i2);
-	      oaParam.quality_ = 2;
+              oaParam.quality_ = 2;
               if (oaMeas.type_ == "SENSOR2D" || oaMeas.type_ == "COPS" || oaMeas.type_ == "DISTANCEMETER" ||
                   oaMeas.type_ == "DISTANCEMETER!DIM" || oaMeas.type_ == "DISTANCEMETER3DIM") {
                 oaParam.dim_type_ = "length";
@@ -428,7 +413,6 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
   }
 }
 
-
 /*
  * This is used to get the OpticalAlignInfo from DB, 
  * which can be used to correct the OpticalAlignInfo from IdealGeometry.
@@ -444,16 +428,15 @@ std::vector<OpticalAlignInfo> CocoaAnalyzer::readCalibrationDB(const edm::EventS
   const std::vector<OpticalAlignInfo>& infoFromDB = pObjs.product()->opticalAlignments_;
 
   if (ALIUtils::debug >= 5) {
-    std::cout << "CocoaAnalyzer::readCalibrationDB:  Number of OpticalAlignInfo READ "
-	      << infoFromDB.size() << std::endl;
+    std::cout << "CocoaAnalyzer::readCalibrationDB:  Number of OpticalAlignInfo READ " << infoFromDB.size()
+              << std::endl;
     for (const auto& myInfoFromDB : infoFromDB) {
       std::cout << "CocoaAnalyzer::readCalibrationDB:  OpticalAlignInfo READ " << myInfoFromDB << std::endl;
-    } 
+    }
   }
 
   return infoFromDB;
 }
-
 
 /*
  * Correct the OpticalAlignInfo from IdealGeometry with values from DB.
@@ -490,7 +473,7 @@ void CocoaAnalyzer::correctOptAlignments(std::vector<OpticalAlignInfo>& oaListCa
       for (itoap1 = extraEntDB.begin(); itoap1 != extraEntDB.end(); ++itoap1) {
         bool pFound = false;
         //----- Look for the extra parameter in XML oaInfo that has the same name
-	std::string oaName = (*itoap1).name_;
+        std::string oaName = (*itoap1).name_;
         for (itoap2 = extraEntXML->begin(); itoap2 != extraEntXML->end(); ++itoap2) {
           if (oaName == itoap2->name_) {
             correctOaParam(&(*itoap2), *itoap1);
@@ -513,19 +496,16 @@ void CocoaAnalyzer::correctOptAlignments(std::vector<OpticalAlignInfo>& oaListCa
   }
 }
 
-
 OpticalAlignInfo* CocoaAnalyzer::findOpticalAlignInfoXML(const OpticalAlignInfo& oaInfo) {
   OpticalAlignInfo* oaInfoXML = nullptr;
-  std::vector<OpticalAlignInfo>::iterator it;
-  for (it = oaList_.opticalAlignments_.begin(); it != oaList_.opticalAlignments_.end(); ++it) {
-    std::string oaName = oaInfo.name_;
 
+  for (auto& myOpticalAlignInfo : oaList_.opticalAlignments_) {
     if (ALIUtils::debug >= 5) {
-      std::cout << "CocoaAnalyzer::findOpticalAlignInfoXML:  looking for OAI " << (*it).name_ << " =? " << oaName
-                << std::endl;
+      std::cout << "CocoaAnalyzer::findOpticalAlignInfoXML:  looking for OAI " << myOpticalAlignInfo.name_ << " =? "
+                << oaInfo.name_ << std::endl;
     }
-    if ((*it).name_ == oaName) {
-      oaInfoXML = &(*it);
+    if (myOpticalAlignInfo.name_ == oaInfo.name_) {
+      oaInfoXML = &(myOpticalAlignInfo);
       if (ALIUtils::debug >= 4) {
         std::cout << "CocoaAnalyzer::findOpticalAlignInfoXML:  OAI found " << oaInfoXML->name_ << std::endl;
       }
@@ -535,7 +515,6 @@ OpticalAlignInfo* CocoaAnalyzer::findOpticalAlignInfoXML(const OpticalAlignInfo&
 
   return oaInfoXML;
 }
-
 
 bool CocoaAnalyzer::correctOaParam(OpticalAlignParam* oaParamXML, const OpticalAlignParam& oaParamDB) {
   if (ALIUtils::debug >= 4) {
@@ -561,7 +540,6 @@ bool CocoaAnalyzer::correctOaParam(OpticalAlignParam* oaParamXML, const OpticalA
 
   return true;
 }
-
 
 /*
  * Collect all information, do the fitting, and store results in DB.
@@ -596,9 +574,7 @@ void CocoaAnalyzer::runCocoa() {
     ALIFileOut& fileout = ALIFileOut::getInstance(Model::ReportFName());
     fileout << "............ program ended OK" << std::endl;
   }
-
 }
-
 
 /* Helper: For a given node, get the values associated to a given parameter, from the XMLs SpecPar sections.
  * NB: The same parameter can appear several times WITHIN the same SpecPar section (hence, we have a std::vector).
@@ -620,7 +596,6 @@ std::vector<T> CocoaAnalyzer::getAllParameterValuesFromSpecParSections(const cms
 
   return std::vector<T>();
 }
-
 
 /* Helper: For a given node, get the value associated to a given parameter, from the XMLs SpecPar sections.
  * This is the parameterValueIndex-th value (within a XML SpecPar block.) of the desired parameter. 

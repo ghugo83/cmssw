@@ -778,16 +778,9 @@ int ALIUtils::checkMatrixEquations(double angleX, double angleY, double angleZ, 
   double rotzz = cx * cy;
 
   int matrixElemBad = 0;
-  if ( !eq2ang(rot.xx(), rotxx)
-       || !eq2ang(rot.xy(), rotxy)
-       || !eq2ang(rot.xz(), rotxz)
-       || !eq2ang(rot.yx(), rotyx)
-       || !eq2ang(rot.yy(), rotyy)
-       || !eq2ang(rot.yz(), rotyz)
-       || !eq2ang(rot.zx(), rotzx)
-       || !eq2ang(rot.zy(), rotzy)
-       || !eq2ang(rot.zz(), rotzz)
-       ) {
+  if (!eq2ang(rot.xx(), rotxx) || !eq2ang(rot.xy(), rotxy) || !eq2ang(rot.xz(), rotxz) || !eq2ang(rot.yx(), rotyx) ||
+      !eq2ang(rot.yy(), rotyy) || !eq2ang(rot.yz(), rotyz) || !eq2ang(rot.zx(), rotzx) || !eq2ang(rot.zy(), rotzy) ||
+      !eq2ang(rot.zz(), rotzz)) {
     matrixElemBad++;
   }
 

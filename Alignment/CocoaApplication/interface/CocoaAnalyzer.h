@@ -6,7 +6,6 @@
 #include "CondFormats/OptAlignObjects/interface/OpticalAlignments.h"
 #include "CondFormats/OptAlignObjects/interface/OpticalAlignMeasurements.h"
 
-
 class CocoaAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 public:
   explicit CocoaAnalyzer(edm::ParameterSet const& p);
