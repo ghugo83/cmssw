@@ -40,7 +40,7 @@ process.PoolDBESSource = cms.ESSource("PoolDBESSource",
     DumpStat=cms.untracked.bool(True),
     toGet = cms.VPSet(cms.PSet(
         record = cms.string('OpticalAlignmentsRcd'),
-        tag = cms.string("OpticalAlignmentsRcd")
+        tag = cms.string("OpticalAlignmentsRcdInput")
     )),
 )
 
