@@ -141,7 +141,8 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
 
       if (ALIUtils::debug >= 4) {
         edm::LogInfo("Alignment") << " CocoaAnalyzer::ReadXML reading object " << name;
-        edm::LogInfo("Alignment") << " @@ Name built= " << oaInfo.name_ << " short_name= " << name << " parent= " << oaInfo.parentName_;
+        edm::LogInfo("Alignment") << " @@ Name built= " << oaInfo.name_ << " short_name= " << name
+                                  << " parent= " << oaInfo.parentName_;
       }
 
       // TRANSLATIONS
@@ -163,9 +164,9 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
                                                                       nodePath,
                                                                       "centre_X_sigma",
                                                                       0) /
-	(1._m);  // COCOA units are m
+                         (1._m);  // COCOA units are m
       oaInfo.x_.quality_ = static_cast<int>(
-					    getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "centre_X_quality", 0));
+          getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "centre_X_quality", 0));
       // Y
       oaInfo.y_.name_ = "Y";
       oaInfo.y_.dim_type_ = "centre";
@@ -174,9 +175,9 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
                                                                       nodePath,
                                                                       "centre_Y_sigma",
                                                                       0) /
-	(1._m);  // COCOA units are m
+                         (1._m);  // COCOA units are m
       oaInfo.y_.quality_ = static_cast<int>(
-					    getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "centre_Y_quality", 0));
+          getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "centre_Y_quality", 0));
       // Z
       oaInfo.z_.name_ = "Z";
       oaInfo.z_.dim_type_ = "centre";
@@ -185,9 +186,9 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
                                                                       nodePath,
                                                                       "centre_Z_sigma",
                                                                       0) /
-	(1._m);  // COCOA units are m
+                         (1._m);  // COCOA units are m
       oaInfo.z_.quality_ = static_cast<int>(
-					    getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "centre_Z_quality", 0));
+          getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "centre_Z_quality", 0));
 
       // ROTATIONS
 
@@ -233,34 +234,34 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
       oaInfo.angx_.name_ = "X";
       oaInfo.angx_.dim_type_ = "angles";
       oaInfo.angx_.value_ =
-	getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "angles_X_value", 0);
+          getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "angles_X_value", 0);
       oaInfo.angx_.error_ =
-	getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "angles_X_sigma", 0);
+          getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "angles_X_sigma", 0);
       oaInfo.angx_.quality_ = static_cast<int>(
-					       getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "angles_X_quality", 0));
+          getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "angles_X_quality", 0));
       // Y
       oaInfo.angy_.name_ = "Y";
       oaInfo.angy_.dim_type_ = "angles";
       oaInfo.angy_.value_ =
-	getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "angles_Y_value", 0);
+          getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "angles_Y_value", 0);
       oaInfo.angy_.error_ =
-	getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "angles_Y_sigma", 0);
+          getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "angles_Y_sigma", 0);
       oaInfo.angy_.quality_ = static_cast<int>(
-					       getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "angles_Y_quality", 0));
+          getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "angles_Y_quality", 0));
       // Z
       oaInfo.angz_.name_ = "Z";
       oaInfo.angz_.dim_type_ = "angles";
       oaInfo.angz_.value_ =
-	getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "angles_Z_value", 0);
+          getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "angles_Z_value", 0);
       oaInfo.angz_.error_ =
-	getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "angles_Z_sigma", 0);
+          getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "angles_Z_sigma", 0);
       oaInfo.angz_.quality_ = static_cast<int>(
-					       getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "angles_Z_quality", 0));
+          getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "angles_Z_quality", 0));
 
       oaInfo.type_ = getParameterValueFromSpecParSections<std::string>(allSpecParSections, nodePath, "cocoa_type", 0);
 
       oaInfo.ID_ =
-	static_cast<int>(getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "cmssw_ID", 0));
+          static_cast<int>(getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "cmssw_ID", 0));
 
       if (ALIUtils::debug >= 4) {
         edm::LogInfo("Alignment") << "CocoaAnalyzer::ReadXML OBJECT " << oaInfo.name_ << " pos/angles read ";
@@ -270,21 +271,23 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
       // Same, that ugly code is not mine ;p
       if (fabs(oaInfo.angx_.value_ - angles[0]) > 1.E-9 || fabs(oaInfo.angy_.value_ - angles[1]) > 1.E-9 ||
           fabs(oaInfo.angz_.value_ - angles[2]) > 1.E-9) {
-        edm::LogError("Alignment") << " WRONG ANGLE IN OBJECT " << oaInfo.name_ << oaInfo.angx_.value_ << " =? " << angles[0] << oaInfo.angy_.value_ << " =? " << angles[1] << oaInfo.angz_.value_ << " =? " << angles[2];
+        edm::LogError("Alignment") << " WRONG ANGLE IN OBJECT " << oaInfo.name_ << oaInfo.angx_.value_ << " =? "
+                                   << angles[0] << oaInfo.angy_.value_ << " =? " << angles[1] << oaInfo.angz_.value_
+                                   << " =? " << angles[2];
       }
 
       // EXTRA PARAM ENTRIES (FROM XMLS)
       // Here initial code to define the containers was fully removed, this is much more compact.
       const std::vector<std::string>& names =
-	getAllParameterValuesFromSpecParSections<std::string>(allSpecParSections, nodePath, "extra_entry");
+          getAllParameterValuesFromSpecParSections<std::string>(allSpecParSections, nodePath, "extra_entry");
       const std::vector<std::string>& dims =
-	getAllParameterValuesFromSpecParSections<std::string>(allSpecParSections, nodePath, "dimType");
+          getAllParameterValuesFromSpecParSections<std::string>(allSpecParSections, nodePath, "dimType");
       const std::vector<double>& values =
-	getAllParameterValuesFromSpecParSections<double>(allSpecParSections, nodePath, "value");
+          getAllParameterValuesFromSpecParSections<double>(allSpecParSections, nodePath, "value");
       const std::vector<double>& errors =
-	getAllParameterValuesFromSpecParSections<double>(allSpecParSections, nodePath, "sigma");
+          getAllParameterValuesFromSpecParSections<double>(allSpecParSections, nodePath, "sigma");
       const std::vector<double>& quality =
-	getAllParameterValuesFromSpecParSections<double>(allSpecParSections, nodePath, "quality");
+          getAllParameterValuesFromSpecParSections<double>(allSpecParSections, nodePath, "quality");
 
       if (ALIUtils::debug >= 4) {
         edm::LogInfo("Alignment") << " CocoaAnalyzer::ReadXML:  Fill extra entries with read parameters ";
@@ -312,14 +315,14 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
         oaList_.opticalAlignments_.emplace_back(oaInfo);
       } else {
         edm::LogInfo("Alignment") << "WARNING FOR NOW: sizes of extra parameters (names, dimType, value, quality) do"
-			      << " not match!  Did not add " << nObjects << " item to OpticalAlignments.";
+                                  << " not match!  Did not add " << nObjects << " item to OpticalAlignments.";
       }
 
       // MEASUREMENTS (FROM XMLS)
       const std::vector<std::string>& measNames =
-	getAllParameterValuesFromSpecParSections<std::string>(allSpecParSections, nodePath, "meas_name");
+          getAllParameterValuesFromSpecParSections<std::string>(allSpecParSections, nodePath, "meas_name");
       const std::vector<std::string>& measTypes =
-	getAllParameterValuesFromSpecParSections<std::string>(allSpecParSections, nodePath, "meas_type");
+          getAllParameterValuesFromSpecParSections<std::string>(allSpecParSections, nodePath, "meas_type");
 
       std::map<std::string, std::vector<std::string>> measObjectNames;
       std::map<std::string, std::vector<std::string>> measParamNames;
@@ -328,15 +331,15 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
       std::map<std::string, std::vector<double>> measIsSimulatedValue;
       for (const auto& name : measNames) {
         measObjectNames[name] = getAllParameterValuesFromSpecParSections<std::string>(
-										      allSpecParSections, nodePath, "meas_object_name_" + name);
+            allSpecParSections, nodePath, "meas_object_name_" + name);
         measParamNames[name] = getAllParameterValuesFromSpecParSections<std::string>(
-										     allSpecParSections, nodePath, "meas_value_name_" + name);
+            allSpecParSections, nodePath, "meas_value_name_" + name);
         measParamValues[name] =
-	  getAllParameterValuesFromSpecParSections<double>(allSpecParSections, nodePath, "meas_value_" + name);
+            getAllParameterValuesFromSpecParSections<double>(allSpecParSections, nodePath, "meas_value_" + name);
         measParamSigmas[name] =
-	  getAllParameterValuesFromSpecParSections<double>(allSpecParSections, nodePath, "meas_sigma_" + name);
+            getAllParameterValuesFromSpecParSections<double>(allSpecParSections, nodePath, "meas_sigma_" + name);
         measIsSimulatedValue[name] = getAllParameterValuesFromSpecParSections<double>(
-										      allSpecParSections, nodePath, "meas_is_simulated_value_" + name);
+            allSpecParSections, nodePath, "meas_is_simulated_value_" + name);
       }
 
       if (ALIUtils::debug >= 4) {
@@ -368,21 +371,22 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
               oaMeas.isSimulatedValue_.emplace_back(measIsSimulatedValue[oaMeas.name_][i2]);
               if (ALIUtils::debug >= 5) {
                 edm::LogInfo("Alignment") << oaMeas.name_ << " copying issimu "
-				      << oaMeas.isSimulatedValue_[oaMeas.isSimulatedValue_.size() - 1] << " = "
-				      << measIsSimulatedValue[oaMeas.name_][i2];
+                                          << oaMeas.isSimulatedValue_[oaMeas.isSimulatedValue_.size() - 1] << " = "
+                                          << measIsSimulatedValue[oaMeas.name_][i2];
               }
               oaParam.clear();
             }
           } else {
             if (ALIUtils::debug >= 2) {
-	      edm::LogWarning("Alignment") << "WARNING FOR NOW: sizes of measurement parameters (name, value, sigma) do"
-					   << " not match! for measurement " << oaMeas.name_
-					   << " !Did not fill parameters for this measurement ";
+              edm::LogWarning("Alignment") << "WARNING FOR NOW: sizes of measurement parameters (name, value, sigma) do"
+                                           << " not match! for measurement " << oaMeas.name_
+                                           << " !Did not fill parameters for this measurement ";
             }
           }
           measList_.oaMeasurements_.emplace_back(oaMeas);
           if (ALIUtils::debug >= 5) {
-            edm::LogInfo("Alignment") << "CocoaAnalyser: MEASUREMENT " << oaMeas.name_ << " extra entries read " << oaMeas;
+            edm::LogInfo("Alignment") << "CocoaAnalyser: MEASUREMENT " << oaMeas.name_ << " extra entries read "
+                                      << oaMeas;
           }
           oaMeas.clear();
         }
@@ -390,7 +394,7 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
       } else {
         if (ALIUtils::debug >= 2) {
           edm::LogWarning("Alignment") << "WARNING FOR NOW: sizes of measurements (names, types do"
-				       << " not match!  Did not add " << nObjects << " item to XXXMeasurements";
+                                       << " not match!  Did not add " << nObjects << " item to XXXMeasurements";
         }
       }
 
@@ -399,8 +403,10 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
     }  // while (doCOCOA)
 
     if (ALIUtils::debug >= 3) {
-      edm::LogInfo("Alignment") << "CocoaAnalyzer::ReadXML: Finished building " << nObjects + 1 << " OpticalAlignInfo objects"
-			    << " and " << measList_.oaMeasurements_.size() << " OpticalAlignMeasurementInfo objects ";
+      edm::LogInfo("Alignment") << "CocoaAnalyzer::ReadXML: Finished building " << nObjects + 1
+                                << " OpticalAlignInfo objects"
+                                << " and " << measList_.oaMeasurements_.size()
+                                << " OpticalAlignMeasurementInfo objects ";
     }
     if (ALIUtils::debug >= 5) {
       edm::LogInfo("Alignment") << " @@@@@@ OpticalAlignments " << oaList_;
@@ -424,7 +430,8 @@ std::vector<OpticalAlignInfo> CocoaAnalyzer::readCalibrationDB(const edm::EventS
   const std::vector<OpticalAlignInfo>& infoFromDB = pObjs.product()->opticalAlignments_;
 
   if (ALIUtils::debug >= 5) {
-    edm::LogInfo("Alignment") << "CocoaAnalyzer::readCalibrationDB:  Number of OpticalAlignInfo READ " << infoFromDB.size();
+    edm::LogInfo("Alignment") << "CocoaAnalyzer::readCalibrationDB:  Number of OpticalAlignInfo READ "
+                              << infoFromDB.size();
     for (const auto& myInfoFromDB : infoFromDB) {
       edm::LogInfo("Alignment") << "CocoaAnalyzer::readCalibrationDB:  OpticalAlignInfo READ " << myInfoFromDB;
     }
@@ -442,21 +449,21 @@ void CocoaAnalyzer::correctAllOpticalAlignments(std::vector<OpticalAlignInfo>& a
   }
 
   for (const auto& myDBInfo : allDBOpticalAlignments) {
-
     if (ALIUtils::debug >= 5) {
       edm::LogInfo("Alignment") << "CocoaAnalyzer::findOpticalAlignInfoXML:  Looking for OAI " << myDBInfo.name_;
     }
 
     std::vector<OpticalAlignInfo>& allXMLOpticalAlignments = oaList_.opticalAlignments_;
-    const auto& myXMLInfo = std::find_if(allXMLOpticalAlignments.begin(), allXMLOpticalAlignments.end(),
-					 [&](const auto& myXMLInfoCandidate) { return myXMLInfoCandidate.name_ == myDBInfo.name_; }
-					 );
+    const auto& myXMLInfo = std::find_if(
+        allXMLOpticalAlignments.begin(), allXMLOpticalAlignments.end(), [&](const auto& myXMLInfoCandidate) {
+          return myXMLInfoCandidate.name_ == myDBInfo.name_;
+        });
 
     if (myXMLInfo != allXMLOpticalAlignments.end()) {
-
       if (ALIUtils::debug >= 4) {
         edm::LogInfo("Alignment") << "CocoaAnalyzer::findOpticalAlignInfoXML:  OAI found " << myXMLInfo->name_;
-	edm::LogInfo("Alignment") << "CocoaAnalyzer::correctAllOpticalAlignments: correcting data from XML with DB info.";
+        edm::LogInfo("Alignment")
+            << "CocoaAnalyzer::correctAllOpticalAlignments: correcting data from XML with DB info.";
       }
       correctOpticalAlignmentParameter(myXMLInfo->x_, myDBInfo.x_);
       correctOpticalAlignmentParameter(myXMLInfo->y_, myDBInfo.y_);
@@ -468,45 +475,44 @@ void CocoaAnalyzer::correctAllOpticalAlignments(std::vector<OpticalAlignInfo>& a
       // Also correct extra entries
       const std::vector<OpticalAlignParam>& allDBExtraEntries = myDBInfo.extraEntries_;
       std::vector<OpticalAlignParam>& allXMLExtraEntries = myXMLInfo->extraEntries_;
-      for (const auto& myDBExtraEntry: allDBExtraEntries) {
-	const auto& myXMLExtraEntry = std::find_if(allXMLExtraEntries.begin(), allXMLExtraEntries.end(),
-						   [&](const auto& myXMLExtraEntryCandidate) { 
-						     return myXMLExtraEntryCandidate.name_ == myDBExtraEntry.name_; }
-						   );
+      for (const auto& myDBExtraEntry : allDBExtraEntries) {
+        const auto& myXMLExtraEntry = std::find_if(
+            allXMLExtraEntries.begin(), allXMLExtraEntries.end(), [&](const auto& myXMLExtraEntryCandidate) {
+              return myXMLExtraEntryCandidate.name_ == myDBExtraEntry.name_;
+            });
 
-	if (myXMLExtraEntry != allXMLExtraEntries.end()) {
-	  correctOpticalAlignmentParameter(*myXMLExtraEntry, myDBExtraEntry);
-	}
-	else {
-	  if (myDBExtraEntry.name_ != "None") {
-	    if (ALIUtils::debug >= 2) {
-	      edm::LogError("Alignment")
-		<< "CocoaAnalyzer::correctAllOpticalAlignments:  extra entry read from DB is not present in XML "
-		<< myDBExtraEntry << " in object " << myDBInfo;
-	    }
-	  }
-	}
+        if (myXMLExtraEntry != allXMLExtraEntries.end()) {
+          correctOpticalAlignmentParameter(*myXMLExtraEntry, myDBExtraEntry);
+        } else {
+          if (myDBExtraEntry.name_ != "None") {
+            if (ALIUtils::debug >= 2) {
+              edm::LogError("Alignment")
+                  << "CocoaAnalyzer::correctAllOpticalAlignments:  extra entry read from DB is not present in XML "
+                  << myDBExtraEntry << " in object " << myDBInfo;
+            }
+          }
+        }
       }
 
       if (ALIUtils::debug >= 5) {
-	edm::LogInfo("Alignment") << "CocoaAnalyzer::correctAllOpticalAlignments: corrected OpticalAlingInfo " << oaList_;
+        edm::LogInfo("Alignment") << "CocoaAnalyzer::correctAllOpticalAlignments: corrected OpticalAlingInfo "
+                                  << oaList_;
       }
-    }
-    else {
+    } else {
       if (ALIUtils::debug >= 2) {
-	edm::LogError("Alignment") << "CocoaAnalyzer::correctAllOpticalAlignments:  OpticalAlignInfo read from DB " << myDBInfo << " is not present in XML.";
+        edm::LogError("Alignment") << "CocoaAnalyzer::correctAllOpticalAlignments:  OpticalAlignInfo read from DB "
+                                   << myDBInfo << " is not present in XML.";
       }
     }
   }
 }
 
-
 /*
  * Correct an OpticalAlignment parameter from IdealGeometry with the value from DB.
  */
-void CocoaAnalyzer::correctOpticalAlignmentParameter(OpticalAlignParam& myXMLParam, const OpticalAlignParam& myDBParam) {  
+void CocoaAnalyzer::correctOpticalAlignmentParameter(OpticalAlignParam& myXMLParam,
+                                                     const OpticalAlignParam& myDBParam) {
   if (myDBParam.value_ != -9.999E9) {
-
     const std::string& type = myDBParam.dimType();
     double dimFactor = 1.;
 
@@ -521,7 +527,7 @@ void CocoaAnalyzer::correctOpticalAlignmentParameter(OpticalAlignParam& myXMLPar
     const double correctedValue = myDBParam.value_ * dimFactor;
     if (ALIUtils::debug >= 4) {
       edm::LogInfo("Alignment") << "CocoaAnalyzer::correctOpticalAlignmentParameter  old value= " << myXMLParam.value_
-			    << " new value= " << correctedValue;
+                                << " new value= " << correctedValue;
     }
     myXMLParam.value_ = correctedValue;
   }
@@ -592,7 +598,7 @@ T CocoaAnalyzer::getParameterValueFromSpecParSections(const cms::DDSpecParRegist
                                                       const std::string& parameterName,
                                                       const unsigned int parameterValueIndex) {
   const std::vector<T>& allParameterValues =
-    getAllParameterValuesFromSpecParSections<T>(allSpecParSections, nodePath, parameterName);
+      getAllParameterValuesFromSpecParSections<T>(allSpecParSections, nodePath, parameterName);
   if (parameterValueIndex < allParameterValues.size()) {
     return allParameterValues.at(parameterValueIndex);
   }

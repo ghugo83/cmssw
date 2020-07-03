@@ -241,17 +241,16 @@ OpticalAlignInfo CocoaDBMgr::GetOptAlignInfoFromOptO(OpticalObject* opto) {
     }
   }
 
-
   std::cout << " CocoaDBMgr::GetOptAlignInfoFromOptO starting entry " << std::endl;
   for (const auto& myDBExtraEntry : opto->ExtraEntryList()) {
     OpticalAlignParam extraEntry;
     extraEntry.name_ = myDBExtraEntry->name();
-    extraEntry.dim_type_ = myDBExtraEntry->type(); 
+    extraEntry.dim_type_ = myDBExtraEntry->type();
     extraEntry.value_ = myDBExtraEntry->value();
     extraEntry.error_ = myDBExtraEntry->sigma();
     if (extraEntry.dim_type_ == "centre" || extraEntry.dim_type_ == "length") {
-      extraEntry.value_ *= 1._m;   // m in COCOA, cm in DB
-      extraEntry.error_ *= 1._m;   // m in COCOA, cm in DB
+      extraEntry.value_ *= 1._m;  // m in COCOA, cm in DB
+      extraEntry.error_ *= 1._m;  // m in COCOA, cm in DB
     }
     extraEntry.quality_ = myDBExtraEntry->quality();
     data.extraEntries_.push_back(extraEntry);
