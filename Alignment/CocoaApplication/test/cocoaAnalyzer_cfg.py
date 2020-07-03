@@ -3,7 +3,11 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("TestCocoa")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
- 
+process.MessageLogger.debugModules = cms.untracked.vstring('cocoa')
+process.MessageLogger.cout = cms.untracked.PSet(
+    threshold = cms.untracked.string('DEBUG')
+)
+
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
 
 # A data source must always be defined. We don't need it, so here's a dummy one.

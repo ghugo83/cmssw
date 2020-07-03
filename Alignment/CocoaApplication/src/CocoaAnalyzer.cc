@@ -67,7 +67,7 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
     const dd4hep::Volume& worldVolume = mySystem->worldVolume();
 
     if (ALIUtils::debug >= 3) {
-      LogDebug("Alignment") << "CocoaAnalyzer::ReadXML: world object = " << worldVolume.name();
+      edm::LogInfo("Alignment") << "CocoaAnalyzer::ReadXML: world object = " << worldVolume.name();
     }
 
     OpticalAlignInfo worldInfo;
@@ -140,8 +140,8 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
       oaInfo.parentName_ = nodePath.substr(0, nodePath.rfind('/', nodePath.length()));
 
       if (ALIUtils::debug >= 4) {
-        LogDebug("Alignment") << " CocoaAnalyzer::ReadXML reading object " << name;
-        LogDebug("Alignment") << " @@ Name built= " << oaInfo.name_ << " short_name= " << name << " parent= " << oaInfo.parentName_;
+        edm::LogInfo("Alignment") << " CocoaAnalyzer::ReadXML reading object " << name;
+        edm::LogInfo("Alignment") << " @@ Name built= " << oaInfo.name_ << " short_name= " << name << " parent= " << oaInfo.parentName_;
       }
 
       // TRANSLATIONS
@@ -151,7 +151,7 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
       const dd4hep::Direction& transl = myPlacedVolume.position();
 
       if (ALIUtils::debug >= 4) {
-        LogDebug("Alignment") << "Local translation in cm = " << transl;
+        edm::LogInfo("Alignment") << "Local translation in cm = " << transl;
       }
 
       // B) READ INFO FROM XMLS
@@ -217,10 +217,10 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
       const double zy = rot[7];
       const double zz = rot[8];
       if (ALIUtils::debug >= 4) {
-        LogDebug("Alignment") << "Local rotation = ";
-        LogDebug("Alignment") << xx << "  " << xy << "  " << xz;
-        LogDebug("Alignment") << yx << "  " << yy << "  " << yz;
-        LogDebug("Alignment") << zx << "  " << zy << "  " << zz;
+        edm::LogInfo("Alignment") << "Local rotation = ";
+        edm::LogInfo("Alignment") << xx << "  " << xy << "  " << xz;
+        edm::LogInfo("Alignment") << yx << "  " << yy << "  " << yz;
+        edm::LogInfo("Alignment") << zx << "  " << zy << "  " << zz;
       }
       const CLHEP::Hep3Vector colX(xx, yx, zx);
       const CLHEP::Hep3Vector colY(xy, yy, zy);
@@ -263,7 +263,7 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
 	static_cast<int>(getParameterValueFromSpecParSections<double>(allSpecParSections, nodePath, "cmssw_ID", 0));
 
       if (ALIUtils::debug >= 4) {
-        LogDebug("Alignment") << "CocoaAnalyzer::ReadXML OBJECT " << oaInfo.name_ << " pos/angles read ";
+        edm::LogInfo("Alignment") << "CocoaAnalyzer::ReadXML OBJECT " << oaInfo.name_ << " pos/angles read ";
       }
 
       // Check that rotations match with values from XMLs.
@@ -287,7 +287,7 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
 	getAllParameterValuesFromSpecParSections<double>(allSpecParSections, nodePath, "quality");
 
       if (ALIUtils::debug >= 4) {
-        LogDebug("Alignment") << " CocoaAnalyzer::ReadXML:  Fill extra entries with read parameters ";
+        edm::LogInfo("Alignment") << " CocoaAnalyzer::ReadXML:  Fill extra entries with read parameters ";
       }
 
       if (names.size() == dims.size() && dims.size() == values.size() && values.size() == errors.size() &&
@@ -311,7 +311,7 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
 
         oaList_.opticalAlignments_.emplace_back(oaInfo);
       } else {
-        LogDebug("Alignment") << "WARNING FOR NOW: sizes of extra parameters (names, dimType, value, quality) do"
+        edm::LogInfo("Alignment") << "WARNING FOR NOW: sizes of extra parameters (names, dimType, value, quality) do"
 			      << " not match!  Did not add " << nObjects << " item to OpticalAlignments.";
       }
 
@@ -340,7 +340,7 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
       }
 
       if (ALIUtils::debug >= 4) {
-        LogDebug("Alignment") << " CocoaAnalyzer::ReadXML:  Fill measurements with read parameters ";
+        edm::LogInfo("Alignment") << " CocoaAnalyzer::ReadXML:  Fill measurements with read parameters ";
       }
 
       if (measNames.size() == measTypes.size()) {
@@ -367,7 +367,7 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
               oaMeas.values_.emplace_back(oaParam);
               oaMeas.isSimulatedValue_.emplace_back(measIsSimulatedValue[oaMeas.name_][i2]);
               if (ALIUtils::debug >= 5) {
-                LogDebug("Alignment") << oaMeas.name_ << " copying issimu "
+                edm::LogInfo("Alignment") << oaMeas.name_ << " copying issimu "
 				      << oaMeas.isSimulatedValue_[oaMeas.isSimulatedValue_.size() - 1] << " = "
 				      << measIsSimulatedValue[oaMeas.name_][i2];
               }
@@ -382,7 +382,7 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
           }
           measList_.oaMeasurements_.emplace_back(oaMeas);
           if (ALIUtils::debug >= 5) {
-            LogDebug("Alignment") << "CocoaAnalyser: MEASUREMENT " << oaMeas.name_ << " extra entries read " << oaMeas;
+            edm::LogInfo("Alignment") << "CocoaAnalyser: MEASUREMENT " << oaMeas.name_ << " extra entries read " << oaMeas;
           }
           oaMeas.clear();
         }
@@ -399,12 +399,12 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
     }  // while (doCOCOA)
 
     if (ALIUtils::debug >= 3) {
-      LogDebug("Alignment") << "CocoaAnalyzer::ReadXML: Finished building " << nObjects + 1 << " OpticalAlignInfo objects"
+      edm::LogInfo("Alignment") << "CocoaAnalyzer::ReadXML: Finished building " << nObjects + 1 << " OpticalAlignInfo objects"
 			    << " and " << measList_.oaMeasurements_.size() << " OpticalAlignMeasurementInfo objects ";
     }
     if (ALIUtils::debug >= 5) {
-      LogDebug("Alignment") << " @@@@@@ OpticalAlignments " << oaList_;
-      LogDebug("Alignment") << " @@@@@@ OpticalMeasurements " << measList_;
+      edm::LogInfo("Alignment") << " @@@@@@ OpticalAlignments " << oaList_;
+      edm::LogInfo("Alignment") << " @@@@@@ OpticalMeasurements " << measList_;
     }
   }
 }
@@ -415,7 +415,7 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
  */
 std::vector<OpticalAlignInfo> CocoaAnalyzer::readCalibrationDB(const edm::EventSetup& evts) {
   if (ALIUtils::debug >= 3) {
-    LogDebug("Alignment") << "$$$ CocoaAnalyzer::readCalibrationDB: ";
+    edm::LogInfo("Alignment") << "$$$ CocoaAnalyzer::readCalibrationDB: ";
   }
 
   using namespace edm::eventsetup;
@@ -424,9 +424,9 @@ std::vector<OpticalAlignInfo> CocoaAnalyzer::readCalibrationDB(const edm::EventS
   const std::vector<OpticalAlignInfo>& infoFromDB = pObjs.product()->opticalAlignments_;
 
   if (ALIUtils::debug >= 5) {
-    LogDebug("Alignment") << "CocoaAnalyzer::readCalibrationDB:  Number of OpticalAlignInfo READ " << infoFromDB.size();
+    edm::LogInfo("Alignment") << "CocoaAnalyzer::readCalibrationDB:  Number of OpticalAlignInfo READ " << infoFromDB.size();
     for (const auto& myInfoFromDB : infoFromDB) {
-      LogDebug("Alignment") << "CocoaAnalyzer::readCalibrationDB:  OpticalAlignInfo READ " << myInfoFromDB;
+      edm::LogInfo("Alignment") << "CocoaAnalyzer::readCalibrationDB:  OpticalAlignInfo READ " << myInfoFromDB;
     }
   }
 
@@ -438,13 +438,13 @@ std::vector<OpticalAlignInfo> CocoaAnalyzer::readCalibrationDB(const edm::EventS
  */
 void CocoaAnalyzer::correctAllOpticalAlignments(std::vector<OpticalAlignInfo>& allDBOpticalAlignments) {
   if (ALIUtils::debug >= 3) {
-    LogDebug("Alignment") << "$$$ CocoaAnalyzer::correctAllOpticalAlignments: ";
+    edm::LogInfo("Alignment") << "$$$ CocoaAnalyzer::correctAllOpticalAlignments: ";
   }
 
   for (const auto& myDBInfo : allDBOpticalAlignments) {
 
     if (ALIUtils::debug >= 5) {
-      LogDebug("Alignment") << "CocoaAnalyzer::findOpticalAlignInfoXML:  Looking for OAI " << myDBInfo.name_;
+      edm::LogInfo("Alignment") << "CocoaAnalyzer::findOpticalAlignInfoXML:  Looking for OAI " << myDBInfo.name_;
     }
 
     std::vector<OpticalAlignInfo>& allXMLOpticalAlignments = oaList_.opticalAlignments_;
@@ -455,8 +455,8 @@ void CocoaAnalyzer::correctAllOpticalAlignments(std::vector<OpticalAlignInfo>& a
     if (myXMLInfo != allXMLOpticalAlignments.end()) {
 
       if (ALIUtils::debug >= 4) {
-        LogDebug("Alignment") << "CocoaAnalyzer::findOpticalAlignInfoXML:  OAI found " << myXMLInfo->name_;
-	LogDebug("Alignment") << "CocoaAnalyzer::correctAllOpticalAlignments: correcting data from XML with DB info.";
+        edm::LogInfo("Alignment") << "CocoaAnalyzer::findOpticalAlignInfoXML:  OAI found " << myXMLInfo->name_;
+	edm::LogInfo("Alignment") << "CocoaAnalyzer::correctAllOpticalAlignments: correcting data from XML with DB info.";
       }
       correctOpticalAlignmentParameter(myXMLInfo->x_, myDBInfo.x_);
       correctOpticalAlignmentParameter(myXMLInfo->y_, myDBInfo.y_);
@@ -489,7 +489,7 @@ void CocoaAnalyzer::correctAllOpticalAlignments(std::vector<OpticalAlignInfo>& a
       }
 
       if (ALIUtils::debug >= 5) {
-	LogDebug("Alignment") << "CocoaAnalyzer::correctAllOpticalAlignments: corrected OpticalAlingInfo " << oaList_;
+	edm::LogInfo("Alignment") << "CocoaAnalyzer::correctAllOpticalAlignments: corrected OpticalAlingInfo " << oaList_;
       }
     }
     else {
@@ -520,7 +520,7 @@ void CocoaAnalyzer::correctOpticalAlignmentParameter(OpticalAlignParam& myXMLPar
 
     const double correctedValue = myDBParam.value_ * dimFactor;
     if (ALIUtils::debug >= 4) {
-      LogDebug("Alignment") << "CocoaAnalyzer::correctOpticalAlignmentParameter  old value= " << myXMLParam.value_
+      edm::LogInfo("Alignment") << "CocoaAnalyzer::correctOpticalAlignmentParameter  old value= " << myXMLParam.value_
 			    << " new value= " << correctedValue;
     }
     myXMLParam.value_ = correctedValue;
@@ -532,7 +532,7 @@ void CocoaAnalyzer::correctOpticalAlignmentParameter(OpticalAlignParam& myXMLPar
  */
 void CocoaAnalyzer::runCocoa() {
   if (ALIUtils::debug >= 3) {
-    LogDebug("Alignment") << "$$$ CocoaAnalyzer::runCocoa: ";
+    edm::LogInfo("Alignment") << "$$$ CocoaAnalyzer::runCocoa: ";
   }
 
   // Geometry model built from XML file (corrected with values from DB)
@@ -540,14 +540,14 @@ void CocoaAnalyzer::runCocoa() {
   model.BuildSystemDescriptionFromOA(oaList_);
 
   if (ALIUtils::debug >= 3) {
-    LogDebug("Alignment") << "$$ CocoaAnalyzer::runCocoa: geometry built ";
+    edm::LogInfo("Alignment") << "$$ CocoaAnalyzer::runCocoa: geometry built ";
   }
 
   // Build measurements
   model.BuildMeasurementsFromOA(measList_);
 
   if (ALIUtils::debug >= 3) {
-    LogDebug("Alignment") << "$$ CocoaAnalyzer::runCocoa: measurements built ";
+    edm::LogInfo("Alignment") << "$$ CocoaAnalyzer::runCocoa: measurements built ";
   }
 
   // Do fit and store results in DB
@@ -555,7 +555,7 @@ void CocoaAnalyzer::runCocoa() {
   Fit::startFit();
 
   if (ALIUtils::debug >= 0)
-    LogDebug("Alignment") << "............ program ended OK";
+    edm::LogInfo("Alignment") << "............ program ended OK";
   if (ALIUtils::report >= 1) {
     ALIFileOut& fileout = ALIFileOut::getInstance(Model::ReportFName());
     fileout << "............ program ended OK";
