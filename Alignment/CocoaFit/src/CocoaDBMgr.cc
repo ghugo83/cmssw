@@ -253,7 +253,7 @@ OpticalAlignInfo CocoaDBMgr::GetOptAlignInfoFromOptO(OpticalObject* opto) {
       extraEntry.error_ *= 1._m;  // m in COCOA, cm in DB
     }
     extraEntry.quality_ = myDBExtraEntry->quality();
-    data.extraEntries_.push_back(extraEntry);
+    data.extraEntries_.emplace_back(extraEntry);
     std::cout << " CocoaDBMgr::GetOptAlignInfoFromOptO done extra entry " << extraEntry.name_ << std::endl;
   }
 
