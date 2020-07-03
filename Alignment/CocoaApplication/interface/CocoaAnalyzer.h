@@ -19,9 +19,8 @@ private:
   void readXMLFile(const edm::EventSetup& evts);
 
   std::vector<OpticalAlignInfo> readCalibrationDB(const edm::EventSetup& evts);
-  void correctOptAlignments(std::vector<OpticalAlignInfo>& oaListCalib);
-  OpticalAlignInfo* findOpticalAlignInfoXML(const OpticalAlignInfo& oaInfo);
-  bool correctOaParam(OpticalAlignParam* oaParamXML, const OpticalAlignParam& oaParamDB);
+  void correctAllOpticalAlignments(std::vector<OpticalAlignInfo>& allDBOpticalAlignments);
+  void correctOpticalAlignmentParameter(OpticalAlignParam& myXMLParam, const OpticalAlignParam& myDBParam);
 
   void runCocoa();
 

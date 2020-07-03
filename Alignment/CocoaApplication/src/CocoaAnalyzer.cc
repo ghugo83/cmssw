@@ -45,7 +45,7 @@ void CocoaAnalyzer::analyze(const edm::Event& evt, const edm::EventSetup& evts) 
 
   // Correct ideal geometry with data from DB.
   std::vector<OpticalAlignInfo> oaListCalib = readCalibrationDB(evts);
-  correctOptAlignments(oaListCalib);
+  correctAllOpticalAlignments(oaListCalib);
 
   // Run the least-squared fit and store results in DB.
   runCocoa();
@@ -270,9 +270,7 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
       // Same, that ugly code is not mine ;p
       if (fabs(oaInfo.angx_.value_ - angles[0]) > 1.E-9 || fabs(oaInfo.angy_.value_ - angles[1]) > 1.E-9 ||
           fabs(oaInfo.angz_.value_ - angles[2]) > 1.E-9) {
-        std::cerr << " WRONG ANGLE IN OBJECT " << oaInfo.name_ << oaInfo.angx_.value_ << " =? " << angles[0]
-                  << oaInfo.angy_.value_ << " =? " << angles[1] << oaInfo.angz_.value_ << " =? " << angles[2]
-	  ;
+        edm::LogError("Alignment") << " WRONG ANGLE IN OBJECT " << oaInfo.name_ << oaInfo.angx_.value_ << " =? " << angles[0] << oaInfo.angy_.value_ << " =? " << angles[1] << oaInfo.angz_.value_ << " =? " << angles[2];
       }
 
       // EXTRA PARAM ENTRIES (FROM XMLS)
@@ -363,8 +361,7 @@ void CocoaAnalyzer::readXMLFile(const edm::EventSetup& evts) {
               } else if (oaMeas.type_ == "TILTMETER") {
                 oaParam.dim_type_ = "angle";
               } else {
-                std::cerr << "CocoaAnalyzer::readXMLFile. Invalid measurement type: " << oaMeas.type_;
-                std::exception();
+                edm::LogError("Alignment") << "CocoaAnalyzer::readXMLFile. Invalid measurement type: " << oaMeas.type_;
               }
 
               oaMeas.values_.emplace_back(oaParam);
@@ -437,105 +434,97 @@ std::vector<OpticalAlignInfo> CocoaAnalyzer::readCalibrationDB(const edm::EventS
 }
 
 /*
- * Correct the OpticalAlignInfo from IdealGeometry with values from DB.
+ * Correct all OpticalAlignInfo from IdealGeometry with values from DB.
  */
-void CocoaAnalyzer::correctOptAlignments(std::vector<OpticalAlignInfo>& oaListCalib) {
+void CocoaAnalyzer::correctAllOpticalAlignments(std::vector<OpticalAlignInfo>& allDBOpticalAlignments) {
   if (ALIUtils::debug >= 3) {
-    LogDebug("Alignment") << "$$$ CocoaAnalyzer::correctOptAlignments: ";
+    LogDebug("Alignment") << "$$$ CocoaAnalyzer::correctAllOpticalAlignments: ";
   }
 
-  std::vector<OpticalAlignInfo>::const_iterator it;
-  for (it = oaListCalib.begin(); it != oaListCalib.end(); ++it) {
-    OpticalAlignInfo oaInfoDB = *it;
-    OpticalAlignInfo* oaInfoXML = findOpticalAlignInfoXML(oaInfoDB);
-    if (oaInfoXML == nullptr) {
-      if (ALIUtils::debug >= 2) {
-        std::cerr << "@@@@@ WARNING CocoaAnalyzer::correctOptAlignments:  OpticalAlignInfo read from DB is not present "
-	  "in XML "
-                  << *it;
-      }
-    } else {
-      //------ Correct info
-      if (ALIUtils::debug >= 5) {
-        LogDebug("Alignment") << "CocoaAnalyzer::correctOptAlignments: correcting data from DB info ";
-      }
-      correctOaParam(&oaInfoXML->x_, oaInfoDB.x_);
-      correctOaParam(&oaInfoXML->y_, oaInfoDB.y_);
-      correctOaParam(&oaInfoXML->z_, oaInfoDB.z_);
-      correctOaParam(&oaInfoXML->angx_, oaInfoDB.angx_);
-      correctOaParam(&oaInfoXML->angy_, oaInfoDB.angy_);
-      correctOaParam(&oaInfoXML->angz_, oaInfoDB.angz_);
-      std::vector<OpticalAlignParam>::iterator itoap1, itoap2;
-      std::vector<OpticalAlignParam> extraEntDB = oaInfoDB.extraEntries_;
-      std::vector<OpticalAlignParam>* extraEntXML = &(oaInfoXML->extraEntries_);
-      for (itoap1 = extraEntDB.begin(); itoap1 != extraEntDB.end(); ++itoap1) {
-        bool pFound = false;
-        //----- Look for the extra parameter in XML oaInfo that has the same name
-        std::string oaName = (*itoap1).name_;
-        for (itoap2 = extraEntXML->begin(); itoap2 != extraEntXML->end(); ++itoap2) {
-          if (oaName == itoap2->name_) {
-            correctOaParam(&(*itoap2), *itoap1);
-            pFound = true;
-            break;
-          }
-        }
-        if (!pFound && oaName != "None") {
-          if (ALIUtils::debug >= 2) {
-            std::cerr
-	      << "@@@@@ WARNING CocoaAnalyzer::correctOptAlignments:  extra entry read from DB is not present in XML "
-	      << *itoap1 << " in object " << *it;
-          }
-        }
-      }
-      if (ALIUtils::debug >= 5) {
-        LogDebug("Alignment") << "CocoaAnalyzer::correctOptAlignments: corrected OpticalAlingInfo " << oaList_;
-      }
-    }
-  }
-}
+  for (const auto& myDBInfo : allDBOpticalAlignments) {
 
-OpticalAlignInfo* CocoaAnalyzer::findOpticalAlignInfoXML(const OpticalAlignInfo& oaInfo) {
-  OpticalAlignInfo* oaInfoXML = nullptr;
-
-  for (auto& myOpticalAlignInfo : oaList_.opticalAlignments_) {
     if (ALIUtils::debug >= 5) {
-      LogDebug("Alignment") << "CocoaAnalyzer::findOpticalAlignInfoXML:  looking for OAI " << myOpticalAlignInfo.name_ << " =? " << oaInfo.name_;
+      LogDebug("Alignment") << "CocoaAnalyzer::findOpticalAlignInfoXML:  Looking for OAI " << myDBInfo.name_;
     }
-    if (myOpticalAlignInfo.name_ == oaInfo.name_) {
-      oaInfoXML = &(myOpticalAlignInfo);
+
+    std::vector<OpticalAlignInfo>& allXMLOpticalAlignments = oaList_.opticalAlignments_;
+    const auto& myXMLInfo = std::find_if(allXMLOpticalAlignments.begin(), allXMLOpticalAlignments.end(),
+					 [&](const auto& myXMLInfoCandidate) { return myXMLInfoCandidate.name_ == myDBInfo.name_; }
+					 );
+
+    if (myXMLInfo != allXMLOpticalAlignments.end()) {
+
       if (ALIUtils::debug >= 4) {
-        LogDebug("Alignment") << "CocoaAnalyzer::findOpticalAlignInfoXML:  OAI found " << oaInfoXML->name_;
+        LogDebug("Alignment") << "CocoaAnalyzer::findOpticalAlignInfoXML:  OAI found " << myXMLInfo->name_;
+	LogDebug("Alignment") << "CocoaAnalyzer::correctAllOpticalAlignments: correcting data from XML with DB info.";
       }
-      break;
+      correctOpticalAlignmentParameter(myXMLInfo->x_, myDBInfo.x_);
+      correctOpticalAlignmentParameter(myXMLInfo->y_, myDBInfo.y_);
+      correctOpticalAlignmentParameter(myXMLInfo->z_, myDBInfo.z_);
+      correctOpticalAlignmentParameter(myXMLInfo->angx_, myDBInfo.angx_);
+      correctOpticalAlignmentParameter(myXMLInfo->angy_, myDBInfo.angy_);
+      correctOpticalAlignmentParameter(myXMLInfo->angz_, myDBInfo.angz_);
+
+      // Also correct extra entries
+      const std::vector<OpticalAlignParam>& allDBExtraEntries = myDBInfo.extraEntries_;
+      std::vector<OpticalAlignParam>& allXMLExtraEntries = myXMLInfo->extraEntries_;
+      for (const auto& myDBExtraEntry: allDBExtraEntries) {
+	const auto& myXMLExtraEntry = std::find_if(allXMLExtraEntries.begin(), allXMLExtraEntries.end(),
+						   [&](const auto& myXMLExtraEntryCandidate) { 
+						     return myXMLExtraEntryCandidate.name_ == myDBExtraEntry.name_; }
+						   );
+
+	if (myXMLExtraEntry != allXMLExtraEntries.end()) {
+	  correctOpticalAlignmentParameter(*myXMLExtraEntry, myDBExtraEntry);
+	}
+	else {
+	  if (myDBExtraEntry.name_ != "None") {
+	    if (ALIUtils::debug >= 2) {
+	      edm::LogError("Alignment")
+		<< "CocoaAnalyzer::correctAllOpticalAlignments:  extra entry read from DB is not present in XML "
+		<< myDBExtraEntry << " in object " << myDBInfo;
+	    }
+	  }
+	}
+      }
+
+      if (ALIUtils::debug >= 5) {
+	LogDebug("Alignment") << "CocoaAnalyzer::correctAllOpticalAlignments: corrected OpticalAlingInfo " << oaList_;
+      }
+    }
+    else {
+      if (ALIUtils::debug >= 2) {
+	edm::LogError("Alignment") << "CocoaAnalyzer::correctAllOpticalAlignments:  OpticalAlignInfo read from DB " << myDBInfo << " is not present in XML.";
+      }
     }
   }
-
-  return oaInfoXML;
 }
 
-bool CocoaAnalyzer::correctOaParam(OpticalAlignParam* oaParamXML, const OpticalAlignParam& oaParamDB) {
-  if (ALIUtils::debug >= 4) {
-    LogDebug("Alignment") << "CocoaAnalyzer::correctOaParam  old value= " << oaParamXML->value_
-			  << " new value= " << oaParamDB.value_;
+
+/*
+ * Correct an OpticalAlignment parameter from IdealGeometry with the value from DB.
+ */
+void CocoaAnalyzer::correctOpticalAlignmentParameter(OpticalAlignParam& myXMLParam, const OpticalAlignParam& myDBParam) {  
+  if (myDBParam.value_ != -9.999E9) {
+
+    const std::string& type = myDBParam.dimType();
+    double dimFactor = 1.;
+
+    if (type == "centre" || type == "length") {
+      dimFactor = 1. / 1._m;  // in DB it is in cm
+    } else if (type == "angles" || type == "angle" || type == "nodim") {
+      dimFactor = 1.;
+    } else {
+      edm::LogError("Alignment") << "Incorrect OpticalAlignParam type = " << type;
+    }
+
+    const double correctedValue = myDBParam.value_ * dimFactor;
+    if (ALIUtils::debug >= 4) {
+      LogDebug("Alignment") << "CocoaAnalyzer::correctOpticalAlignmentParameter  old value= " << myXMLParam.value_
+			    << " new value= " << correctedValue;
+    }
+    myXMLParam.value_ = correctedValue;
   }
-  if (oaParamDB.value_ == -9.999E9)
-    return false;
-
-  std::string type = oaParamDB.dimType();
-  double dimFactor = 1.;
-  if (type == "centre" || type == "length") {
-    dimFactor = 1. / 1._m;  // in DB it is in cm
-  } else if (type == "angles" || type == "angle" || type == "nodim") {
-    dimFactor = 1.;
-  } else {
-    std::cerr << "!!! COCOA programming error: inform responsible: incorrect OpticalAlignParam type = " << type
-      ;
-    std::exception();
-  }
-
-  oaParamXML->value_ = oaParamDB.value_ * dimFactor;
-
-  return true;
 }
 
 /*

@@ -168,7 +168,7 @@ bool CocoaDBMgr::DumpCocoaResults() {
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 OpticalAlignInfo CocoaDBMgr::GetOptAlignInfoFromOptO(OpticalObject* opto) {
-  std::cout << " CocoaDBMgr::GetOptAlignInfoFromOptO " << opto->name() << std::endl;
+  LogDebug("Alignment") << " CocoaDBMgr::GetOptAlignInfoFromOptO " << opto->name();
   OpticalAlignInfo data;
   data.ID_ = opto->getCmsswID();
   data.type_ = opto->type();
@@ -180,7 +180,7 @@ OpticalAlignInfo CocoaDBMgr::GetOptAlignInfoFromOptO(OpticalObject* opto) {
   centreLocal = parentRmGlobInv * centreLocal;
 
   const std::vector<Entry*>& theCoordinateEntryVector = opto->CoordinateEntryList();
-  std::cout << " CocoaDBMgr::GetOptAlignInfoFromOptO starting coord " << std::endl;
+  LogDebug("Alignment") << " CocoaDBMgr::GetOptAlignInfoFromOptO starting coord ";
   if (theCoordinateEntryVector.size() == 6) {
     const Entry* const translationX = theCoordinateEntryVector.at(0);
     OpticalAlignParam translationXDataForDB;
