@@ -1,5 +1,5 @@
-#ifndef CocoaAnalyser_HH
-#define CocoaAnalyser_HH
+#ifndef ALIGNMENT_COCOA_APPLICATION_COCOA_ANALYZER_H
+#define ALIGNMENT_COCOA_APPLICATION_COCOA_ANALYZER_H
 
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "DetectorDescription/DDCMS/interface/DDSpecParRegistry.h"
@@ -38,7 +38,7 @@ private:
 private:
   OpticalAlignments oaList_;
   OpticalAlignMeasurements measList_;
-  std::string theCocoaDaqRootFileName;
+  std::string theCocoaDaqRootFileName_;
 };
 
 #endif
