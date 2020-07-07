@@ -576,6 +576,23 @@ from Configuration.Eras.Modifier_run2_common_cff import run2_common
 run2_common.toModify( g4SimHits.HFShowerLibrary, FileName = 'SimG4CMS/Calo/data/HFShowerLibrary_npmt_noatt_eta4_16en_v4.root' )
 run2_common.toModify( g4SimHits.HFShower, ProbMax = 0.5)
 
+
+from Configuration.Eras.Modifier_ctpps_2021_cff import ctpps_2021
+ctpps_2021.toModify(g4SimHits,
+    Generator = dict(
+        HepMCProductLabel = 'LHCTransport',
+        MinEtaCut = -13.0,
+        MaxEtaCut = 13.0
+    ),
+    SteppingAction = dict(
+        MaxTrackTime = 2000.0
+    ),
+    StackingAction = dict(
+        MaxTrackTime = 2000.0
+    )
+)
+
+
 from Configuration.Eras.Modifier_run2_HCAL_2017_cff import run2_HCAL_2017
 run2_HCAL_2017.toModify( g4SimHits, HCalSD = dict( TestNumberingScheme = True ) )
 from Configuration.Eras.Modifier_phase2_timing_cff import phase2_timing
