@@ -138,6 +138,31 @@ void PPSGeometryBuilder::buildPDetGeomDesc(DDFilteredView* fv, PDetGeomDesc* gd)
 
     // =======================================================================
 
+
+    std::cout << " " << std::endl;
+    std::cout << " " << std::endl;
+    std::cout << " " << std::endl;
+    std::cout << "!!!!!!!!!!!!!!!!    item.name_ = " << item.name_ << std::endl;
+    std::cout << "solid = " << fv->logicalPart().solid() << std::endl;
+    std::cout << "item.copy_ = " << item.copy_ << std::endl;
+    std::cout << "item.geographicalID_ = " << item.geographicalID_ << std::endl;
+    std::cout << "item.z_ = " << item.z_ << std::endl;
+    //std::cout << "sensor_name = " << sensor_name << std::endl;
+    std::cout << "item.sensorType_ = " << item.sensorType_ << std::endl;
+    std::cout << "item.dx_ = " << item.dx_ << std::endl;
+    std::cout << "item.dy_ = " << item.dy_ << std::endl;
+    std::cout << "item.dz_ = " << item.dz_ << std::endl;
+    std::cout << "rot = " << rot << std::endl;
+    std::cout << "item.params_ = ";
+    for (const auto& val : item.params_) {
+      std::cout << val << " ";
+    }
+    std::cout << " " << std::endl;
+
+
+
+
+
     // add component
     gd->container_.push_back(item);
 
