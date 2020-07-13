@@ -45,6 +45,9 @@ public:
   void analyze(const edm::Event&, const edm::EventSetup&) override;
 
 private:
+  double roundZero(const double input);
+  float roundZero(const float input);
+
   void buildPDetGeomDesc(DDFilteredView*, PDetGeomDesc*);
   uint32_t getGeographicalID(DDFilteredView*);
 
@@ -146,16 +149,16 @@ void PPSGeometryBuilder::buildPDetGeomDesc(DDFilteredView* fv, PDetGeomDesc* gd)
     std::cout << "solid = " << fv->logicalPart().solid() << std::endl;
     std::cout << "item.copy_ = " << item.copy_ << std::endl;
     std::cout << "item.geographicalID_ = " << item.geographicalID_ << std::endl;
-    std::cout << "item.z_ = " << item.z_ << std::endl;
+    std::cout << "item.z_ = " << roundZero(item.z_) << std::endl;
     //std::cout << "sensor_name = " << sensor_name << std::endl;
     std::cout << "item.sensorType_ = " << item.sensorType_ << std::endl;
-    std::cout << "item.dx_ = " << item.dx_ << std::endl;
-    std::cout << "item.dy_ = " << item.dy_ << std::endl;
-    std::cout << "item.dz_ = " << item.dz_ << std::endl;
-    std::cout << "rot = " << rot << std::endl;
+    std::cout << "item.dx_ = " << roundZero(item.dx_) << std::endl;
+    std::cout << "item.dy_ = " << roundZero(item.dy_) << std::endl;
+    std::cout << "item.dz_ = " << roundZero(item.dz_) << std::endl;
+    //std::cout << "rot = " << rot << std::endl;
     std::cout << "item.params_ = ";
     for (const auto& val : item.params_) {
-      std::cout << val << " ";
+      std::cout << roundZero(val) << " ";
     }
     std::cout << " " << std::endl;
 
@@ -172,6 +175,22 @@ void PPSGeometryBuilder::buildPDetGeomDesc(DDFilteredView* fv, PDetGeomDesc* gd)
 
   // go a level up
   fv->parent();
+}
+
+
+double PPSGeometryBuilder::roundZero(const double input) {
+  if (input < 0.000000001) {
+    return 0.;
+  }
+  else { return input; }
+}
+
+
+float PPSGeometryBuilder::roundZero(const float input) {
+  if (input < 0.000000001) {
+    return 0.;
+  }
+  else { return input; }
 }
 
 //----------------------------------------------------------------------------------------------------//----------------------------------------------------------------------------------------------------
