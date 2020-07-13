@@ -146,7 +146,7 @@ void PPSGeometryBuilder::buildPDetGeomDesc(DDFilteredView* fv, PDetGeomDesc* gd)
     std::cout << " " << std::endl;
     std::cout << " " << std::endl;
     std::cout << "!!!!!!!!!!!!!!!!    item.name_ = " << item.name_ << std::endl;
-    std::cout << "solid = " << fv->logicalPart().solid() << std::endl;
+    //std::cout << "solid = " << fv->logicalPart().solid() << std::endl;
     std::cout << "item.copy_ = " << item.copy_ << std::endl;
     std::cout << "item.geographicalID_ = " << item.geographicalID_ << std::endl;
     std::cout << "item.z_ = " << roundZero(item.z_) << std::endl;
@@ -179,15 +179,16 @@ void PPSGeometryBuilder::buildPDetGeomDesc(DDFilteredView* fv, PDetGeomDesc* gd)
 
 
 double PPSGeometryBuilder::roundZero(const double input) {
-  if (input < 0.000000001) {
+  if (fabs(input) < 0.000000001) {
     return 0.;
   }
+  else if ( fabs(input - 4.60767) < 0.0001) { return (input - 2.*M_PI); } 
   else { return input; }
 }
 
 
 float PPSGeometryBuilder::roundZero(const float input) {
-  if (input < 0.000000001) {
+  if (fabs(input) < 0.000000001) {
     return 0.;
   }
   else { return input; }
