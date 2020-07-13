@@ -18,7 +18,7 @@
     <RotationSection label="RP_147_Right_Station.xml">
         <Rotation name="RP_147_Right_Sec_Rotation" 
             phiX="[RP_147_Right_Sec_Rot_Angle]" thetaX="90*deg" 
-            phiY="90*deg+[RP_147_Right_Sec_Rot_Angle]" thetaY="90*deg"
+            phiY="(90+[RP_147_Right_Sec_Rot_Angle])*deg" thetaY="90*deg"
             phiZ="0*deg" thetaZ="0*deg"/>
         <Rotation name="RP_147_Right_90_y_Sec_Rotation" 
             phiX="0*deg" thetaX="180*deg" 

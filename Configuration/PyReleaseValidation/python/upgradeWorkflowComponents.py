@@ -576,6 +576,30 @@ upgradeWFs['heCollapse'] = UpgradeWorkflow_heCollapse(
     offset = 0.6,
 )
 
+class UpgradeWorkflow_0T(UpgradeWorkflow):
+    def setup_(self, step, stepName, stepDict, k, properties):
+        myGT=stepDict[step][k]['--conditions']
+        myGT+="_0T"
+        stepDict[stepName][k] = merge([{'-n':'1','--magField':'0T','--conditions':myGT}, stepDict[step][k]])
+    def condition(self, fragment, stepList, key, hasHarvest):
+        return (fragment=="TTbar_13" or fragment=="TTbar_14TeV") and ('2017' in key or '2018' in key or '2021' in key)
+upgradeWFs['0T'] = UpgradeWorkflow_0T(
+    steps = [
+        'GenSimFull',
+        'DigiFull',
+        'RecoFull',
+        'HARVESTFull',
+        'ALCAFull',
+    ],
+    PU = [
+        'DigiFull',
+        'RecoFull',
+        'HARVESTFull',
+    ],
+    suffix = '_0T',
+    offset = 0.24,
+)
+
 class UpgradeWorkflow_ParkingBPH(UpgradeWorkflow):
     def setup_(self, step, stepName, stepDict, k, properties):
         if 'Reco' in step and 'Run2_2018' in stepDict[step][k]['--era']:
@@ -1068,5 +1092,6 @@ upgradeFragments = OrderedDict([
     ('BuMixing_BMuonFilter_forSTEAM_14TeV_TuneCP5_cfi', UpgradeFragment(Kby(900,10000),'BuMixing_14')),
     ('Upsilon1SToMuMu_forSTEAM_14TeV_TuneCP5_cfi', UpgradeFragment(Kby(9,50),'Upsilon1SToMuMu_14')),
     ('TenTau_E_15_500_Eta3p1_pythia8_cfi', UpgradeFragment(Kby(9,100),'TenTau_15_500_Eta3p1')),
+    ('QCD_Pt_1800_2400_14TeV_TuneCP5_cfi', UpgradeFragment(Kby(9,50), 'QCD_Pt_1800_2400_14')),
 ])
 
