@@ -53,8 +53,6 @@ upgradeKeys[2026] = [
     '2026D63PU',
     '2026D64',
     '2026D64PU',
-    '2026D65',
-    '2026D65PU',
 ]
 
 # pre-generation of WF numbers
@@ -872,16 +870,8 @@ upgradeProperties[2026] = {
     '2026D64' : {
         'Geom' : 'Extended2026D64',                   # N.B.: Geometry with square 50x50 um2 pixels in the Inner Tracker.
         'HLTmenu': '@fake2',
-        'GT' : 'auto:phase2_realistic_T22',
+        'GT' : 'auto:phase2_realistic_T23',
         'ProcessModifier': 'phase2_PixelCPEGeneric',  # Pixel Template reconstruction is temporarily inactive (will update once conditions are availalble).
-        'Era' : 'Phase2C11',
-        'ScenToRun' : ['GenSimHLBeamSpotFull','DigiFullTrigger','RecoFullGlobal', 'HARVESTFullGlobal'],
-    },
-    '2026D65' : {
-        'Geom' : 'Extended2026D65',                   # N.B.: Geometry with 3D pixels in the Inner Tracker.
-        'HLTmenu': '@fake2',
-        'GT' : 'auto:phase2_realistic_T22',           # This symbolic GT has no pixel template / GenError informations.
-        'ProcessModifier': 'phase2_PixelCPEGeneric',  # This modifier removes all need for IT template information. DO NOT USE for standard planar sensors.
         'Era' : 'Phase2C11',
         'ScenToRun' : ['GenSimHLBeamSpotFull','DigiFullTrigger','RecoFullGlobal', 'HARVESTFullGlobal'],
     },
