@@ -880,7 +880,7 @@ upgradeProperties[2026] = {
     '2026D65' : {
         'Geom' : 'Extended2026D65',                   # N.B.: Geometry with 3D pixels in the Inner Tracker.
         'HLTmenu': '@fake2',
-        'GT' : 'auto:phase2_realistic_T23',           # This symbolic GT has no pixel template / GenError informations.
+        'GT' : 'auto:phase2_realistic_T22',           # This symbolic GT has no pixel template / GenError informations.
         'ProcessModifier': 'phase2_PixelCPEGeneric',  # This modifier removes all need for IT template information. DO NOT USE for standard planar sensors.
         'Era' : 'Phase2C11',
         'ScenToRun' : ['GenSimHLBeamSpotFull','DigiFullTrigger','RecoFullGlobal', 'HARVESTFullGlobal'],
