@@ -30,6 +30,7 @@ numWFIB.extend([28634.0]) #2026D61
 numWFIB.extend([29034.0]) #2026D62
 numWFIB.extend([29434.0]) #2026D63
 numWFIB.extend([29834.0]) #2026D64
+numWFIB.extend([30234.0]) #2026D65
 
 for numWF in numWFIB:
     workflows[numWF] = _upgrade_workflows[numWF]
