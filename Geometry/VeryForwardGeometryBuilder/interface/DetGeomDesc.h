@@ -49,7 +49,9 @@ public:
   virtual ~DetGeomDesc();
 
   /// ID stuff
-  void setGeographicalID(DetId id) { m_geographicalID = id; }
+  void setGeographicalID(DetId id) { m_geographicalID = id; 
+    std::cout << "item.geographicalID() = " << m_geographicalID << std::endl; 
+  }
   DetId geographicalID() const { return m_geographicalID; }
 
   /// access to the tree structure
@@ -73,6 +75,8 @@ public:
 
 private:
   DetGeomDesc() {}
+  double roundZero(const double input);
+  float roundZero(const float input);
   void deleteComponents();      /// deletes just the first daughters
   void deepDeleteComponents();  /// traverses the treee and deletes all nodes.
   void clearComponents() { m_container.resize(0); }

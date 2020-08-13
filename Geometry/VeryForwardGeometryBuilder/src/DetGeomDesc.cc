@@ -17,8 +17,29 @@
 
 //#include "DataFormats/CTPPSAlignment/interface/RPAlignmentCorrectionData.h"
 #include "CondFormats/PPSObjects/interface/CTPPSRPAlignmentCorrectionData.h"
+#include <iomanip>
 
 using namespace std;
+
+
+double DetGeomDesc::roundZero(const double input) {
+  if (fabs(input) < 0.000000001) {
+    return 0.;
+  }
+  else if ( fabs(input - 4.60767) < 0.0001) { return (input - 2.*M_PI); } 
+  else if ( fabs(input + 2.25147) < 0.0001) { return (input + 2.*M_PI); } 
+
+  else { return input; }
+}
+
+
+float DetGeomDesc::roundZero(const float input) {
+  if (fabs(input) < 0.000000001) {
+    return 0.;
+  }
+  else { return input; }
+}
+
 
 //----------------------------------------------------------------------------------------------------
 
@@ -35,6 +56,39 @@ DetGeomDesc::DetGeomDesc(DDFilteredView* fv)
   if (found != std::string::npos && sensor_name.substr(found - 4, 3) == DDD_CTPPS_PIXELS_SENSOR_TYPE_2x2) {
     m_sensorType = DDD_CTPPS_PIXELS_SENSOR_TYPE_2x2;
   }
+
+
+
+
+
+
+
+  std::cout << " " << std::endl;
+  std::cout << " " << std::endl;
+  std::cout << " " << std::endl;
+  std::cout << "!!!!!!!!!!!!!!!!    item.name_ = " << m_name << std::endl;
+  std::cout << "item.copy_ = " << m_copy << std::endl;
+  std::cout << "item.translation = " << std::fixed << std::setprecision(7) << m_trans << std::endl;
+  std::cout << "item.rotation = " << std::fixed << std::setprecision(7) << m_rot << std::endl;
+
+  if (fv->shape() == DDSolidShape::ddbox) {
+    std::cout << "item.getDiamondDimensions() = " << std::fixed << std::setprecision(7) << m_params.at(0) << " " << m_params.at(1) << " " << m_params.at(2) << std::endl;
+  }
+  std::cout << "item.sensorType_ = " << m_sensorType << std::endl;
+
+  std::cout << "item.parentZPosition() = " << std::fixed << std::setprecision(7) << roundZero( m_z ) << std::endl;
+  
+
+
+
+
+
+
+
+
+
+
+
 }
 
 //----------------------------------------------------------------------------------------------------
