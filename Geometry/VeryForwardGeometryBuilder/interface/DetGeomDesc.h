@@ -41,6 +41,9 @@ public:
   ///Constructors to be used when looping over DDD
   DetGeomDesc(DDFilteredView* fv);
 
+  void print() const;
+  bool operator<(const DetGeomDesc& other) const;
+
   /// copy constructor and assignment operator
   DetGeomDesc(const DetGeomDesc&);
   DetGeomDesc& operator=(const DetGeomDesc&);

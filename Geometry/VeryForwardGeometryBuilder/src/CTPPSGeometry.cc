@@ -19,33 +19,15 @@ void CTPPSGeometry::build(const DetGeomDesc* gD) {
   rps_in_station_.clear();
   dets_in_rp_.clear();
 
+  std::map<std::string, const DetGeomDesc*> allDets;
+
   // propagate through the GeometricalDet structure and add all detectors to 'sensors_map_'
   std::deque<const DetGeomDesc*> buffer;
   buffer.emplace_back(gD);
   while (!buffer.empty()) {
     const DetGeomDesc* d = buffer.front();
     buffer.pop_front();
-
-    std::cout << " " << std::endl;
-    std::cout << " " << std::endl;
-    std::cout << "!!!!!!!!!!!!!!!!    item.name_ = " << d->name() << std::endl;
-    std::cout << "item.copy_ = " << d->copyno() << std::endl;
-    std::cout << "item.translation = " << std::fixed << std::setprecision(7) << d->translation() << std::endl;
-    std::cout << "item.rotation = " << std::fixed << std::setprecision(7) << d->rotation() << std::endl;
-
-    /*if (d->isABox()) {
-      std::cout << "item.getDiamondDimensions() = " << std::fixed << std::setprecision(7) << d->getDiamondDimensions().xHalfWidth << " " << d->getDiamondDimensions().yHalfWidth << " " << d->getDiamondDimensions().zHalfWidth << std::endl;
-      }*/
-    std::cout << "item.sensorType_ = " << d->sensorType() << std::endl;
-    //std::cout << "path = " << fv.path() << std::endl;
-
-    std::cout << "item.parentZPosition() = " << std::fixed << std::setprecision(7) << d->parentZPosition() << std::endl;
-    if ((int)d->geographicalID() != 0) {
-      std::cout << "item.geographicalID() = " << d->geographicalID() << std::endl;
-    }
-
-
-
+    allDets.insert(std::make_pair(d->name(), d));
 
     // check if it is a sensor
     if (d->name() == DDD_TOTEM_RP_SENSOR_NAME ||
@@ -61,6 +43,10 @@ void CTPPSGeometry::build(const DetGeomDesc* gD) {
 
     for (const auto& comp : d->components())
       buffer.emplace_back(comp);
+  }
+
+  for (const auto& mine : allDets) {
+    mine.second->print();
   }
 
   // build sets

@@ -37,6 +37,53 @@ DetGeomDesc::DetGeomDesc(DDFilteredView* fv)
   }
 }
 
+void DetGeomDesc::print() const {
+  std::cout << " " << std::endl;
+  std::cout << " " << std::endl;
+  std::cout << "!!!!!!!!!!!!!!!!    item.name_ = " << m_name << std::endl;
+  std::cout << "item.copy_ = " << m_copy << std::endl;
+  std::cout << "item.translation = " << std::fixed << std::setprecision(7) << m_trans << std::endl;
+  std::cout << "item.rotation = " << std::fixed << std::setprecision(7) << m_rot << std::endl;
+
+  /*
+    if (m_isABox()) {
+    std::cout << "item.getDiamondDimensions() = " << std::fixed << std::setprecision(7) << m_getDiamondDimensions().xHalfWidth << " " << m_getDiamondDimensions().yHalfWidth << " " << m_getDiamondDimensions().zHalfWidth << std::endl;
+    }*/
+  std::cout << "item.sensorType_ = " << m_sensorType << std::endl;
+  //std::cout << "path = " << fv.path() << std::endl;
+
+  std::cout << "item.parentZPosition() = " << std::fixed << std::setprecision(7) << m_z << std::endl;
+  if ((int)m_geographicalID() != 0) {
+    std::cout << "item.geographicalID() = " << m_geographicalID << std::endl;
+  }
+
+  /* REMOVE ABOVE PRINTOUT AND PUT THIS IN DETGEOMDESC CONSTRUCTOR:
+     std::cout << " " << std::endl;
+     std::cout << " " << std::endl;
+     std::cout << " " << std::endl;
+     std::cout << "!!!!!!!!!!!!!!!!    item.name_ = " << m_name << std::endl;
+     std::cout << "item.copy_ = " << m_copy << std::endl;
+     std::cout << "item.translation = " << std::fixed << std::setprecision(7) << m_trans << std::endl;
+     std::cout << "item.rotation = " << std::fixed << std::setprecision(7) << m_rot << std::endl;
+
+     if (fv->shape() == DDSolidShape::ddbox) {
+     std::cout << "item.getDiamondDimensions() = " << std::fixed << std::setprecision(7) << m_params.at(0) << " " << m_params.at(1) << " " << m_params.at(2) << std::endl;
+     }
+     std::cout << "item.sensorType_ = " << m_sensorType << std::endl;
+
+     std::cout << "item.parentZPosition() = " << std::fixed << std::setprecision(7) <<  m_z << std::endl;
+  */
+
+}
+
+
+bool DetGeomDesc::operator<(const DetGeomDesc& other) const { 
+  return (name() != other.name() ? name() < other.name() : copyno() < other.copyno()); 
+}
+
+
+
+
 //----------------------------------------------------------------------------------------------------
 DetGeomDesc::DetGeomDesc(const DetGeomDesc& ref) { (*this) = ref; }
 
