@@ -34,15 +34,110 @@ using namespace cms_units::operators;
 //  A conversion factor (/1._mm) is applied wherever needed.
 DetGeomDesc::DetGeomDesc(const cms::DDFilteredView& fv, const cms::DDSpecParRegistry& allSpecParSections)
   : m_name(computeNameWithNoNamespace(fv.name())),
+    m_mat(fv.materialName()),
     m_copy(fv.copyNum()),
     m_trans(fv.translation() / 1._mm),  // Convert cm (DD4hep) to mm (legacy)
     m_rot(fv.rotation()),
-    m_params(computeParameters(fv)),   
+    m_params(computeParameters(fv)),
+    m_allparams(computeParametersTEST(fv)),
     m_isABox(fv.isABox()),
     m_sensorType(computeSensorType(fv.name(), fv.path(), allSpecParSections)),
     m_geographicalID(computeDetID(m_name, fv.copyNos(), fv.copyNum())),
-    m_z(fv.translation().z() / 1._mm)  // Convert cm (DD4hep) to mm (legacy)
+  m_z(fv.translation().z() / 1._mm)  // Convert cm (DD4hep) to mm (legacy)
 {}
+
+
+std::vector<double> DetGeomDesc::computeParametersTEST(const cms::DDFilteredView& fv) const {
+
+  std::vector<double> result;
+
+  const cms::DDSolidShape& mySolidShape = cms::dd::getCurrentShape(fv);
+
+  if (mySolidShape == cms::DDSolidShape::ddbox) {
+    const cms::dd::DDBox& myShape = cms::dd::DDBox(fv);
+    result = { myShape.halfX() / 1._mm,
+		   myShape.halfY() / 1._mm,
+		   myShape.halfZ() / 1._mm
+    };
+  }
+  else if (mySolidShape == cms::DDSolidShape::ddcons) {
+    const cms::dd::DDCons& myShape = cms::dd::DDCons(fv);
+    result = { myShape.zhalf() / 1._mm,
+		   myShape.rInMinusZ() / 1._mm,
+		   myShape.rOutMinusZ() / 1._mm,
+		   myShape.rInPlusZ() / 1._mm,
+		   myShape.rOutPlusZ() / 1._mm,
+		   myShape.phiFrom(),
+		   myShape.deltaPhi()
+    }; 
+  }
+  else if (mySolidShape == cms::DDSolidShape::ddtrap) {
+    const cms::dd::DDTrap& myShape = cms::dd::DDTrap(fv);
+    result = { myShape.halfZ() / 1._mm,
+		   myShape.theta(),
+		   myShape.phi(),
+		   myShape.y1() / 1._mm,
+		   myShape.x1() / 1._mm,
+		   myShape.x2() / 1._mm,
+		   myShape.alpha1(),
+		   myShape.y2() / 1._mm,
+		   myShape.x3() / 1._mm,
+		   myShape.x4() / 1._mm,		 
+		   myShape.alpha2()
+    }; 
+  }
+  else if (mySolidShape == cms::DDSolidShape::ddtubs) {
+    const cms::dd::DDTubs& myShape = cms::dd::DDTubs(fv);
+    result = { myShape.zhalf() / 1._mm,
+		   myShape.rIn() / 1._mm,
+		   myShape.rOut() / 1._mm,
+		   myShape.startPhi(),
+		   myShape.deltaPhi()
+    };
+  }
+  else if (mySolidShape == cms::DDSolidShape::ddtrunctubs) {
+    const cms::dd::DDTruncTubs& myShape = cms::dd::DDTruncTubs(fv);
+    result = { myShape.zHalf() / 1._mm,
+		   myShape.rIn() / 1._mm,
+		   myShape.rOut() / 1._mm,
+		   myShape.startPhi(),
+		   myShape.deltaPhi(),
+		   myShape.cutAtStart() / 1._mm,
+		   myShape.cutAtDelta() / 1._mm,
+		   static_cast<double>(myShape.cutInside())
+    }; 
+  }
+  else if (mySolidShape == cms::DDSolidShape::dd_not_init) {
+    auto myShape = fv.solid();
+    const std::vector<double>& params = myShape.dimensions();
+    if (fv.isA<dd4hep::Trd1>()) {
+      result = { params[3] / 1._mm, // z
+		     0.,
+		     0.,
+		     params[2] / 1._mm, // y
+		     params[0] / 1._mm, // x1
+		     params[0] / 1._mm, // x1
+		     0.,
+		     params[2] / 1._mm, // y
+		     params[1] / 1._mm, // x2
+		     params[1] / 1._mm, // x2
+		     0.  
+      };
+    }
+    else if (fv.isA<dd4hep::Polycone>()) {
+      int counter = 0;
+      for (const auto& para : params) {	
+	if (counter != 2) {
+	  const double factor = (counter >= 2 ? (1. / 1._mm) : 1.);
+	  result.emplace_back(para * factor);
+	}
+	++counter;
+      }
+    }
+  }
+
+  return result;
+}
 
 
 void DetGeomDesc::print() const {
@@ -54,8 +149,8 @@ void DetGeomDesc::print() const {
   std::cout << "item.rotation = " << std::fixed << std::setprecision(7) << m_rot << std::endl;
 
   /*
-    if (m_isABox()) {
-    std::cout << "item.getDiamondDimensions() = " << std::fixed << std::setprecision(7) << m_getDiamondDimensions().xHalfWidth << " " << m_getDiamondDimensions().yHalfWidth << " " << m_getDiamondDimensions().zHalfWidth << std::endl;
+  if (m_isABox) {
+    std::cout << "item.getDiamondDimensions() = " << std::fixed << std::setprecision(7) << getDiamondDimensions().xHalfWidth << " " << getDiamondDimensions().yHalfWidth << " " << getDiamondDimensions().zHalfWidth << std::endl;
     }*/
   std::cout << "item.sensorType_ = " << m_sensorType << std::endl;
   //std::cout << "path = " << fv.path() << std::endl;
@@ -63,6 +158,15 @@ void DetGeomDesc::print() const {
   std::cout << "item.parentZPosition() = " << std::fixed << std::setprecision(7) << m_z << std::endl;
   if ((int)m_geographicalID() != 0) {
     std::cout << "item.geographicalID() = " << m_geographicalID << std::endl;
+  }
+  std::cout << "item.materialName() = " << m_mat << std::endl;
+
+  if (!m_allparams.empty()) {
+    std::cout << "item.parameters() = " << std::fixed << std::setprecision(7);
+    for (const auto& para : m_allparams) {
+      std::cout << para << "  ";
+    }
+    std::cout << " " << std::endl;
   }
 
 }
@@ -79,10 +183,12 @@ DetGeomDesc::DetGeomDesc(const DetGeomDesc& ref) { (*this) = ref; }
 
 DetGeomDesc& DetGeomDesc::operator=(const DetGeomDesc& ref) {
   m_name = ref.m_name;
+  m_mat = ref.m_mat;
   m_copy = ref.m_copy;
   m_trans = ref.m_trans;
   m_rot = ref.m_rot;
   m_params = ref.m_params;
+  m_allparams = ref.m_allparams;
   m_isABox = ref.m_isABox;
   m_sensorType = ref.m_sensorType;
   m_geographicalID = ref.m_geographicalID;

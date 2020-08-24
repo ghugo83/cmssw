@@ -47,6 +47,7 @@ struct DiamondDimensions {
   double zHalfWidth;
 };
 
+
 class DetGeomDesc {
 public:
   using Container = std::vector<DetGeomDesc*>;
@@ -104,14 +105,17 @@ private:
 
   std::string computeNameWithNoNamespace(const std::string_view nameFromView) const;
   std::vector<double> computeParameters(const cms::DDFilteredView& fv) const;
+  std::vector<double> computeParametersTEST(const cms::DDFilteredView& fv) const;
   DetId computeDetID(const std::string& name, const std::vector<int>& copyNos, unsigned int copyNum) const;
   std::string computeSensorType(const std::string_view nameFromView, const std::string& nodePath, const cms::DDSpecParRegistry& allSpecParSections);
 
-  std::string m_name;           // name with no namespace
+  std::string m_name;           // name with no namespac
+  std::string m_mat;
   int m_copy;
   Translation m_trans;
   RotationMatrix m_rot;
   std::vector<double> m_params;
+  std::vector<double> m_allparams;
   bool m_isABox;
   std::string m_sensorType;
   DetId m_geographicalID;
