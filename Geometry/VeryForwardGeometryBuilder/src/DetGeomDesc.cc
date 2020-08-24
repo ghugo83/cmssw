@@ -30,6 +30,9 @@ DetGeomDesc::DetGeomDesc(DDFilteredView* fv)
       m_copy(fv->copyno()),
       m_z(fv->geoHistory().back().absTranslation().z()),
       m_sensorType("") {
+  m_mat = fv->material();
+  m_allparams = fv->parameters();
+
   std::string sensor_name = fv->geoHistory().back().logicalPart().name().fullname();
   std::size_t found = sensor_name.find(DDD_CTPPS_PIXELS_SENSOR_NAME);
   if (found != std::string::npos && sensor_name.substr(found - 4, 3) == DDD_CTPPS_PIXELS_SENSOR_TYPE_2x2) {
@@ -55,6 +58,16 @@ void DetGeomDesc::print() const {
   std::cout << "item.parentZPosition() = " << std::fixed << std::setprecision(7) << m_z << std::endl;
   if ((int)m_geographicalID() != 0) {
     std::cout << "item.geographicalID() = " << m_geographicalID << std::endl;
+  }
+
+  std::cout << "item.materialName() = " << m_mat << std::endl;
+
+  if (!m_allparams.empty()) {
+    std::cout << "item.parameters() = " << std::fixed << std::setprecision(7);
+    for (const auto& para : m_allparams) {
+      std::cout << para << "  ";
+    }
+    std::cout << " " << std::endl;
   }
 
   /* REMOVE ABOVE PRINTOUT AND PUT THIS IN DETGEOMDESC CONSTRUCTOR:
@@ -91,9 +104,11 @@ DetGeomDesc::DetGeomDesc(const DetGeomDesc& ref) { (*this) = ref; }
 
 DetGeomDesc& DetGeomDesc::operator=(const DetGeomDesc& ref) {
   m_params = ref.m_params;
+  m_allparams = ref.m_allparams;
   m_trans = ref.m_trans;
   m_rot = ref.m_rot;
   m_name = ref.m_name;
+  m_mat = ref.m_mat;
   m_copy = ref.m_copy;
   m_geographicalID = ref.m_geographicalID;
   m_z = ref.m_z;

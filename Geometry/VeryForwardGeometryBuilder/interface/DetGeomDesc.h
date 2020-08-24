@@ -32,6 +32,7 @@ class CTPPSRPAlignmentCorrectionData;
  \endverbatim
  **/
 
+
 class DetGeomDesc {
 public:
   using Container = std::vector<DetGeomDesc*>;
@@ -84,7 +85,9 @@ private:
   Translation m_trans;
   RotationMatrix m_rot;
   std::string m_name;
+  std::string m_mat;
   std::vector<double> m_params;
+  std::vector<double> m_allparams;
   DetId m_geographicalID;
   int m_copy;
   float m_z;

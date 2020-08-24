@@ -136,3 +136,14 @@ rpDistBeamCent = cms.vstring(
 )
 
 allFiles = totemGeomXMLFiles + ctppsDiamondGeomXMLFiles + ctppsUFSDGeomXMLFiles + ctppsPixelGeomXMLFiles + rpDistBeamCent
+
+
+XMLIdealGeometryESSource_CTPPS = cms.ESSource("XMLIdealGeometryESSource",
+        geomXMLFiles = allFiles,
+        rootNodeName = cms.string('cms:CMSE')
+)
+
+ctppsGeometryESModule = cms.ESProducer("CTPPSGeometryESModule",
+        verbosity = cms.untracked.uint32(1),
+        compactViewTag = cms.string('XMLIdealGeometryESSource_CTPPS')
+)
