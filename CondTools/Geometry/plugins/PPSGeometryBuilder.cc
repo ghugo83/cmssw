@@ -1,10 +1,9 @@
 /****************************************************************************
  *
- * Author:
- *
- *  Wagner Carvalho (wcarvalh@cern.ch)
- *
  *  DB builder for PPS geometry
+ *
+ *  Author: Wagner Carvalho (wcarvalh@cern.ch)
+ *  Rewritten / Moved out common functionalities to DetGeomDesc(Builder) by Gabrielle Hugo.
  *
  ****************************************************************************/
 
@@ -26,7 +25,6 @@
 #include "CondFormats/GeometryObjects/interface/PDetGeomDesc.h"
 #include "Geometry/VeryForwardGeometryBuilder/interface/DetGeomDescBuilder.h"
 
-
 class PPSGeometryBuilder : public edm::one::EDAnalyzer<> {
 public:
   explicit PPSGeometryBuilder(const edm::ParameterSet&);
@@ -40,12 +38,8 @@ private:
   edm::Service<cond::service::PoolDBOutputService> dbService_;
 };
 
-
 PPSGeometryBuilder::PPSGeometryBuilder(const edm::ParameterSet& iConfig)
-  : compactViewTag_(iConfig.getUntrackedParameter<std::string>("compactViewTag", "XMLIdealGeometryESSource_CTPPS")
-		    ) {
-}
-
+    : compactViewTag_(iConfig.getUntrackedParameter<std::string>("compactViewTag", "XMLIdealGeometryESSource_CTPPS")) {}
 
 /*
  * Save PPS geo to DB.
@@ -58,44 +52,45 @@ void PPSGeometryBuilder::analyze(const edm::Event& iEvent, const edm::EventSetup
     iSetup.get<IdealGeometryRecord>().get(compactViewTag_.c_str(), myCompactView);
   }
   // Build geometry
-  auto geoInfoSentinel = DetGeomDescBuilder::buildDetGeomDescFromCompactView(*myCompactView);
+  auto geoInfoSentinel = detgeomdescbuilder::buildDetGeomDescFromCompactView(*myCompactView);
 
   // Build persistent geometry data from geometry
-  PDetGeomDesc* serializableData = new PDetGeomDesc;
+  PDetGeomDesc* serializableData =
+      new PDetGeomDesc;  // cond::service::PoolDBOutputService::writeOne interface requires raw pointer.
   int counter = 0;
   buildSerializableDataFromGeoInfo(serializableData, geoInfoSentinel.get(), counter);
- 
+
   // Save geometry in the database
   if (serializableData->container_.empty()) {
     throw cms::Exception("PPSGeometryBuilder") << "PDetGeomDesc is empty, no geometry to save in the database.";
   } else {
     if (dbService_.isAvailable()) {
       dbService_->writeOne(serializableData, dbService_->beginOfTime(), "VeryForwardIdealGeometryRecord");
-      edm::LogInfo("PPSGeometryBuilder") << "Successfully wrote DB, with " 
-					 << serializableData->container_.size() << " PDetGeomDesc items.";
+      edm::LogInfo("PPSGeometryBuilder") << "Successfully wrote DB, with " << serializableData->container_.size()
+                                         << " PDetGeomDesc items.";
     } else {
       throw cms::Exception("PPSGeometryBuilder") << "PoolDBService required.";
     }
   }
 }
 
-
 /*
  * Build persistent data items to be stored in DB (PDetGeomDesc) from geo info (DetGeomDesc).
  * Recursive, depth-first search.
  */
-void PPSGeometryBuilder::buildSerializableDataFromGeoInfo(PDetGeomDesc* serializableData, const DetGeomDesc* geoInfo, int& counter) {
+void PPSGeometryBuilder::buildSerializableDataFromGeoInfo(PDetGeomDesc* serializableData,
+                                                          const DetGeomDesc* geoInfo,
+                                                          int& counter) {
   PDetGeomDesc::Item serializableItem(geoInfo);
   counter++;
 
   if (counter >= 4) {  // Skip sentinel + OCMS + CMSE
-    serializableData->container_.emplace_back(serializableItem); 
+    serializableData->container_.emplace_back(serializableItem);
   }
 
   for (auto& child : geoInfo->components()) {
     buildSerializableDataFromGeoInfo(serializableData, child, counter);
   }
 }
-
 
 DEFINE_FWK_MODULE(PPSGeometryBuilder);

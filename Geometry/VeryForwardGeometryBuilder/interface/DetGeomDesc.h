@@ -4,6 +4,9 @@
 *	Jan Kašpar (jan.kaspar@gmail.com) 
 *	CMSSW developpers (based on class GeometricDet)
 *
+*  Rewritten + Moved out common functionalities to DetGeomDesc(Builder) by Gabrielle Hugo.
+*  Migrated to DD4hep by Gabrielle Hugo and Wagner Carvalho.
+*
 ****************************************************************************/
 
 #ifndef Geometry_VeryForwardGeometryBuilder_DetGeomDesc
@@ -34,10 +37,8 @@ class CTPPSRPAlignmentCorrectionData;
     x_g = rotation * x_l + translation
  \endverbatim
  *
- * Aug 2020: Migrated to DD4hep
- *
- *  PPS software expects mm but DD4hep standard unit of length is cm. A conversion 
- *  factor (/1._mm) is applied wherever needed. 
+ * July 2020: Migrated to DD4hep
+ * To avoid any regression with values from XMLs / Geant4, all lengths are converted from cm (DD4hep) to mm. 
  *
  **/
 
@@ -54,12 +55,6 @@ public:
   using RotationMatrix = ROOT::Math::Rotation3D;
   using Translation = ROOT::Math::DisplacementVector3D<ROOT::Math::Cartesian3D<double>>;
 
-  // Default
-  DetGeomDesc() {};
-
-  void print() const;
-  bool operator<(const DetGeomDesc& other) const;
-
   // Constructor from DD4Hep DDFilteredView
   DetGeomDesc(const cms::DDFilteredView& fv, const cms::DDSpecParRegistry& allSpecParSections);
 
@@ -72,31 +67,34 @@ public:
   int copyno() const { return m_copy; }
 
   // placement info
-  Translation translation() const { return m_trans; }
-  RotationMatrix rotation() const { return m_rot; }
+  const Translation& translation() const { return m_trans; }  // in mm
+  const RotationMatrix& rotation() const { return m_rot; }
 
   // shape info
-  // params() is left for general access to solid shape parameters, but should be used 
-  // only with great care, for two reasons: 1. order of parameters may possibly change from 
-  // a version to another of DD4hep; 2. length parameters unit is cm while PPS uses mm.    
-  std::vector<double> params() const { return m_params; }
+  // params() is left for general access to solid shape parameters, but should be used
+  // only with great care, for two reasons: 1. order of parameters may possibly change from
+  // a version to another of DD4hep; 2. length parameters unit is cm while PPS uses mm.
+  const std::vector<double>& params() const { return m_params; }  // default unit from DD4hep (cm)
   bool isABox() const { return m_isABox; }
-  DiamondDimensions getDiamondDimensions() const;
+  DiamondDimensions getDiamondDimensions() const;  // in mm
 
   // sensor type
   const std::string& sensorType() const { return m_sensorType; }
- 
+
   // ID info
   DetId geographicalID() const { return m_geographicalID; }
 
   // components (children) management
-  Container components() const;
-  float parentZPosition() const { return m_z; }
+  const Container& components() const { return m_container; }
+  float parentZPosition() const { return m_z; }  // in mm
   void addComponent(DetGeomDesc*);
   bool isLeaf() const { return m_container.empty(); }
 
   // alignment
   void applyAlignment(const CTPPSRPAlignmentCorrectionData&);
+
+  bool operator<(const DetGeomDesc& other) const;
+  void print() const;
 
 private:
   void deleteComponents();      // deletes just the first daughters
@@ -107,12 +105,14 @@ private:
   std::vector<double> computeParameters(const cms::DDFilteredView& fv) const;
   std::vector<double> computeParametersTEST(const cms::DDFilteredView& fv) const;
   DetId computeDetID(const std::string& name, const std::vector<int>& copyNos, unsigned int copyNum) const;
-  std::string computeSensorType(const std::string_view nameFromView, const std::string& nodePath, const cms::DDSpecParRegistry& allSpecParSections);
+  std::string computeSensorType(const std::string_view nameFromView,
+                                const std::string& nodePath,
+                                const cms::DDSpecParRegistry& allSpecParSections);
 
   std::string m_name;           // name with no namespac
   std::string m_mat;
   int m_copy;
-  Translation m_trans;
+  Translation m_trans;  // in mm
   RotationMatrix m_rot;
   std::vector<double> m_params;
   std::vector<double> m_allparams;
@@ -121,7 +121,7 @@ private:
   DetId m_geographicalID;
 
   Container m_container;
-  float m_z;
+  float m_z;  // in mm
 };
 
 #endif

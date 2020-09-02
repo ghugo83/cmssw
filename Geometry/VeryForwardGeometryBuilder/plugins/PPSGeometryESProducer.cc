@@ -1,17 +1,30 @@
 /****************************************************************************
-*
-* Author:
-*
-*  Wagner Carvalho (wcarvalh@cern.ch)
-*
 *  Based on CTPPSGeometryESModule.cc by:
-*
 *  Jan Kaspar (jan.kaspar@gmail.com)
 *  Dominik Mierzejewski <dmierzej@cern.ch>
 *
+*  Rewritten + Moved out common functionailities to DetGeomDesc(Builder) by Gabrielle Hugo.
+*  Migrated to DD4hep by Wagner Carvalho and Gabrielle Hugo.
+*
 ****************************************************************************/
 
-#include "Geometry/VeryForwardGeometryBuilder/plugins/PPSGeometryESProducer.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/Framework/interface/ESHandle.h"
+#include "FWCore/Framework/interface/EventSetup.h"
+#include "FWCore/Framework/interface/ModuleFactory.h"
+#include "FWCore/Framework/interface/ESProducer.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
+
+#include "DetectorDescription/DDCMS/interface/DDCompactView.h"
+#include "CondFormats/PPSObjects/interface/CTPPSRPAlignmentCorrectionsData.h"
+#include "Geometry/VeryForwardGeometryBuilder/interface/DetGeomDesc.h"
+#include "Geometry/VeryForwardGeometryBuilder/interface/CTPPSGeometry.h"
+
+#include "CondFormats/AlignmentRecord/interface/RPRealAlignmentRecord.h"
+#include "CondFormats/AlignmentRecord/interface/RPMisalignedAlignmentRecord.h"
+#include "Geometry/Records/interface/IdealGeometryRecord.h"
+#include "Geometry/Records/interface/VeryForwardMisalignedGeometryRecord.h"
+#include "Geometry/Records/interface/VeryForwardRealGeometryRecord.h"
 
 #include "DataFormats/CTPPSDetId/interface/TotemRPDetId.h"
 #include "DataFormats/CTPPSDetId/interface/TotemTimingDetId.h"
@@ -24,7 +37,6 @@
 
 #include <regex>
 
-
 /**
  * \brief Builds ideal, real and misaligned geometries.
  *
@@ -36,13 +48,56 @@
 
 using RotationMatrix = ROOT::Math::Rotation3D;
 using Translation = ROOT::Math::DisplacementVector3D<ROOT::Math::Cartesian3D<double>>;
-  
+
+class PPSGeometryESProducer : public edm::ESProducer {
+public:
+  PPSGeometryESProducer(const edm::ParameterSet&);
+  ~PPSGeometryESProducer() override {}
+
+  static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+
+private:
+  std::unique_ptr<DetGeomDesc> produceIdealGD(const IdealGeometryRecord&);
+  std::vector<int> fillCopyNos(TGeoIterator& it);
+
+  template <typename ALIGNMENT_REC>
+  struct GDTokens {
+    explicit GDTokens(edm::ESConsumesCollector&& iCC)
+        : idealGDToken_{iCC.consumesFrom<DetGeomDesc, IdealGeometryRecord>(edm::ESInputTag())},
+          alignmentToken_{iCC.consumesFrom<CTPPSRPAlignmentCorrectionsData, ALIGNMENT_REC>(edm::ESInputTag())} {}
+    const edm::ESGetToken<DetGeomDesc, IdealGeometryRecord> idealGDToken_;
+    const edm::ESGetToken<CTPPSRPAlignmentCorrectionsData, ALIGNMENT_REC> alignmentToken_;
+  };
+
+  std::unique_ptr<DetGeomDesc> produceRealGD(const VeryForwardRealGeometryRecord&);
+  std::unique_ptr<CTPPSGeometry> produceRealTG(const VeryForwardRealGeometryRecord&);
+
+  std::unique_ptr<DetGeomDesc> produceMisalignedGD(const VeryForwardMisalignedGeometryRecord&);
+  std::unique_ptr<CTPPSGeometry> produceMisalignedTG(const VeryForwardMisalignedGeometryRecord&);
+
+  template <typename REC>
+  std::unique_ptr<DetGeomDesc> produceGD(IdealGeometryRecord const&,
+                                         const std::optional<REC>&,
+                                         GDTokens<REC> const&,
+                                         const char* name);
+
+  static void applyAlignments(const DetGeomDesc&, const CTPPSRPAlignmentCorrectionsData*, DetGeomDesc*&);
+
+  const unsigned int verbosity_;
+  const edm::ESGetToken<cms::DDDetector, IdealGeometryRecord> detectorToken_;
+
+  const GDTokens<RPRealAlignmentRecord> gdRealTokens_;
+  const GDTokens<RPMisalignedAlignmentRecord> gdMisTokens_;
+
+  const edm::ESGetToken<DetGeomDesc, VeryForwardRealGeometryRecord> dgdRealToken_;
+  const edm::ESGetToken<DetGeomDesc, VeryForwardMisalignedGeometryRecord> dgdMisToken_;
+};
 
 PPSGeometryESProducer::PPSGeometryESProducer(const edm::ParameterSet& iConfig)
     : verbosity_(iConfig.getUntrackedParameter<unsigned int>("verbosity")),
       detectorToken_{setWhatProduced(this, &PPSGeometryESProducer::produceIdealGD)
-                            .consumes<cms::DDDetector>(edm::ESInputTag(
-                                "" /*optional module label */, iConfig.getParameter<std::string>("detectorTag")))},
+                         .consumes<cms::DDDetector>(edm::ESInputTag("" /*optional module label */,
+                                                                    iConfig.getParameter<std::string>("detectorTag")))},
       gdRealTokens_{setWhatProduced(this, &PPSGeometryESProducer::produceRealGD)},
       gdMisTokens_{setWhatProduced(this, &PPSGeometryESProducer::produceMisalignedGD)},
       dgdRealToken_{
@@ -55,11 +110,13 @@ void PPSGeometryESProducer::fillDescriptions(edm::ConfigurationDescriptions& des
   edm::ParameterSetDescription desc;
   desc.addUntracked<unsigned int>("verbosity", 1);
   desc.add<std::string>("detectorTag", std::string());
-  descriptions.add("DoodadESSourceDD4hepFV", desc);
+  descriptions.add("PPSGeometryESProducer", desc);
 }
 
 //----------------------------------------------------------------------------------------------------
-
+/*
+ * Apply alignments by doing a BFS on idealGD tree.
+ */
 void PPSGeometryESProducer::applyAlignments(const DetGeomDesc& idealGD,
                                             const CTPPSRPAlignmentCorrectionsData* alignments,
                                             DetGeomDesc*& newGD) {
@@ -114,18 +171,16 @@ void PPSGeometryESProducer::applyAlignments(const DetGeomDesc& idealGD,
   }
 }
 
-
 std::unique_ptr<DetGeomDesc> PPSGeometryESProducer::produceIdealGD(const IdealGeometryRecord& iRecord) {
   // Get the DDDetector from EventSetup
   auto const& det = iRecord.get(detectorToken_);
-  
+
   // Get the DDCompactView
   cms::DDCompactView myCompactView(det);
 
   // Build geo from compact view.
-  return DetGeomDescBuilder::buildDetGeomDescFromCompactView(myCompactView);
+  return detgeomdescbuilder::buildDetGeomDescFromCompactView(myCompactView);
 }
-
 
 template <typename REC>
 std::unique_ptr<DetGeomDesc> PPSGeometryESProducer::produceGD(IdealGeometryRecord const& iIdealRec,
@@ -177,7 +232,7 @@ std::unique_ptr<DetGeomDesc> PPSGeometryESProducer::produceMisalignedGD(
 std::unique_ptr<CTPPSGeometry> PPSGeometryESProducer::produceRealTG(const VeryForwardRealGeometryRecord& iRecord) {
   auto const& gD = iRecord.get(dgdRealToken_);
 
-  return std::make_unique<CTPPSGeometry>(&gD);
+  return std::make_unique<CTPPSGeometry>(&gD, verbosity_);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -186,7 +241,7 @@ std::unique_ptr<CTPPSGeometry> PPSGeometryESProducer::produceMisalignedTG(
     const VeryForwardMisalignedGeometryRecord& iRecord) {
   auto const& gD = iRecord.get(dgdMisToken_);
 
-  return std::make_unique<CTPPSGeometry>(&gD);
+  return std::make_unique<CTPPSGeometry>(&gD, verbosity_);
 }
 
 DEFINE_FWK_EVENTSETUP_MODULE(PPSGeometryESProducer);
