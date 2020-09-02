@@ -1,3 +1,5 @@
+# TODO: for the moment this is just copy of the 2018 config !!! this needs updating !!!
+
 import FWCore.ParameterSet.Config as cms
 
 # common and strip files
@@ -25,7 +27,7 @@ totemGeomXMLFiles = cms.vstring(
     'Geometry/VeryForwardData/data/RP_Box/RP_Box_005.xml',
     'Geometry/VeryForwardData/data/RP_Box/RP_Box_020.xml',
     'Geometry/VeryForwardData/data/RP_Box/RP_Box_021.xml',
-    'Geometry/VeryForwardData/data/RP_Box/RP_Box_022.xml',
+    #'Geometry/VeryForwardData/data/RP_Box/RP_Box_022.xml',
     'Geometry/VeryForwardData/data/RP_Box/RP_Box_023.xml',
     'Geometry/VeryForwardData/data/RP_Box/RP_Box_024.xml',
     'Geometry/VeryForwardData/data/RP_Box/RP_Box_025.xml',
@@ -37,7 +39,7 @@ totemGeomXMLFiles = cms.vstring(
     'Geometry/VeryForwardData/data/RP_Box/RP_Box_105.xml',
     'Geometry/VeryForwardData/data/RP_Box/RP_Box_120.xml',
     'Geometry/VeryForwardData/data/RP_Box/RP_Box_121.xml',
-    'Geometry/VeryForwardData/data/RP_Box/RP_Box_122.xml',
+    #'Geometry/VeryForwardData/data/RP_Box/RP_Box_122.xml',
     'Geometry/VeryForwardData/data/RP_Box/RP_Box_123.xml',
     'Geometry/VeryForwardData/data/RP_Box/RP_Box_124.xml',
     'Geometry/VeryForwardData/data/RP_Box/RP_Box_125.xml',
@@ -50,7 +52,7 @@ totemGeomXMLFiles = cms.vstring(
     'Geometry/VeryForwardData/data/RP_Detectors_Assembly/RP_Detectors_Assembly_002.xml',
     'Geometry/VeryForwardData/data/RP_Detectors_Assembly/RP_Detectors_Assembly_004.xml',
     'Geometry/VeryForwardData/data/RP_Detectors_Assembly/RP_Detectors_Assembly_005.xml',
-    'Geometry/VeryForwardData/data/RP_Detectors_Assembly/RP_Detectors_Assembly_022.xml',
+    #'Geometry/VeryForwardData/data/RP_Detectors_Assembly/RP_Detectors_Assembly_022.xml',
     'Geometry/VeryForwardData/data/RP_Detectors_Assembly/RP_Detectors_Assembly_024.xml',
     'Geometry/VeryForwardData/data/RP_Detectors_Assembly/RP_Detectors_Assembly_025.xml',
     'Geometry/VeryForwardData/data/RP_Detectors_Assembly/RP_Detectors_Assembly_100.xml',
@@ -58,14 +60,14 @@ totemGeomXMLFiles = cms.vstring(
     'Geometry/VeryForwardData/data/RP_Detectors_Assembly/RP_Detectors_Assembly_102.xml',
     'Geometry/VeryForwardData/data/RP_Detectors_Assembly/RP_Detectors_Assembly_104.xml',
     'Geometry/VeryForwardData/data/RP_Detectors_Assembly/RP_Detectors_Assembly_105.xml',
-    'Geometry/VeryForwardData/data/RP_Detectors_Assembly/RP_Detectors_Assembly_122.xml',
+    #'Geometry/VeryForwardData/data/RP_Detectors_Assembly/RP_Detectors_Assembly_122.xml',
     'Geometry/VeryForwardData/data/RP_Detectors_Assembly/RP_Detectors_Assembly_124.xml',
     'Geometry/VeryForwardData/data/RP_Detectors_Assembly/RP_Detectors_Assembly_125.xml',
     'Geometry/VeryForwardData/data/RP_Device.xml',
     'Geometry/VeryForwardData/data/RP_Vertical_Device.xml',
     'Geometry/VeryForwardData/data/RP_Horizontal_Device.xml',
-    'Geometry/VeryForwardData/data/RP_220_Right_Station.xml',
-    'Geometry/VeryForwardData/data/RP_220_Left_Station.xml',
+    'Geometry/VeryForwardData/data/2021/v1/RP_220_Right_Station.xml',
+    'Geometry/VeryForwardData/data/2021/v1/RP_220_Left_Station.xml',
     'Geometry/VeryForwardData/data/CTPPS_Pixel_2018/RP_147_Right_Station.xml',
     'Geometry/VeryForwardData/data/CTPPS_Pixel_2018/RP_147_Left_Station.xml',
     'Geometry/VeryForwardData/data/RP_Stations_Assembly.xml',
@@ -84,7 +86,7 @@ ctppsDiamondGeomXMLFiles = cms.vstring(
     'Geometry/VeryForwardData/data/CTPPS_Timing_Horizontal_Pot.xml',
     'Geometry/VeryForwardData/data/CTPPS_Timing_Positive_Station.xml',
     'Geometry/VeryForwardData/data/CTPPS_Timing_Negative_Station.xml',
-    'Geometry/VeryForwardData/data/Timing_Stations_Assembly.xml',
+    'Geometry/VeryForwardData/data/2021/v1/Timing_Stations_Assembly.xml',
     'Geometry/VeryForwardData/data/CTPPS_Diamond_Segments/CTPPS_Diamond_Pattern1_Segment1.xml',
     'Geometry/VeryForwardData/data/CTPPS_Diamond_Segments/CTPPS_Diamond_Pattern2_Segment1.xml',
     'Geometry/VeryForwardData/data/CTPPS_Diamond_Segments/CTPPS_Diamond_Pattern2_Segment2.xml',
@@ -136,20 +138,15 @@ ctppsPixelGeomXMLFiles = cms.vstring(
     'Geometry/VeryForwardData/data/CTPPS_Pixel_Sens.xml'
     )
 
-# RP distance
-rpDistBeamCent = cms.vstring(
-    'Geometry/VeryForwardData/data/2016_ctpps_15sigma_margin0/RP_Dist_Beam_Cent.xml'
-)
-
-allFiles = totemGeomXMLFiles + ctppsDiamondGeomXMLFiles + ctppsUFSDGeomXMLFiles + totemTimingGeomXMLFiles + ctppsPixelGeomXMLFiles + rpDistBeamCent
-
-
 XMLIdealGeometryESSource_CTPPS = cms.ESSource("XMLIdealGeometryESSource",
-        geomXMLFiles = allFiles,
-        rootNodeName = cms.string('cms:CMSE')
-)
+                                              geomXMLFiles = totemGeomXMLFiles + ctppsDiamondGeomXMLFiles + ctppsUFSDGeomXMLFiles + totemTimingGeomXMLFiles + ctppsPixelGeomXMLFiles,
+                                              rootNodeName = cms.string('cms:CMSE')
+                                              )
+
+# position of RPs
+XMLIdealGeometryESSource_CTPPS.geomXMLFiles.append("Geometry/VeryForwardData/data/2016_ctpps_15sigma_margin0/RP_Dist_Beam_Cent.xml")
 
 ctppsGeometryESModule = cms.ESProducer("CTPPSGeometryESModule",
-        verbosity = cms.untracked.uint32(1),
-        compactViewTag = cms.string('XMLIdealGeometryESSource_CTPPS')
-)
+                                       verbosity = cms.untracked.uint32(1),
+                                       compactViewTag = cms.string('XMLIdealGeometryESSource_CTPPS')
+                                       )
