@@ -267,10 +267,14 @@ void CTPPSGeometryESModule::buildDetGeomDesc(DDFilteredView* fv, DetGeomDesc* gd
             << "size of copyNumbers for diamond segments is " << copy_num.size() << ". It must be >= 2.";
 
       const unsigned int decRPId = copy_num[1];
+      unsigned int arm, station, rp;
+      arm = decRPId - 1;
+      station = 1;
+      rp = 6;
       const unsigned int id = copy_num[copy_num.size() - 1];
-      const unsigned int arm = (decRPId % 1000) / 100;
-      const unsigned int station = (decRPId % 100) / 10;
-      const unsigned int rp = decRPId % 10;
+      //const unsigned int arm = (decRPId % 1000) / 100;
+      //const unsigned int station = (decRPId % 100) / 10;
+      //const unsigned int rp = decRPId % 10;
       const unsigned int plane = id / 100;
       const unsigned int channel = id % 100;
 
@@ -287,9 +291,13 @@ void CTPPSGeometryESModule::buildDetGeomDesc(DDFilteredView* fv, DetGeomDesc* gd
             << "size of copyNumbers for diamond RP is " << copy_num.size() << ". It must be >= 2.";
 
       const unsigned int decRPId = copy_num[1];
-      const unsigned int arm = (decRPId % 1000) / 100;
-      const unsigned int station = (decRPId % 100) / 10;
-      const unsigned int rp = decRPId % 10;
+      unsigned int arm, station, rp;
+      arm = decRPId - 1;
+      station = 1;
+      rp = 6;
+      //const unsigned int arm = (decRPId % 1000) / 100;
+      //const unsigned int station = (decRPId % 100) / 10;
+      //const unsigned int rp = decRPId % 10;
 
       newGD->setGeographicalID(CTPPSDiamondDetId(arm, station, rp));
     }
