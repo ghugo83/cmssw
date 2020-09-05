@@ -30,9 +30,9 @@ void CTPPSGeometry::build(const DetGeomDesc* gD, unsigned int verbosity) {
     buffer.pop_front();
 
     // verbosity printout
-    //if (verbosity == 2) {
+    if (verbosity == 2) {
       d->print();
-      //}
+    }
 
     allDets.insert(std::make_pair(d->name(), d));
 
@@ -42,13 +42,11 @@ void CTPPSGeometry::build(const DetGeomDesc* gD, unsigned int verbosity) {
         d->name() == DDD_CTPPS_DIAMONDS_SEGMENT_NAME || d->name() == DDD_CTPPS_UFSD_SEGMENT_NAME ||
         d->name() == DDD_CTPPS_PIXELS_SENSOR_NAME) {
       addSensor(d->geographicalID(), d);
-      std::cout << "am a sensor" << std::endl;
     }
 
     // check if it is a RP
     if (d->name() == DDD_TOTEM_RP_RP_NAME || d->name() == DDD_TOTEM_TIMING_RP_NAME ||
         d->name() == DDD_CTPPS_DIAMONDS_RP_NAME || d->name() == DDD_CTPPS_PIXELS_RP_NAME) {
-      std::cout << "am a RP sensor" << std::endl;
     }
       addRP(d->geographicalID(), d);
 
@@ -61,10 +59,10 @@ void CTPPSGeometry::build(const DetGeomDesc* gD, unsigned int verbosity) {
     edm::LogVerbatim("CTPPSGeometry::build")
         << "sensors_map_.size() = " << sensors_map_.size() << ", rps_map_.size() = " << rps_map_.size() << std::endl;
   }
-  /*
+  
   for (const auto& mine : allDets) {
     mine.second->print();
-    }*/
+  }
 
   // build sets
   for (const auto& it : sensors_map_) {
