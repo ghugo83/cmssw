@@ -57,11 +57,9 @@ void DetGeomDesc::print() const {
       << m_params[1] << " " << m_params[2] << std::endl;
   }
 
-  edm::LogVerbatim("DetGeomDesc::print") << "sensorType = " << m_sensorType << std::endl;
+  //edm::LogVerbatim("DetGeomDesc::print") << "sensorType = " << m_sensorType << std::endl;
 
-  if (m_geographicalID() != 0) {
-    edm::LogVerbatim("DetGeomDesc::print") << "geographicalID() = " << m_geographicalID << std::endl;
-  }
+  //edm::LogVerbatim("DetGeomDesc::print") << "geographicalID() = " << m_geographicalID << std::endl;
 
   edm::LogVerbatim("DetGeomDesc::print") << "parentZPosition() = " << std::fixed << std::setprecision(7) << m_z
                                          << std::endl;

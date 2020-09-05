@@ -35,6 +35,10 @@
 
 #include "CondFormats/GeometryObjects/interface/PDetGeomDesc.h"
 
+
+
+#include "Geometry/VeryForwardGeometryBuilder/interface/DetGeomDesc.h"
+
 #include <regex>
 
 //----------------------------------------------------------------------------------------------------
@@ -45,7 +49,7 @@ public:
   void analyze(const edm::Event&, const edm::EventSetup&) override;
 
 private:
-  void buildPDetGeomDesc(DDFilteredView*, PDetGeomDesc*);
+void buildPDetGeomDesc(DDFilteredView* fv, PDetGeomDesc* gd, std::set<DetGeomDesc, DetGeomDescCompare>& allDets);
   uint32_t getGeographicalID(DDFilteredView*);
 
   std::string compactViewTag_;
@@ -72,10 +76,16 @@ void PPSGeometryBuilder::analyze(const edm::Event& iEvent, const edm::EventSetup
   DDPassAllFilter filter;
   DDFilteredView fv((*cpv), filter);
 
+  std::set<DetGeomDesc, DetGeomDescCompare> allDets;
+
   // Persistent geometry data
   PDetGeomDesc* pdet = new PDetGeomDesc;
   // Build geometry
-  buildPDetGeomDesc(&fv, pdet);
+  buildPDetGeomDesc(&fv, pdet, allDets);
+
+  for (const auto& mine : allDets) {
+    mine.print();
+  }
 
   // Save geometry in the database
   if (pdet->container_.empty()) {
@@ -83,6 +93,8 @@ void PPSGeometryBuilder::analyze(const edm::Event& iEvent, const edm::EventSetup
   } else {
     if (dbservice_.isAvailable()) {
       dbservice_->writeOne(pdet, dbservice_->beginOfTime(), "VeryForwardIdealGeometryRecord");
+      edm::LogInfo("PPSGeometryBuilder") << "Successfully wrote DB, with " << pdet->container_.size()
+                                         << " PDetGeomDesc items.";
     } else {
       throw cms::Exception("PoolDBService required.");
     }
@@ -93,7 +105,7 @@ void PPSGeometryBuilder::analyze(const edm::Event& iEvent, const edm::EventSetup
 
 //----------------------------------------------------------------------------------------------------//----------------------------------------------------------------------------------------------------
 
-void PPSGeometryBuilder::buildPDetGeomDesc(DDFilteredView* fv, PDetGeomDesc* gd) {
+  void PPSGeometryBuilder::buildPDetGeomDesc(DDFilteredView* fv, PDetGeomDesc* gd, std::set<DetGeomDesc, DetGeomDescCompare>& allDets) {
   // try to dive into next level
   if (!fv->firstChild())
     return;
@@ -140,9 +152,12 @@ void PPSGeometryBuilder::buildPDetGeomDesc(DDFilteredView* fv, PDetGeomDesc* gd)
 
     // add component
     gd->container_.push_back(item);
+    const DetGeomDesc printD = DetGeomDesc(fv);
+    allDets.insert(printD);
+
 
     // recursion
-    buildPDetGeomDesc(fv, gd);
+    buildPDetGeomDesc(fv, gd, allDets);
   } while (fv->nextSibling());
 
   // go a level up
