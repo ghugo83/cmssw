@@ -95,10 +95,9 @@ DetGeomDesc(const DDFilteredView& fv);
   // alignment
   void applyAlignment(const CTPPSRPAlignmentCorrectionData&);
 
-// is DD4hep
-bool isDD4hep() const { return m_isDD4hep; }
+  // is DD4hep
+  bool isDD4hep() const { return m_isDD4hep; }
 
-  bool operator<(const DetGeomDesc& other) const;
   void print() const;
 
 private:

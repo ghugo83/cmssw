@@ -70,44 +70,47 @@ DetGeomDesc::DetGeomDesc(const DetGeomDesc& ref) { (*this) = ref; }
 
 DetGeomDesc& DetGeomDesc::operator=(const DetGeomDesc& ref) {
   m_name = ref.m_name;
-m_copy = ref.m_copy;
-m_trans = ref.m_trans;
-m_rot = ref.m_rot;
-m_params = ref.m_params;
-m_isABox = ref.m_isABox;
-m_sensorType = ref.m_sensorType;
-m_geographicalID = ref.m_geographicalID;
-m_z = ref.m_z;
-m_mat = ref.m_mat;
-m_allparams = ref.m_allparams;
-return (*this);
+  m_copy = ref.m_copy;
+  m_trans = ref.m_trans;
+  m_rot = ref.m_rot;
+  m_params = ref.m_params;
+  m_isABox = ref.m_isABox;
+  m_sensorType = ref.m_sensorType;
+  m_geographicalID = ref.m_geographicalID;
+  m_z = ref.m_z;
+  m_isDD4hep = ref.m_isDD4hep;
+  m_mat = ref.m_mat;
+  m_allparams = ref.m_allparams;
+  return (*this);
 }
 
-	DetGeomDesc::~DetGeomDesc() { deepDeleteComponents(); }
+DetGeomDesc::~DetGeomDesc() { deepDeleteComponents(); }
 	  
-  void DetGeomDesc::addComponent(DetGeomDesc* det) { m_container.emplace_back(det); }
+void DetGeomDesc::addComponent(DetGeomDesc* det) { m_container.emplace_back(det); }
 
-    DiamondDimensions DetGeomDesc::getDiamondDimensions() const {
-// Convert parameters units from cm (DD4hep standard) to mm (expected by PPS reco software).
-// This implementation is customized for the diamond sensors, which are represented by the
-// Box shape parameterized by x, y and z half width.
-DiamondDimensions parameters;
-if (isABox()) {
-if (!m_isDD4hep) {
-// mm (legacy)
-parameters = {m_params.at(0),
-		m_params.at(1),
-		m_params.at(2)};
-} else {
-// convert cm (DD4hep) to mm (legacy)
-parameters = {geant_units::operators::convertCmToMm(m_params.at(0)),
-		geant_units::operators::convertCmToMm(m_params.at(1)),
-		geant_units::operators::convertCmToMm(m_params.at(2))};
-}
-} else {
-edm::LogError("DetGeomDesc::getDiamondDimensions is not called on a box, for solid ")
-<< name() << ", Id = " << geographicalID();
-}
+DiamondDimensions DetGeomDesc::getDiamondDimensions() const {
+  // Convert parameters units from cm (DD4hep standard) to mm (expected by PPS reco software).
+  // This implementation is customized for the diamond sensors, which are represented by the
+  // Box shape parameterized by x, y and z half width.
+  DiamondDimensions parameters;
+  std::cout << "am in DetGeomDesc::getDiamondDimensions(), isDD4hep() = " << isDD4hep() << std::endl;
+  if (isABox()) {
+    if (!isDD4hep()) {
+      // mm (legacy)
+      std::cout << "am in DetGeomDesc::getDiamondDimensions(), old DD case:" << std::endl;
+      parameters = {m_params.at(0),
+		    m_params.at(1),
+		    m_params.at(2)};
+    } else {
+      // convert cm (DD4hep) to mm (legacy)
+      parameters = {geant_units::operators::convertCmToMm(m_params.at(0)),
+		    geant_units::operators::convertCmToMm(m_params.at(1)),
+		    geant_units::operators::convertCmToMm(m_params.at(2))};
+    }
+  } else {
+    edm::LogError("DetGeomDesc::getDiamondDimensions is not called on a box, for solid ")
+      << name() << ", Id = " << geographicalID();
+  }
   return parameters;
 }
 
