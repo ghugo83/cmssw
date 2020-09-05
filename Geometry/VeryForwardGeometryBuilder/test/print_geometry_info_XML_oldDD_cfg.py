@@ -11,7 +11,7 @@ process.MessageLogger = cms.Service("MessageLogger",
 )
 
 # geometry
-process.load("Geometry.VeryForwardGeometry.geometryPPS_CMSxz_fromDD_2017_cfi")
+process.load("Geometry.VeryForwardGeometry.geometryPPS_CMSxz_fromDD_2016_cfi")
 #process.load("Geometry.VeryForwardGeometry.geometryRPFromDD_2018_cfi")
 
 
