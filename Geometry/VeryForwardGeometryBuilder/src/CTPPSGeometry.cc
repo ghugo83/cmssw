@@ -20,6 +20,8 @@ void CTPPSGeometry::build(const DetGeomDesc* gD, unsigned int verbosity) {
   rps_in_station_.clear();
   dets_in_rp_.clear();
 
+  std::map<std::string, const DetGeomDesc*> allDets;
+
   // propagate through the GeometricalDet structure and add all detectors to 'sensors_map_'
   std::deque<const DetGeomDesc*> buffer;
   buffer.emplace_back(gD);
@@ -31,6 +33,8 @@ void CTPPSGeometry::build(const DetGeomDesc* gD, unsigned int verbosity) {
     if (verbosity == 2) {
       d->print();
     }
+
+    allDets.insert(std::make_pair(d->name(), d));
 
     // check if it is a sensor
     if (d->name() == DDD_TOTEM_RP_SENSOR_NAME ||
@@ -52,6 +56,10 @@ void CTPPSGeometry::build(const DetGeomDesc* gD, unsigned int verbosity) {
   if (verbosity) {
     edm::LogVerbatim("CTPPSGeometry::build")
         << "sensors_map_.size() = " << sensors_map_.size() << ", rps_map_.size() = " << rps_map_.size() << std::endl;
+  }
+
+  for (const auto& mine : allDets) {
+    mine.second->print();
   }
 
   // build sets

@@ -42,7 +42,9 @@ DetGeomDesc::DetGeomDesc(const DDFilteredView& fv)
     m_sensorType(computeSensorType(fv.name())),
     m_geographicalID(computeDetID(m_name, fv.copyNumbers(), fv.copyno())),
   m_z(fv.translation().z()),   // mm (legacy)
-  m_isDD4hep(false)
+  m_isDD4hep(false),
+  m_mat(fv.material()),
+    m_allparams(fv.parameters())
 {}
 
   /*
@@ -58,7 +60,9 @@ DetGeomDesc::DetGeomDesc(const DDFilteredView& fv)
       m_sensorType(computeSensorType(fv.name(), fv.path(), allSpecParSections)),
       m_geographicalID(computeDetID(m_name, fv.copyNos(), fv.copyNum())),
       m_z(geant_units::operators::convertCmToMm(fv.translation().z())),  // convert cm (DD4hep) to mm (legacy)
-  m_isDD4hep(true)
+  m_isDD4hep(true),
+ m_mat(fv.materialName()),
+  m_allparams(computeParametersTEST(fv))
   {}
 
     DetGeomDesc::DetGeomDesc(const DetGeomDesc& ref) { (*this) = ref; }
@@ -73,6 +77,8 @@ m_isABox = ref.m_isABox;
 m_sensorType = ref.m_sensorType;
 m_geographicalID = ref.m_geographicalID;
 m_z = ref.m_z;
+m_mat = ref.m_mat;
+m_allparams = ref.m_allparams;
 return (*this);
 }
 
@@ -114,6 +120,9 @@ bool DetGeomDesc::operator<(const DetGeomDesc& other) const {
 }
 
 void DetGeomDesc::print() const {
+  edm::LogVerbatim("DetGeomDesc::print") << " " << std::endl;
+  edm::LogVerbatim("DetGeomDesc::print") << " " << std::endl;
+  edm::LogVerbatim("DetGeomDesc::print") << " " << std::endl;
   edm::LogVerbatim("DetGeomDesc::print") << "............................." << std::endl;
   edm::LogVerbatim("DetGeomDesc::print") << "name = " << m_name << std::endl;
   edm::LogVerbatim("DetGeomDesc::print") << "copy = " << m_copy << std::endl;
@@ -135,6 +144,15 @@ void DetGeomDesc::print() const {
 
   edm::LogVerbatim("DetGeomDesc::print") << "parentZPosition() = " << std::fixed << std::setprecision(7) << m_z
                                          << std::endl;
+
+  std::cout << "item.materialName() = " << m_mat << std::endl;
+  if (!m_allparams.empty()) {
+    std::cout << "item.parameters() = " << std::fixed << std::setprecision(7);
+    for (const auto& para : m_allparams) {
+      std::cout << para << "  ";
+    }
+    std::cout << " " << std::endl;
+  }
 }
 
 /*
@@ -161,6 +179,99 @@ std::vector<double> DetGeomDesc::computeParameters(const cms::DDFilteredView& fv
   auto myShape = fv.solid();
   const std::vector<double>& parameters = myShape.dimensions();  // default unit from DD4hep (cm)
   return parameters;
+}
+
+
+std::vector<double> DetGeomDesc::computeParametersTEST(const cms::DDFilteredView& fv) const {
+
+  std::vector<double> result;
+
+  const cms::DDSolidShape& mySolidShape = cms::dd::getCurrentShape(fv);
+
+  if (mySolidShape == cms::DDSolidShape::ddbox) {
+    const cms::dd::DDBox& myShape = cms::dd::DDBox(fv);
+    result = { geant_units::operators::convertCmToMm(myShape.halfX() ),
+		   geant_units::operators::convertCmToMm(myShape.halfY() ),
+		   geant_units::operators::convertCmToMm(myShape.halfZ() )
+    };
+  }
+  else if (mySolidShape == cms::DDSolidShape::ddcons) {
+    const cms::dd::DDCons& myShape = cms::dd::DDCons(fv);
+    result = { geant_units::operators::convertCmToMm(myShape.zhalf() ),
+		   geant_units::operators::convertCmToMm(myShape.rInMinusZ() ),
+		   geant_units::operators::convertCmToMm(myShape.rOutMinusZ() ),
+		   geant_units::operators::convertCmToMm(myShape.rInPlusZ() ),
+		   geant_units::operators::convertCmToMm(myShape.rOutPlusZ() ),
+		   myShape.phiFrom(),
+		   myShape.deltaPhi()
+    }; 
+  }
+  else if (mySolidShape == cms::DDSolidShape::ddtrap) {
+    const cms::dd::DDTrap& myShape = cms::dd::DDTrap(fv);
+    result = { geant_units::operators::convertCmToMm(myShape.halfZ() ),
+		   myShape.theta(),
+		   myShape.phi(),
+		   geant_units::operators::convertCmToMm(myShape.y1() ),
+		   geant_units::operators::convertCmToMm(myShape.x1() ),
+		   geant_units::operators::convertCmToMm(myShape.x2() ),
+		   myShape.alpha1(),
+		   geant_units::operators::convertCmToMm(myShape.y2() ),
+		   geant_units::operators::convertCmToMm(myShape.x3() ),
+		   geant_units::operators::convertCmToMm(myShape.x4() ),		 
+		   myShape.alpha2()
+    }; 
+  }
+  else if (mySolidShape == cms::DDSolidShape::ddtubs) {
+    const cms::dd::DDTubs& myShape = cms::dd::DDTubs(fv);
+    result = { geant_units::operators::convertCmToMm(myShape.zhalf() ),
+		   geant_units::operators::convertCmToMm(myShape.rIn() ),
+		   geant_units::operators::convertCmToMm(myShape.rOut() ),
+		   myShape.startPhi(),
+		   myShape.deltaPhi()
+    };
+  }
+  else if (mySolidShape == cms::DDSolidShape::ddtrunctubs) {
+    const cms::dd::DDTruncTubs& myShape = cms::dd::DDTruncTubs(fv);
+    result = { geant_units::operators::convertCmToMm(myShape.zHalf() ),
+		   geant_units::operators::convertCmToMm(myShape.rIn() ),
+		   geant_units::operators::convertCmToMm(myShape.rOut() ),
+		   myShape.startPhi(),
+		   myShape.deltaPhi(),
+		   geant_units::operators::convertCmToMm(myShape.cutAtStart() ),
+		   geant_units::operators::convertCmToMm(myShape.cutAtDelta() ),
+		   static_cast<double>(myShape.cutInside())
+    }; 
+  }
+  else if (mySolidShape == cms::DDSolidShape::dd_not_init) {
+    auto myShape = fv.solid();
+    const std::vector<double>& params = myShape.dimensions();
+    if (fv.isA<dd4hep::Trd1>()) {
+      result = { geant_units::operators::convertCmToMm(params[3] ), // z
+		     0.,
+		     0.,
+		     geant_units::operators::convertCmToMm(params[2] ), // y
+		     geant_units::operators::convertCmToMm(params[0] ), // x1
+		     geant_units::operators::convertCmToMm(params[0] ), // x1
+		     0.,
+		     geant_units::operators::convertCmToMm(params[2] ), // y
+		     geant_units::operators::convertCmToMm(params[1] ), // x2
+		     geant_units::operators::convertCmToMm(params[1] ), // x2
+		     0.  
+      };
+    }
+    else if (fv.isA<dd4hep::Polycone>()) {
+      int counter = 0;
+      for (const auto& para : params) {	
+	if (counter != 2) {
+	  const double factor = (counter >= 2 ? (10.) : 1.);
+	  result.emplace_back(para * factor);
+	}
+	++counter;
+      }
+    }
+  }
+
+  return result;
 }
 
 DetId DetGeomDesc::computeDetID(const std::string& name, const std::vector<int>& copyNos, unsigned int copyNum) const {
