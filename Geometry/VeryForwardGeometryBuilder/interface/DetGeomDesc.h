@@ -43,7 +43,6 @@ public:
   DetGeomDesc(DDFilteredView* fv);
 
   void print() const;
-  bool operator<(const DetGeomDesc& other) const;
 
   /// copy constructor and assignment operator
   DetGeomDesc(const DetGeomDesc&);
@@ -92,6 +91,12 @@ private:
   float m_z;
   std::string m_sensorType;
   bool m_isABox;
+};
+
+struct DetGeomDescCompare {
+  bool operator() (const DetGeomDesc& a, const DetGeomDesc& b) const {
+    return (a.name() != b.name() ? a.name() < b.name() : a.copyno() < b.copyno());
+  }
 };
 
 #endif

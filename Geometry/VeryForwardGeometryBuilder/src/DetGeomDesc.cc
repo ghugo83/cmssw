@@ -95,12 +95,6 @@ void DetGeomDesc::print() const {
 }
 
 
-bool DetGeomDesc::operator<(const DetGeomDesc& other) const { 
-  return (name() != other.name() ? name() < other.name() : copyno() < other.copyno()); 
-}
-
-
-
 
 //----------------------------------------------------------------------------------------------------
 DetGeomDesc::DetGeomDesc(const DetGeomDesc& ref) { (*this) = ref; }
