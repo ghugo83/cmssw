@@ -132,4 +132,10 @@ std::string m_name;  // with no namespace
   std::vector<double> m_allparams;
 };
 
+struct DetGeomDescCompare {
+  bool operator() (const DetGeomDesc& a, const DetGeomDesc& b) const {
+    return (a.name() != b.name() ? a.name() < b.name() : a.copyno() < b.copyno());
+  }
+};
+
 #endif

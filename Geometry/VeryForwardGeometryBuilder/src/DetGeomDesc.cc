@@ -29,6 +29,7 @@
 #include "DataFormats/Math/interface/GeantUnits.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
+
 /*
  *  Constructor from old DD DDFilteredView, also using the SpecPars to access 2x2 wafers info.
  */
@@ -115,9 +116,6 @@ void DetGeomDesc::applyAlignment(const CTPPSRPAlignmentCorrectionData& t) {
   m_trans = t.getTranslation() + m_trans;
 }
 
-bool DetGeomDesc::operator<(const DetGeomDesc& other) const {
-  return (name() != other.name() ? name() < other.name() : copyno() < other.copyno());
-}
 
 void DetGeomDesc::print() const {
   edm::LogVerbatim("DetGeomDesc::print") << " " << std::endl;

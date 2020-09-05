@@ -20,7 +20,7 @@ void CTPPSGeometry::build(const DetGeomDesc* gD, unsigned int verbosity) {
   rps_in_station_.clear();
   dets_in_rp_.clear();
 
-  std::map<std::string, const DetGeomDesc*> allDets;
+  std::set<DetGeomDesc, DetGeomDescCompare> allDets;
 
   // propagate through the GeometricalDet structure and add all detectors to 'sensors_map_'
   std::deque<const DetGeomDesc*> buffer;
@@ -34,7 +34,8 @@ void CTPPSGeometry::build(const DetGeomDesc* gD, unsigned int verbosity) {
       d->print();
     }
 
-    allDets.insert(std::make_pair(d->name(), d));
+    DetGeomDesc dPrinted = *d;
+    allDets.insert(dPrinted);
 
     // check if it is a sensor
     if (d->name() == DDD_TOTEM_RP_SENSOR_NAME ||
@@ -47,8 +48,8 @@ void CTPPSGeometry::build(const DetGeomDesc* gD, unsigned int verbosity) {
     // check if it is a RP
     if (d->name() == DDD_TOTEM_RP_RP_NAME || d->name() == DDD_TOTEM_TIMING_RP_NAME ||
         d->name() == DDD_CTPPS_DIAMONDS_RP_NAME || d->name() == DDD_CTPPS_PIXELS_RP_NAME) {
-    }
       addRP(d->geographicalID(), d);
+    }
 
     for (const auto& comp : d->components())
       buffer.emplace_back(comp);
@@ -61,7 +62,7 @@ void CTPPSGeometry::build(const DetGeomDesc* gD, unsigned int verbosity) {
   }
   
   for (const auto& mine : allDets) {
-    mine.second->print();
+    mine.print();
   }
 
   // build sets
