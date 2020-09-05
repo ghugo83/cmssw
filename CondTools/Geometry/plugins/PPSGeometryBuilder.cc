@@ -32,7 +32,7 @@ public:
   void analyze(const edm::Event&, const edm::EventSetup&) override;
 
 private:
-  void buildSerializableDataFromGeoInfo(PDetGeomDesc* serializableData, const DetGeomDesc* geoInfo, int& counter);
+  void buildSerializableDataFromGeoInfo(PDetGeomDesc* serializableData, const DetGeomDesc* geoInfo, int& counter, std::set<DetGeomDesc, DetGeomDescCompare>& allDets);
 
   std::string compactViewTag_;
   edm::ESWatcher<IdealGeometryRecord> watcherIdealGeometry_;
@@ -52,6 +52,9 @@ void PPSGeometryBuilder::analyze(const edm::Event& iEvent, const edm::EventSetup
     edm::LogInfo("PPSGeometryBuilder") << "Got IdealGeometryRecord ";
     iSetup.get<IdealGeometryRecord>().get(compactViewTag_.c_str(), myCompactView);
   }
+
+std::set<DetGeomDesc, DetGeomDescCompare> allDets;
+
   // Build geometry
   auto geoInfoSentinel = detgeomdescbuilder::buildDetGeomDescFromCompactView(*myCompactView);
 
@@ -59,7 +62,11 @@ void PPSGeometryBuilder::analyze(const edm::Event& iEvent, const edm::EventSetup
   PDetGeomDesc* serializableData =
     new PDetGeomDesc();  // cond::service::PoolDBOutputService::writeOne interface requires raw pointer.
   int counter = 0;
-  buildSerializableDataFromGeoInfo(serializableData, geoInfoSentinel.get(), counter);
+  buildSerializableDataFromGeoInfo(serializableData, geoInfoSentinel.get(), counter, allDets);
+
+  for (const auto& mine : allDets) {
+    mine.print();
+  }
 
   // Save geometry in the database
   if (serializableData->container_.empty()) {
@@ -81,7 +88,8 @@ void PPSGeometryBuilder::analyze(const edm::Event& iEvent, const edm::EventSetup
  */
 void PPSGeometryBuilder::buildSerializableDataFromGeoInfo(PDetGeomDesc* serializableData,
                                                           const DetGeomDesc* geoInfo,
-                                                          int& counter) {
+                                                          int& counter
+							  , std::set<DetGeomDesc, DetGeomDescCompare>& allDets) {
   PDetGeomDesc::Item serializableItem;
   serializableItem.dx_ = geoInfo->translation().X();
   serializableItem.dy_ = geoInfo->translation().Y();
@@ -101,10 +109,12 @@ void PPSGeometryBuilder::buildSerializableDataFromGeoInfo(PDetGeomDesc* serializ
 
   if (counter >= 2) {  // Skip sentinel + OCMS + CMSE
     serializableData->container_.emplace_back(serializableItem);
+    const DetGeomDesc printD = DetGeomDesc(*geoInfo);
+    allDets.insert(printD);
   }
 
   for (auto& child : geoInfo->components()) {
-    buildSerializableDataFromGeoInfo(serializableData, child, counter);
+    buildSerializableDataFromGeoInfo(serializableData, child, counter, allDets);
   }
 }
 
