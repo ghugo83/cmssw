@@ -31,7 +31,7 @@ DetGeomDesc::DetGeomDesc(DDFilteredView* fv)
       m_z(fv->geoHistory().back().absTranslation().z()),
       m_sensorType("") {
   m_mat = fv->material();
-  m_allparams = fv->parameters();
+  m_isABox = (fv->shape() == DDSolidShape::ddbox);
 
   std::string sensor_name = fv->geoHistory().back().logicalPart().name().fullname();
   std::size_t found = sensor_name.find(DDD_CTPPS_PIXELS_SENSOR_NAME);
@@ -41,30 +41,35 @@ DetGeomDesc::DetGeomDesc(DDFilteredView* fv)
 }
 
 void DetGeomDesc::print() const {
-  std::cout << " " << std::endl;
-  std::cout << " " << std::endl;
-  std::cout << "!!!!!!!!!!!!!!!!    item.name_ = " << m_name << std::endl;
-  std::cout << "item.copy_ = " << m_copy << std::endl;
-  std::cout << "item.translation = " << std::fixed << std::setprecision(7) << m_trans << std::endl;
-  std::cout << "item.rotation = " << std::fixed << std::setprecision(7) << m_rot << std::endl;
+  edm::LogVerbatim("DetGeomDesc::print") << " " << std::endl;
+  edm::LogVerbatim("DetGeomDesc::print") << " " << std::endl;
+  edm::LogVerbatim("DetGeomDesc::print") << " " << std::endl;
+  edm::LogVerbatim("DetGeomDesc::print") << "............................." << std::endl;
+  edm::LogVerbatim("DetGeomDesc::print") << "name = " << m_name << std::endl;
+  edm::LogVerbatim("DetGeomDesc::print") << "copy = " << m_copy << std::endl;
+  edm::LogVerbatim("DetGeomDesc::print") << "translation = " << std::fixed << std::setprecision(7) << m_trans
+                                         << std::endl;
+  edm::LogVerbatim("DetGeomDesc::print") << "rotation = " << std::fixed << std::setprecision(7) << m_rot << std::endl;
 
-  /*
-    if (m_isABox()) {
-    std::cout << "item.getDiamondDimensions() = " << std::fixed << std::setprecision(7) << m_getDiamondDimensions().xHalfWidth << " " << m_getDiamondDimensions().yHalfWidth << " " << m_getDiamondDimensions().zHalfWidth << std::endl;
-    }*/
-  std::cout << "item.sensorType_ = " << m_sensorType << std::endl;
-  //std::cout << "path = " << fv.path() << std::endl;
-
-  std::cout << "item.parentZPosition() = " << std::fixed << std::setprecision(7) << m_z << std::endl;
-  if ((int)m_geographicalID() != 0) {
-    std::cout << "item.geographicalID() = " << m_geographicalID << std::endl;
+  if (m_isABox) {
+    edm::LogVerbatim("DetGeomDesc::print")
+      << "getDiamondDimensions() = " << std::fixed << std::setprecision(7) << m_params[0] << " "
+      << m_params[1] << " " << m_params[2] << std::endl;
   }
 
-  std::cout << "item.materialName() = " << m_mat << std::endl;
+  edm::LogVerbatim("DetGeomDesc::print") << "sensorType = " << m_sensorType << std::endl;
 
-  if (!m_allparams.empty()) {
+  if (m_geographicalID() != 0) {
+    edm::LogVerbatim("DetGeomDesc::print") << "geographicalID() = " << m_geographicalID << std::endl;
+  }
+
+  edm::LogVerbatim("DetGeomDesc::print") << "parentZPosition() = " << std::fixed << std::setprecision(7) << m_z
+                                         << std::endl;
+
+  std::cout << "item.materialName() = " << m_mat << std::endl;
+  if (!m_params.empty()) {
     std::cout << "item.parameters() = " << std::fixed << std::setprecision(7);
-    for (const auto& para : m_allparams) {
+    for (const auto& para : m_params) {
       std::cout << para << "  ";
     }
     std::cout << " " << std::endl;
@@ -104,7 +109,6 @@ DetGeomDesc::DetGeomDesc(const DetGeomDesc& ref) { (*this) = ref; }
 
 DetGeomDesc& DetGeomDesc::operator=(const DetGeomDesc& ref) {
   m_params = ref.m_params;
-  m_allparams = ref.m_allparams;
   m_trans = ref.m_trans;
   m_rot = ref.m_rot;
   m_name = ref.m_name;
@@ -113,6 +117,7 @@ DetGeomDesc& DetGeomDesc::operator=(const DetGeomDesc& ref) {
   m_geographicalID = ref.m_geographicalID;
   m_z = ref.m_z;
   m_sensorType = ref.m_sensorType;
+  m_isABox = ref.m_isABox;
   return (*this);
 }
 
