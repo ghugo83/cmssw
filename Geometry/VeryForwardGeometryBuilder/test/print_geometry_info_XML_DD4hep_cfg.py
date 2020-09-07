@@ -11,8 +11,8 @@ process.MessageLogger = cms.Service("MessageLogger",
 )
 
 # geometry
-#process.load("Geometry.VeryForwardGeometry.geometryPPS_CMSxz_fromDD_2018_cfi")
-process.load("Geometry.VeryForwardGeometry.geometryRPFromDD_2018_cfi")
+process.load("Geometry.VeryForwardGeometry.dd4hep.geometryPPS_CMSxz_fromDD_2018_cfi")
+#process.load("Geometry.VeryForwardGeometry.dd4hep.geometryRPFromDD_2018_cfi")
 
 
 # load alignment correction

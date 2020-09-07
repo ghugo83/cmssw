@@ -21,14 +21,14 @@
 
 #include "Geometry/Records/interface/IdealGeometryRecord.h"
 #include "Geometry/Records/interface/VeryForwardIdealGeometryRecord.h"
-#include "DetectorDescription/Core/interface/DDCompactView.h"
+#include "DetectorDescription/DDCMS/interface/DDCompactView.h"
 #include "CondFormats/GeometryObjects/interface/PDetGeomDesc.h"
 #include "Geometry/VeryForwardGeometryBuilder/interface/DetGeomDescBuilder.h"
 
 
-class PPSGeometryBuilder : public edm::one::EDAnalyzer<> {
+class PPSGeometryBuilderDD4hep : public edm::one::EDAnalyzer<> {
 public:
-  explicit PPSGeometryBuilder(const edm::ParameterSet&);
+  explicit PPSGeometryBuilderDD4hep(const edm::ParameterSet&);
   void analyze(const edm::Event&, const edm::EventSetup&) override;
 
 private:
@@ -39,21 +39,21 @@ private:
   edm::Service<cond::service::PoolDBOutputService> dbService_;
 };
 
-PPSGeometryBuilder::PPSGeometryBuilder(const edm::ParameterSet& iConfig)
+PPSGeometryBuilderDD4hep::PPSGeometryBuilderDD4hep(const edm::ParameterSet& iConfig)
     : compactViewTag_(iConfig.getUntrackedParameter<std::string>("compactViewTag", "XMLIdealGeometryESSource_CTPPS")) {}
 
 /*
  * Save PPS geo to DB.
  */
-void PPSGeometryBuilder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
-  edm::ESHandle<DDCompactView> myCompactView;
+void PPSGeometryBuilderDD4hep::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
+  edm::ESHandle<cms::DDCompactView> myCompactView;
 
   if (watcherIdealGeometry_.check(iSetup)) {
-    edm::LogInfo("PPSGeometryBuilder") << "Got IdealGeometryRecord ";
+    edm::LogInfo("PPSGeometryBuilderDD4hep") << "Got IdealGeometryRecord ";
     iSetup.get<IdealGeometryRecord>().get(compactViewTag_.c_str(), myCompactView);
   }
 
-std::set<DetGeomDesc, DetGeomDescCompare> allDets;
+  std::set<DetGeomDesc, DetGeomDescCompare> allDets;
 
   // Build geometry
   auto geoInfoSentinel = detgeomdescbuilder::buildDetGeomDescFromCompactView(*myCompactView);
@@ -70,14 +70,14 @@ std::set<DetGeomDesc, DetGeomDescCompare> allDets;
 
   // Save geometry in the database
   if (serializableData->container_.empty()) {
-    throw cms::Exception("PPSGeometryBuilder") << "PDetGeomDesc is empty, no geometry to save in the database.";
+    throw cms::Exception("PPSGeometryBuilderDD4hep") << "PDetGeomDesc is empty, no geometry to save in the database.";
   } else {
     if (dbService_.isAvailable()) {
       dbService_->writeOne(serializableData, dbService_->beginOfTime(), "VeryForwardIdealGeometryRecord");
-      edm::LogInfo("PPSGeometryBuilder") << "Successfully wrote DB, with " << serializableData->container_.size()
+      edm::LogInfo("PPSGeometryBuilderDD4hep") << "Successfully wrote DB, with " << serializableData->container_.size()
                                          << " PDetGeomDesc items.";
     } else {
-      throw cms::Exception("PPSGeometryBuilder") << "PoolDBService required.";
+      throw cms::Exception("PPSGeometryBuilderDD4hep") << "PoolDBService required.";
     }
   }
 }
@@ -86,10 +86,10 @@ std::set<DetGeomDesc, DetGeomDescCompare> allDets;
  * Build persistent data items to be stored in DB (PDetGeomDesc) from geo info (DetGeomDesc).
  * Recursive, depth-first search.
  */
-void PPSGeometryBuilder::buildSerializableDataFromGeoInfo(PDetGeomDesc* serializableData,
-                                                          const DetGeomDesc* geoInfo,
-                                                          int& counter
-							  , std::set<DetGeomDesc, DetGeomDescCompare>& allDets) {
+void PPSGeometryBuilderDD4hep::buildSerializableDataFromGeoInfo(PDetGeomDesc* serializableData,
+								const DetGeomDesc* geoInfo,
+								int& counter
+								, std::set<DetGeomDesc, DetGeomDescCompare>& allDets) {
   PDetGeomDesc::Item serializableItem;
   serializableItem.dx_ = geoInfo->translation().X();
   serializableItem.dy_ = geoInfo->translation().Y();
@@ -107,7 +107,7 @@ void PPSGeometryBuilder::buildSerializableDataFromGeoInfo(PDetGeomDesc* serializ
   serializableItem.geographicalID_ = geoInfo->geographicalID();
   counter++;
 
-  if (counter >= 2) {  // Skip sentinel + OCMS + CMSE
+  if (counter >= 4) {  // Skip sentinel + OCMS + CMSE
     serializableData->container_.emplace_back(serializableItem);
     const DetGeomDesc printD = DetGeomDesc(*geoInfo);
     allDets.insert(printD);
@@ -118,4 +118,4 @@ void PPSGeometryBuilder::buildSerializableDataFromGeoInfo(PDetGeomDesc* serializ
   }
 }
 
-DEFINE_FWK_MODULE(PPSGeometryBuilder);
+DEFINE_FWK_MODULE(PPSGeometryBuilderDD4hep);
