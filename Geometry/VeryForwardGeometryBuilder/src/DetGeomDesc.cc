@@ -29,7 +29,6 @@
 #include "DataFormats/Math/interface/GeantUnits.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
-
 /*
  *  Constructor from old DD DDFilteredView, also using the SpecPars to access 2x2 wafers info.
  */
@@ -113,10 +112,10 @@ void DetGeomDesc::print() const {
         << getDiamondDimensions().yHalfWidth << " " << getDiamondDimensions().zHalfWidth << std::endl;
   }
 
-  //edm::LogVerbatim("DetGeomDesc::print") << "sensorType = " << m_sensorType << std::endl;
+  edm::LogVerbatim("DetGeomDesc::print") << "sensorType = " << m_sensorType << std::endl;
 
   
-  //edm::LogVerbatim("DetGeomDesc::print") << "geographicalID() = " << m_geographicalID << std::endl;
+  edm::LogVerbatim("DetGeomDesc::print") << "geographicalID() = " << m_geographicalID << std::endl;
   
 
   edm::LogVerbatim("DetGeomDesc::print") << "parentZPosition() = " << std::fixed << std::setprecision(7) << m_z
