@@ -96,29 +96,29 @@ void DetGeomDesc::applyAlignment(const CTPPSRPAlignmentCorrectionData& t) {
 }
 
 void DetGeomDesc::print() const {
-  edm::LogVerbatim("DetGeomDesc::print") << " " << std::endl;
-  edm::LogVerbatim("DetGeomDesc::print") << " " << std::endl;
-  edm::LogVerbatim("DetGeomDesc::print") << " " << std::endl;
-  edm::LogVerbatim("DetGeomDesc::print") << "............................." << std::endl;
-  edm::LogVerbatim("DetGeomDesc::print") << "name = " << m_name << std::endl;
-  edm::LogVerbatim("DetGeomDesc::print") << "copy = " << m_copy << std::endl;
-  edm::LogVerbatim("DetGeomDesc::print") << "translation = " << std::fixed << std::setprecision(7) << m_trans
+  std::cout << " " << std::endl;
+  std::cout << " " << std::endl;
+  std::cout << " " << std::endl;
+  std::cout << "............................." << std::endl;
+  std::cout << "name = " << m_name << std::endl;
+  std::cout << "copy = " << m_copy << std::endl;
+  std::cout << "translation = " << std::fixed << std::setprecision(7) << m_trans
                                          << std::endl;
-  edm::LogVerbatim("DetGeomDesc::print") << "rotation = " << std::fixed << std::setprecision(7) << m_rot << std::endl;
+  std::cout << "rotation = " << std::fixed << std::setprecision(7) << m_rot << std::endl;
 
   if (m_isABox) {
-    edm::LogVerbatim("DetGeomDesc::print")
+    std::cout
         << "getDiamondDimensions() = " << std::fixed << std::setprecision(7) << getDiamondDimensions().xHalfWidth << " "
         << getDiamondDimensions().yHalfWidth << " " << getDiamondDimensions().zHalfWidth << std::endl;
   }
 
-  edm::LogVerbatim("DetGeomDesc::print") << "sensorType = " << m_sensorType << std::endl;
+  std::cout << "sensorType = " << m_sensorType << std::endl;
 
   
-  edm::LogVerbatim("DetGeomDesc::print") << "geographicalID() = " << m_geographicalID << std::endl;
+  std::cout << "geographicalID() = " << m_geographicalID << std::endl;
   
 
-  edm::LogVerbatim("DetGeomDesc::print") << "parentZPosition() = " << std::fixed << std::setprecision(7) << m_z
+  std::cout << "parentZPosition() = " << std::fixed << std::setprecision(7) << m_z
                                          << std::endl;
 
   std::cout << "item.materialName() = " << m_mat << std::endl;
