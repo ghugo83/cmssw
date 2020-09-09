@@ -21,8 +21,6 @@
 #include "DataFormats/DetId/interface/DetId.h"
 #include <Math/Rotation3D.h>
 
-class DDFilteredView;
-class PDetGeomDesc;
 class CTPPSRPAlignmentCorrectionData;
 
 /**
@@ -53,12 +51,12 @@ class DetGeomDesc {
 public:
   using Container = std::vector<DetGeomDesc*>;
   using RotationMatrix = ROOT::Math::Rotation3D;
-using Translation = ROOT::Math::DisplacementVector3D<ROOT::Math::Cartesian3D<double>>;
+  using Translation = ROOT::Math::DisplacementVector3D<ROOT::Math::Cartesian3D<double>>;
 
-// Constructor from old DD DDFilteredView
-DetGeomDesc(const DDFilteredView& fv);
+  // Constructor from old DD DDFilteredView
+  DetGeomDesc(const DDFilteredView& fv);
   // Constructor from DD4Hep DDFilteredView
-  DetGeomDesc(const cms::DDFilteredView& fv, const cms::DDSpecParRegistry& allSpecParSections);
+  DetGeomDesc(const cms::DDFilteredView& fv);
 
   DetGeomDesc(const DetGeomDesc&);
   DetGeomDesc& operator=(const DetGeomDesc&);
@@ -84,10 +82,10 @@ DetGeomDesc(const DDFilteredView& fv);
   const DiamondDimensions& getDiamondDimensions() const {
     if (!isABox()) {
       edm::LogError("DetGeomDesc::getDiamondDimensions is not called on a box, for solid ")
-	<< name() << ", Id = " << geographicalID();
+          << name() << ", Id = " << geographicalID();
     }
-    return m_diamondBoxParams; 
-  } // in mm
+    return m_diamondBoxParams;
+  }  // in mm
 
   // sensor type
   const std::string& sensorType() const { return m_sensorType; }
@@ -112,15 +110,14 @@ DetGeomDesc(const DDFilteredView& fv);
   void deepDeleteComponents();  // traverses the tree and deletes all nodes.
   void clearComponents() { m_container.resize(0); }
 
-  std::string computeNameWithNoNamespace(const std::string_view nameFromView) const;
+  std::string computeNameWithNoNamespace(std::string_view nameFromView) const;
   std::vector<double> computeParameters(const cms::DDFilteredView& fv) const;
-  DiamondDimensions computeDiamondDimensions(const bool isABox, const bool isDD4hep, const std::vector<double>& params) const;
+  DiamondDimensions computeDiamondDimensions(const bool isABox,
+                                             const bool isDD4hep,
+                                             const std::vector<double>& params) const;
   DetId computeDetID(const std::string& name, const std::vector<int>& copyNos, unsigned int copyNum) const;
   DetId computeDetIDFromDD4hep(const std::string& name, const std::vector<int>& copyNos, unsigned int copyNum) const;
-  std::string computeSensorType(const std::string_view name);
-  std::string computeSensorType(const std::string_view nameFromView,
-				const std::string& nodePath,
-				const cms::DDSpecParRegistry& allSpecParSections);
+  std::string computeSensorType(std::string_view name);
 
   std::string m_name;  // with no namespace
   int m_copy;
@@ -132,16 +129,15 @@ DetGeomDesc(const DDFilteredView& fv);
   DiamondDimensions m_diamondBoxParams;  // in mm
   std::string m_sensorType;
   DetId m_geographicalID;
-  
+
   Container m_container;
   float m_z;  // in mm
   std::string m_mat;
   std::vector<double> m_allparams;
 };
 
-
 struct DetGeomDescCompare {
-  bool operator() (const DetGeomDesc& a, const DetGeomDesc& b) const {
+  bool operator()(const DetGeomDesc& a, const DetGeomDesc& b) const {
     return (a.name() != b.name() ? a.name() < b.name() : a.copyno() < b.copyno());
   }
 };

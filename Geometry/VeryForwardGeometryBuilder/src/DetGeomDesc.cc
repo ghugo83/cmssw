@@ -11,16 +11,11 @@
 
 #include "Geometry/VeryForwardGeometryBuilder/interface/DetGeomDesc.h"
 #include "Geometry/VeryForwardGeometryBuilder/interface/CTPPSDDDNames.h"
-#include "CondFormats/GeometryObjects/interface/PDetGeomDesc.h"
 #include "CondFormats/PPSObjects/interface/CTPPSRPAlignmentCorrectionData.h"
 
-#include "DataFormats/Math/interface/CMSUnits.h"
-#include "DetectorDescription/Core/interface/DDFilteredView.h"
 #include "DetectorDescription/Core/interface/DDSolid.h"
-#include "DetectorDescription/DDCMS/interface/DDFilteredView.h"
 #include "DetectorDescription/DDCMS/interface/DDShapes.h"
 #include "DetectorDescription/DDCMS/interface/DDSolidShapes.h"
-#include "TGeoMatrix.h"
 
 #include "DataFormats/CTPPSDetId/interface/TotemRPDetId.h"
 #include "DataFormats/CTPPSDetId/interface/TotemTimingDetId.h"
@@ -51,7 +46,7 @@ DetGeomDesc::DetGeomDesc(const DDFilteredView& fv)
 /*
  *  Constructor from DD4Hep DDFilteredView, also using the SpecPars to access 2x2 wafers info.
  */
-DetGeomDesc::DetGeomDesc(const cms::DDFilteredView& fv, const cms::DDSpecParRegistry& allSpecParSections)
+DetGeomDesc::DetGeomDesc(const cms::DDFilteredView& fv)
   : m_name(computeNameWithNoNamespace(fv.name())),
     m_copy(fv.copyNum()),
     m_isDD4hep(true),
@@ -60,7 +55,7 @@ DetGeomDesc::DetGeomDesc(const cms::DDFilteredView& fv, const cms::DDSpecParRegi
     m_params(computeParameters(fv)),  // default unit from DD4hep (cm)
     m_isABox(fv.isABox()),
     m_diamondBoxParams(computeDiamondDimensions(m_isABox, m_isDD4hep, m_params)), // converted from cm (DD4hep) to mm
-    m_sensorType(computeSensorType(fv.name(), fv.path(), allSpecParSections)),
+    m_sensorType(computeSensorType(fv.name())),
   m_geographicalID(computeDetIDFromDD4hep(m_name, fv.copyNos(), fv.copyNum())),
   m_z(geant_units::operators::convertCmToMm(fv.translation().z())),  // converted from cm (DD4hep) to mm
   m_mat(fv.materialName()),
@@ -87,7 +82,7 @@ DetGeomDesc& DetGeomDesc::operator=(const DetGeomDesc& ref) {
 }
 
 DetGeomDesc::~DetGeomDesc() { deepDeleteComponents(); }
-	  
+
 void DetGeomDesc::addComponent(DetGeomDesc* det) { m_container.emplace_back(det); }
 
 void DetGeomDesc::applyAlignment(const CTPPSRPAlignmentCorrectionData& t) {
@@ -145,7 +140,7 @@ void DetGeomDesc::deepDeleteComponents() {
   clearComponents();
 }
 
-std::string DetGeomDesc::computeNameWithNoNamespace(const std::string_view nameFromView) const {
+std::string DetGeomDesc::computeNameWithNoNamespace(std::string_view nameFromView) const {
   const auto& semiColonPos = nameFromView.find(":");
   const std::string name{(semiColonPos != std::string::npos ? nameFromView.substr(semiColonPos + 1) : nameFromView)};
   return name;
@@ -260,24 +255,23 @@ std::vector<double> DetGeomDesc::computeParametersTEST(const cms::DDFilteredView
  * oldDD: params are already in mm. 
  * DD4hep: convert params from cm (DD4hep) to mm (legacy expected by PPS reco software).
  */
-DiamondDimensions DetGeomDesc::computeDiamondDimensions(const bool isABox, const bool isDD4hep, const std::vector<double>& params) const {
+DiamondDimensions DetGeomDesc::computeDiamondDimensions(const bool isABox,
+                                                        const bool isDD4hep,
+                                                        const std::vector<double>& params) const {
   DiamondDimensions boxShapeParameters{};
   if (isABox) {
     if (!isDD4hep) {
       // mm (legacy)
-      boxShapeParameters = {params.at(0),
-			    params.at(1),
-			    params.at(2)};
+      boxShapeParameters = {params.at(0), params.at(1), params.at(2)};
     } else {
       // convert cm (DD4hep) to mm (legacy expected by PPS reco software)
       boxShapeParameters = {geant_units::operators::convertCmToMm(params.at(0)),
-			    geant_units::operators::convertCmToMm(params.at(1)),
-			    geant_units::operators::convertCmToMm(params.at(2))};
+                            geant_units::operators::convertCmToMm(params.at(1)),
+                            geant_units::operators::convertCmToMm(params.at(2))};
     }
-  } 
+  }
   return boxShapeParameters;
 }
-
 
 /*
  * old DD DetId computation.
@@ -339,7 +333,7 @@ DetId DetGeomDesc::computeDetID(const std::string& name, const std::vector<int>&
   }
 
   // pixel sensors
-  else if (name == DDD_CTPPS_PIXELS_SENSOR_NAME) {
+  else if (name == DDD_CTPPS_PIXELS_SENSOR_NAME || name == DDD_CTPPS_PIXELS_SENSOR_NAME_2x2) {
     // check size of copy numbers array
     if (copyNos.size() < 4)
       throw cms::Exception("DDDTotemRPContruction")
@@ -383,57 +377,37 @@ DetId DetGeomDesc::computeDetID(const std::string& name, const std::vector<int>&
   return geoID;
 }
 
-
 /*
  * DD4hep DetId computation.
  */
-DetId DetGeomDesc::computeDetIDFromDD4hep(const std::string& name, const std::vector<int>& copyNos, unsigned int copyNum) const {
-  std::vector<int> copyNosOldDD = { copyNos.rbegin() + 1, copyNos.rend() };
+DetId DetGeomDesc::computeDetIDFromDD4hep(const std::string& name,
+                                          const std::vector<int>& copyNos,
+                                          unsigned int copyNum) const {
+  std::vector<int> copyNosOldDD = {copyNos.rbegin() + 1, copyNos.rend()};
 
   return computeDetID(name, copyNosOldDD, copyNum);
 }
 
 
 /*
- * old DD sensor type computation.
- * Find out from the namespace, whether a sensor type is 2x2.
+ * Sensor type computation.
+ * Find out from the namespace (from DB) or the volume name (from XMLs), whether a sensor type is 2x2.
  */
-std::string DetGeomDesc::computeSensorType(const std::string_view name) {
-  std::string sensorType;
-
-  // Namespace is present, and allow identification of 2x2 sensor type: just look for "2x2:RPixWafer" in name.
-  const auto& found = name.find(DDD_CTPPS_PIXELS_SENSOR_TYPE_2x2 + ":" + DDD_CTPPS_PIXELS_SENSOR_NAME);
-  if (found != std::string::npos) {
-    sensorType = DDD_CTPPS_PIXELS_SENSOR_TYPE_2x2;
-  }
-
-  return sensorType;
-}
-
-
-/*
- * DD4hep sensor type computation.
- * Find out from the namespace (from DB) or the nodePath (from XMLs), whether a sensor type is 2x2.
- */
-std::string DetGeomDesc::computeSensorType(const std::string_view name,
-                                           const std::string& nodePath,
-                                           const cms::DDSpecParRegistry& allSpecParSections) {
+std::string DetGeomDesc::computeSensorType(std::string_view name) {
   std::string sensorType;
 
   // Case A: Construction from DB.
   // Namespace is present, and allow identification of 2x2 sensor type: just look for "2x2:RPixWafer" in name.
-  sensorType = computeSensorType(name);
+  const auto& foundFromDB = name.find(DDD_CTPPS_PIXELS_SENSOR_TYPE_2x2 + ":" + DDD_CTPPS_PIXELS_SENSOR_NAME);
+  if (foundFromDB != std::string::npos) {
+    sensorType = DDD_CTPPS_PIXELS_SENSOR_TYPE_2x2;
+  }
 
   // Case B: Construction from XMLs.
-  // Namespace is not present. XML SPecPar sections allow identification of 2x2 sensor type.
-  // If nodePath has a 2x2RPixWafer parameter defined in an XML SPecPar section, sensorType is 2x2.
-  const std::string& parameterName = DDD_CTPPS_2x2_RPIXWAFER_PARAMETER_NAME;
-  cms::DDSpecParRefs filteredSpecParSections;
-  allSpecParSections.filter(filteredSpecParSections, parameterName);
-  for (const auto& mySpecParSection : filteredSpecParSections) {
-    if (mySpecParSection->hasPath(nodePath)) {
-      sensorType = DDD_CTPPS_PIXELS_SENSOR_TYPE_2x2;
-    }
+  // Volume name allows identification of 2x2 sensor type: just look whether name is "RPixWafer2x2".
+  const auto& foundFromXML = name.find(DDD_CTPPS_PIXELS_SENSOR_NAME_2x2);
+  if (foundFromXML != std::string::npos) {
+    sensorType = DDD_CTPPS_PIXELS_SENSOR_TYPE_2x2;
   }
 
   return sensorType;

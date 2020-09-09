@@ -26,7 +26,6 @@
 #include "CondFormats/GeometryObjects/interface/PDetGeomDesc.h"
 #include "Geometry/VeryForwardGeometryBuilder/interface/DetGeomDescBuilder.h"
 
-
 class PPSGeometryBuilder : public edm::one::EDAnalyzer<> {
 public:
   explicit PPSGeometryBuilder(const edm::ParameterSet&);
@@ -38,45 +37,51 @@ private:
 
   bool fromDD4hep_;
   std::string compactViewTag_;
+  edm::ESGetToken<DDCompactView, IdealGeometryRecord> ddToken_;
+  edm::ESGetToken<cms::DDCompactView, IdealGeometryRecord> dd4hepToken_;
   edm::ESWatcher<IdealGeometryRecord> watcherIdealGeometry_;
   edm::Service<cond::service::PoolDBOutputService> dbService_;
 };
 
 PPSGeometryBuilder::PPSGeometryBuilder(const edm::ParameterSet& iConfig)
-  : fromDD4hep_(iConfig.getUntrackedParameter<bool>("fromDD4hep", false)),
-    compactViewTag_(iConfig.getUntrackedParameter<std::string>("compactViewTag", "XMLIdealGeometryESSource_CTPPS")) {}
+    : fromDD4hep_(iConfig.getUntrackedParameter<bool>("fromDD4hep", false)),
+      compactViewTag_(iConfig.getUntrackedParameter<std::string>("compactViewTag", "XMLIdealGeometryESSource_CTPPS")),
+      ddToken_(esConsumes(edm::ESInputTag("", compactViewTag_))),
+      dd4hepToken_(esConsumes(edm::ESInputTag("", compactViewTag_))) {}
 
 /*
  * Save PPS geo to DB.
  */
 void PPSGeometryBuilder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
+  // Get DetGeomDesc tree
   std::unique_ptr<DetGeomDesc> geoInfoRoot = nullptr;
-
-  // old DD
-  if (!fromDD4hep_) {
-    edm::ESHandle<DDCompactView> myCompactView;
+  if (watcherIdealGeometry_.check(iSetup)) {
     edm::LogInfo("PPSGeometryBuilder") << "Got IdealGeometryRecord ";
-    iSetup.get<IdealGeometryRecord>().get(compactViewTag_.c_str(), myCompactView);
+    // old DD
+    if (!fromDD4hep_) {
+      // Get CompactView from IdealGeometryRecord
+      auto const& myCompactView = iSetup.getData(ddToken_);
 
-    // Build geometry
-    geoInfoRoot = detgeomdescbuilder::buildDetGeomDescFromCompactView(*myCompactView);
-  } 
-  // DD4hep
-  else {
-    edm::ESHandle<cms::DDCompactView> myCompactView;
-    edm::LogInfo("PPSGeometryBuilder") << "Got IdealGeometryRecord ";
-    iSetup.get<IdealGeometryRecord>().get(compactViewTag_.c_str(), myCompactView);
+      // Build geometry
+      geoInfoRoot = detgeomdescbuilder::buildDetGeomDescFromCompactView(myCompactView);
+    }
+    // DD4hep
+    else {
+      // Get CompactView from IdealGeometryRecord
+      auto const& myCompactView = iSetup.getData(dd4hepToken_);
 
-    // Build geometry
-    geoInfoRoot = detgeomdescbuilder::buildDetGeomDescFromCompactView(*myCompactView);
+      // Build geometry
+      geoInfoRoot = detgeomdescbuilder::buildDetGeomDescFromCompactView(myCompactView);
+    }
   }
-
 
   // Build persistent geometry data from geometry
   PDetGeomDesc* serializableData =
-    new PDetGeomDesc();  // cond::service::PoolDBOutputService::writeOne interface requires raw pointer.
+      new PDetGeomDesc();  // cond::service::PoolDBOutputService::writeOne interface requires raw pointer.
   int counter = 0;
-  buildSerializableDataFromGeoInfo(serializableData, geoInfoRoot.get(), counter);
+  if (geoInfoRoot) {
+    buildSerializableDataFromGeoInfo(serializableData, geoInfoRoot.get(), counter);
+  }
 
   // Save geometry in the database
   if (serializableData->container_.empty()) {
@@ -103,8 +108,8 @@ void PPSGeometryBuilder::buildSerializableDataFromGeoInfo(PDetGeomDesc* serializ
   counter++;
 
   // Store item in serializableData
-  if ( (!fromDD4hep_ && counter >= 2)         // Old DD: Skip CMSE
-       || (fromDD4hep_ && counter >= 4) ) {   // DD4hep: Skip world + OCMS + CMSE
+  if ((!fromDD4hep_ && counter >= 2)       // Old DD: Skip CMSE
+      || (fromDD4hep_ && counter >= 4)) {  // DD4hep: Skip world + OCMS + CMSE
     serializableData->container_.emplace_back(serializableItem);
   }
 
@@ -124,9 +129,15 @@ PDetGeomDesc::Item PPSGeometryBuilder::buildItemFromDetGeomDesc(const DetGeomDes
   result.dz_ = geoInfo->translation().Z();
 
   const DDRotationMatrix& rot = geoInfo->rotation();
-  rot.GetComponents(result.axx_, result.axy_, result.axz_, 
-		    result.ayx_, result.ayy_, result.ayz_, 
-		    result.azx_, result.azy_, result.azz_);
+  rot.GetComponents(result.axx_,
+                    result.axy_,
+                    result.axz_,
+                    result.ayx_,
+                    result.ayy_,
+                    result.ayz_,
+                    result.azx_,
+                    result.azy_,
+                    result.azz_);
   result.name_ = geoInfo->name();
   result.params_ = geoInfo->params();
   result.copy_ = geoInfo->copyno();
