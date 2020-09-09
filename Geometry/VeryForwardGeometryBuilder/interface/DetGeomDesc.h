@@ -138,7 +138,10 @@ public:
 
 struct DetGeomDescCompare {
   bool operator()(const DetGeomDesc& a, const DetGeomDesc& b) const {
-    return (a.name() != b.name() ? a.name() < b.name() : a.copyno() < b.copyno());
+    return (a.geographicalID() != b.geographicalID() ? a.geographicalID() < b.geographicalID() 
+	    : (a.name() != b.name() ? a.name() < b.name()
+	       : a.copyno() < b.copyno())
+	    );
   }
 };
 

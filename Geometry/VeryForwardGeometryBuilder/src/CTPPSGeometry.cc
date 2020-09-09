@@ -20,7 +20,7 @@ void CTPPSGeometry::build(const DetGeomDesc* gD, unsigned int verbosity) {
   rps_in_station_.clear();
   dets_in_rp_.clear();
 
-  std::set<DetGeomDesc, DetGeomDescCompare> allDets;
+  std::multiset<DetGeomDesc, DetGeomDescCompare> allDets;
 
   // propagate through the GeometricalDet structure and add all detectors to 'sensors_map_'
   std::deque<const DetGeomDesc*> buffer;
