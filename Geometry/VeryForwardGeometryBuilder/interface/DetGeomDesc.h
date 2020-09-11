@@ -95,6 +95,8 @@ public:
 
   // components (children) management
   const Container& components() const { return m_container; }
+  float parentXPosition() const { return m_x; }
+  float parentYPosition() const { return m_y; }
   float parentZPosition() const { return m_z; }  // in mm
   void addComponent(DetGeomDesc*);
   bool isLeaf() const { return m_container.empty(); }
@@ -131,6 +133,8 @@ public:
   DetId m_geographicalID;
 
   Container m_container;
+  float m_x;
+  float m_y;
   float m_z;  // in mm
   std::string m_mat;
   std::vector<double> m_allparams;
@@ -138,10 +142,18 @@ public:
 
 struct DetGeomDescCompare {
   bool operator()(const DetGeomDesc& a, const DetGeomDesc& b) const {
-    return (a.geographicalID() != b.geographicalID() ? a.geographicalID() < b.geographicalID() 
-	    : (a.name() != b.name() ? a.name() < b.name()
-	       : a.copyno() < b.copyno())
-	    );
+    const bool result = (a.geographicalID() != b.geographicalID() ? a.geographicalID() < b.geographicalID() 
+			 : (a.name() != b.name() ? a.name() < b.name()
+			    : (a.copyno() != b.copyno() ? a.copyno() < b.copyno()
+			       : (fabs(a.parentXPosition() - b.parentXPosition()) > 0.001 ? a.parentXPosition() < b.parentXPosition()
+				  : (fabs(a.parentYPosition() - b.parentYPosition()) > 0.001 ? a.parentYPosition() < b.parentYPosition()
+				     : a.parentZPosition() < b.parentZPosition()
+				     )
+				  )
+			       )
+			    )
+			 );
+    return result;
   }
 };
 

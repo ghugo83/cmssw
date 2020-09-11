@@ -38,7 +38,9 @@ DetGeomDesc::DetGeomDesc(const DDFilteredView& fv)
     m_diamondBoxParams(computeDiamondDimensions(m_isABox, m_isDD4hep, m_params)),  // mm (legacy)
     m_sensorType(computeSensorType(fv.logicalPart().name().fullname())),
   m_geographicalID(computeDetID(m_name, fv.copyNumbers(), fv.copyno())),
-  m_z(fv.translation().z()),   // mm (legacy)
+    m_x(fv.translation().x()),
+  m_y(fv.translation().y()),
+  m_z(fv.translation().z()),
   m_mat(fv.material()),
   m_allparams(m_params)
 {}
@@ -57,7 +59,9 @@ DetGeomDesc::DetGeomDesc(const cms::DDFilteredView& fv)
     m_diamondBoxParams(computeDiamondDimensions(m_isABox, m_isDD4hep, m_params)), // converted from cm (DD4hep) to mm
     m_sensorType(computeSensorType(fv.name())),
   m_geographicalID(computeDetIDFromDD4hep(m_name, fv.copyNos(), fv.copyNum())),
-  m_z(geant_units::operators::convertCmToMm(fv.translation().z())),  // converted from cm (DD4hep) to mm
+  m_x(geant_units::operators::convertCmToMm(fv.translation().x())),
+  m_y(geant_units::operators::convertCmToMm(fv.translation().y())),
+  m_z(geant_units::operators::convertCmToMm(fv.translation().z())),
   m_mat(fv.materialName()),
   m_allparams(computeParametersTEST(fv))
 {}
@@ -75,6 +79,8 @@ DetGeomDesc& DetGeomDesc::operator=(const DetGeomDesc& ref) {
   m_diamondBoxParams = ref.m_diamondBoxParams;
   m_sensorType = ref.m_sensorType;
   m_geographicalID = ref.m_geographicalID;
+  m_x = ref.m_x;
+  m_y = ref.m_y;
   m_z = ref.m_z;
   m_mat = ref.m_mat;
   m_allparams = ref.m_allparams;
