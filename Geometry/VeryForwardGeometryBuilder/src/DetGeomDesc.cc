@@ -28,6 +28,8 @@ DetGeomDesc::DetGeomDesc(DDFilteredView* fv)
       m_name(((fv->logicalPart()).ddname()).name()),
       m_params(((fv->logicalPart()).solid()).parameters()),
       m_copy(fv->copyno()),
+      m_x(fv->geoHistory().back().absTranslation().x()),
+      m_y(fv->geoHistory().back().absTranslation().y()),
       m_z(fv->geoHistory().back().absTranslation().z()),
       m_sensorType("") {
   m_mat = fv->material();
@@ -107,6 +109,8 @@ DetGeomDesc& DetGeomDesc::operator=(const DetGeomDesc& ref) {
   m_mat = ref.m_mat;
   m_copy = ref.m_copy;
   m_geographicalID = ref.m_geographicalID;
+  m_x = ref.m_x;
+  m_y = ref.m_y;
   m_z = ref.m_z;
   m_sensorType = ref.m_sensorType;
   m_isABox = ref.m_isABox;

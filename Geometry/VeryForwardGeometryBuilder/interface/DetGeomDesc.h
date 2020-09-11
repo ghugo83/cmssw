@@ -57,6 +57,8 @@ public:
 
   /// access to the tree structure
   Container components() const;
+  float parentXPosition() const { return m_x; }
+  float parentYPosition() const { return m_y; }
   float parentZPosition() const { return m_z; }
 
   /// components (children) management
@@ -88,6 +90,8 @@ private:
   std::vector<double> m_params;
   DetId m_geographicalID;
   int m_copy;
+  float m_x;
+  float m_y;
   float m_z;
   std::string m_sensorType;
   bool m_isABox;
@@ -95,10 +99,18 @@ private:
 
 struct DetGeomDescCompare {
   bool operator()(const DetGeomDesc& a, const DetGeomDesc& b) const {
-    return (a.geographicalID() != b.geographicalID() ? a.geographicalID() < b.geographicalID() 
-	    : (a.name() != b.name() ? a.name() < b.name()
-	       : a.copyno() < b.copyno())
-	    );
+    const bool result = (a.geographicalID() != b.geographicalID() ? a.geographicalID() < b.geographicalID() 
+			 : (a.name() != b.name() ? a.name() < b.name()
+			    : (a.copyno() != b.copyno() ? a.copyno() < b.copyno()
+			       : (fabs(a.parentXPosition() - b.parentXPosition()) > 0.001 ? a.parentXPosition() < b.parentXPosition()
+				  : (fabs(a.parentYPosition() - b.parentYPosition()) > 0.001 ? a.parentYPosition() < b.parentYPosition()
+				     : a.parentZPosition() < b.parentZPosition()
+				     )
+				  )
+			       )
+			    )
+			 );
+    return result;
   }
 };
 
