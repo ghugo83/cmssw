@@ -135,6 +135,7 @@ XMLIdealGeometryESSource_CTPPS = cms.ESSource("XMLIdealGeometryESSource",
 XMLIdealGeometryESSource_CTPPS.geomXMLFiles.append("Geometry/VeryForwardData/data/CTPPS_2017/RP_Dist_Beam_Cent.xml")
 
 ctppsGeometryESModule = cms.ESProducer("CTPPSGeometryESModule",
+        isRun2 = cms.untracked.bool(True),
         verbosity = cms.untracked.uint32(1),
         compactViewTag = cms.string('XMLIdealGeometryESSource_CTPPS')
 )

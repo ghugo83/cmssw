@@ -94,7 +94,7 @@ private:
 
 CTPPSGeometryESModule::CTPPSGeometryESModule(const edm::ParameterSet& iConfig)
     : verbosity_(iConfig.getUntrackedParameter<unsigned int>("verbosity")),
-      isRun2_(iConfig.getUntrackedParameter<bool>("isRun2", true)),
+      isRun2_(iConfig.getUntrackedParameter<bool>("isRun2", false)),
       fromDD4hep_(iConfig.getUntrackedParameter<bool>("fromDD4hep", false)),
       gdRealTokens_{setWhatProduced(this, &CTPPSGeometryESModule::produceRealGD)},
       gdMisTokens_{setWhatProduced(this, &CTPPSGeometryESModule::produceMisalignedGD)},
@@ -115,7 +115,7 @@ CTPPSGeometryESModule::CTPPSGeometryESModule(const edm::ParameterSet& iConfig)
 void CTPPSGeometryESModule::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   edm::ParameterSetDescription desc;
   desc.addUntracked<unsigned int>("verbosity", 1);
-  desc.addUntracked<bool>("isRun2", true);
+  desc.addUntracked<bool>("isRun2", false);
   desc.add<std::string>("compactViewTag", std::string());
   desc.addUntracked<bool>("fromDD4hep", false);
   descriptions.add("CTPPSGeometryESModule", desc);
