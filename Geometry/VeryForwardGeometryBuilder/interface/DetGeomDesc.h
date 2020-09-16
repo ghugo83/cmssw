@@ -54,9 +54,9 @@ public:
   using Translation = ROOT::Math::DisplacementVector3D<ROOT::Math::Cartesian3D<double>>;
 
   // Constructor from old DD DDFilteredView
-  DetGeomDesc(const DDFilteredView& fv, const bool is2021);
+  DetGeomDesc(const DDFilteredView& fv, const bool isRun2);
   // Constructor from DD4Hep DDFilteredView
-  DetGeomDesc(const cms::DDFilteredView& fv, const bool is2021);
+  DetGeomDesc(const cms::DDFilteredView& fv, const bool isRun2);
 
   DetGeomDesc(const DetGeomDesc&);
   DetGeomDesc& operator=(const DetGeomDesc&);
@@ -117,11 +117,11 @@ private:
   DetId computeDetID(const std::string& name,
                      const std::vector<int>& copyNos,
                      const unsigned int copyNum,
-                     const bool is2021) const;
+                     const bool isRun2) const;
   DetId computeDetIDFromDD4hep(const std::string& name,
                                const std::vector<int>& copyNos,
                                const unsigned int copyNum,
-                               const bool is2021) const;
+                               const bool isRun2) const;
   std::string computeSensorType(std::string_view name);
 
   std::string m_name;  // with no namespace
