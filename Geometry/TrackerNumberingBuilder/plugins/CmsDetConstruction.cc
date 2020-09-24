@@ -116,6 +116,7 @@ void CmsDetConstruction<cms::DDFilteredView>::buildComponent(cms::DDFilteredView
       // Go to the next volume in FilteredView.
       // NB: If this volume is another sensor of the same module, let's stay in the loop.
       // Otherwise, loop is exited.
+      std::cout << "CALLING FIRST CHILDDDDDDDD! (from DetConstruction)" << std::endl;
       fv.firstChild();
     }
   }
@@ -140,12 +141,14 @@ void CmsDetConstruction<cms::DDFilteredView>::buildComponent(cms::DDFilteredView
       // Go to the next volume in FilteredView.
       // NB: If this volume is another sensor of the same module, let's stay in the loop.
       // Otherwise, loop is exited.
+      std::cout << "CALLING FIRST CHILDDDDDDDD! (from DetConstruction)" << std::endl;
       fv.firstChild();
     }
   }
 
   else {
     // Go to the next volume in FilteredView.
+    std::cout << "CALLING FIRST CHILDDDDDDDD! (from DetConstruction)" << std::endl;
     fv.firstChild();
   }
 

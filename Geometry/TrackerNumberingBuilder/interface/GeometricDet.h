@@ -201,6 +201,7 @@ public:
   double siliconAPVNum() const { return _siliconAPVNum; }
 
 private:
+std::string computeNameWithNoNamespace(std::string_view nameFromView) const;
   std::vector<double> computeLegacyShapeParameters(const cms::DDSolidShape& mySolidShape,
 						   const dd4hep::Solid& mySolid) const;
 

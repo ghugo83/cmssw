@@ -177,6 +177,7 @@ void CmsTrackerLevelBuilder<cms::DDFilteredView>::build(cms::DDFilteredView& fv,
 	    << " tracker->path() = "  << fv.geoHistory()
 	    << " tracker->type() = " << tracker->type() << std::endl;
 
+  std::cout << "CALLING FIRST CHILDDDDDDDD!" << std::endl;
   fv.firstChild();
   std::cout << "CmsTrackerLevelBuilder::build  called first child "  << std::endl;
 

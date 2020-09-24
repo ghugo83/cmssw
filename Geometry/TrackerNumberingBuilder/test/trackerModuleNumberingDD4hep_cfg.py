@@ -5,7 +5,8 @@ process = cms.Process('NumberingTest',Run3_dd4hep)
 
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 
-process.load('Configuration.Geometry.GeometryDD4hepExtended2021Reco_cff')
+#process.load('Configuration.Geometry.GeometryDD4hepExtended2021Reco_cff')
+process.load('Configuration.Geometry.GeometryDD4hepExtended2026D65Reco_cff')
 
 if 'MessageLogger' in process.__dict__:
     process.MessageLogger.categories.append('TrackerGeometryBuilder')

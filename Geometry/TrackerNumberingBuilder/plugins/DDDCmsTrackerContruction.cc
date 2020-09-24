@@ -53,10 +53,15 @@ std::unique_ptr<GeometricDet> DDDCmsTrackerContruction::construct(const cms::DDC
   std::string attribute("TkDDDStructure");
   cms::DDFilteredView fv(cpv, cms::DDFilter(attribute));
 
+  std::cout << "TEST starts" << std::endl;
+  std::cout << ExtractStringFromDDD<cms::DDFilteredView>::getString(attribute, &fv) << std::endl;
+  
   CmsTrackerStringToEnum theCmsTrackerStringToEnum;
   if (theCmsTrackerStringToEnum.type(ExtractStringFromDDD<cms::DDFilteredView>::getString("TkDDDStructure", &fv)) !=
       GeometricDet::Tracker) {
+    std::cout << "STATISFIED TEST AND called first child" << std::endl;
     fv.firstChild();
+    std::cout << ExtractStringFromDDD<cms::DDFilteredView>::getString(attribute, &fv) << std::endl;
     if (theCmsTrackerStringToEnum.type(ExtractStringFromDDD<cms::DDFilteredView>::getString(attribute, &fv)) !=
         GeometricDet::Tracker) {
       throw cms::Exception("Configuration")
@@ -68,6 +73,8 @@ std::unique_ptr<GeometricDet> DDDCmsTrackerContruction::construct(const cms::DDC
   std::cout << "DDDCmsTrackerContruction starts" << std::endl;
 
   auto tracker = std::make_unique<GeometricDet>(&fv, GeometricDet::Tracker);
+
+  std::cout << "sucessfully built tracker GeomDet" << std::endl;
   CmsTrackerBuilder<cms::DDFilteredView> theCmsTrackerBuilder;
   theCmsTrackerBuilder.build(fv, tracker.get(), attribute);
 
