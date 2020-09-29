@@ -534,12 +534,21 @@ std::vector<std::string> DDFilteredView::get<std::vector<std::string>>(const str
     return std::vector<std::string>();
 }
 
+
+
+//std::vector<double> DDFilteredView::getAllParameterValuesFromSpecParSections<double>(const std::string& parameterName);
+//std::vector<std::string_view> DDFilteredView::getAllParameterValuesFromSpecParSections<std::string_view>(const std::string& parameterName);
+
+
+//double DDFilteredView::getParameterValueFromSpecParSections<double>(const std::string& parameterName, const unsigned int parameterValueIndex);
+//std::string_view DDFilteredView::getParameterValueFromSpecParSections<std::string_view>(const std::string& parameterName, const unsigned int parameterValueIndex);
+
 std::vector<double> DDFilteredView::get(const string& name, const string& key) const {
   std::vector<std::string> stringVector = get<std::vector<std::string>>(name, key);
   std::vector<double> doubleVector(stringVector.size());
   std::transform(stringVector.begin(), stringVector.end(), doubleVector.begin(), [](const std::string& val) {
-    return std::stod(val);
-  });
+      return std::stod(val);
+    });
   return doubleVector;
 }
 

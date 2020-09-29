@@ -203,6 +203,60 @@ namespace cms {
 
     std::string_view getString(const std::string&) const;
 
+    /*
+    template <typename T>
+      std::vector<T> getAllParameterValuesFromSpecParSections(const std::string& parameterName);
+
+
+    template <typename T>
+      T getParameterValueFromSpecParSections(const std::string& parameterName,
+      const unsigned int parameterValueIndex = 0);*/
+
+    template <typename T>
+      std::vector<T> getAllParameterValuesFromSpecParSections(const std::string& parameterName) {
+      //const cms::DDSpecParRegistry& allSpecParSections = fv->getAllSpecParSections();
+      cms::DDSpecParRefs filteredSpecParSections;
+      //allSpecParSections.filter(filteredSpecParSections, parameterName);
+      registry_->filter(filteredSpecParSections, parameterName);
+      for (const auto& mySpecParSection : filteredSpecParSections) {
+	for (const auto& path : mySpecParSection->paths) {
+
+	  /*
+	  const std::string startSpecPartPath = "//";
+	  const auto& found = path.find(startSpecPartPath);
+	  const std::string& searchPath = (found != std::string::npos) ? path.substr(found + startSpecPartPath.size()) : path;*/
+	  std::string_view searchPath = dd4hep::dd::realTopName(path);
+
+	  //if (mySpecParSection->hasPath(fv->path())) {
+	  // if (path.find(ddname_) != std::string::npos) { // WORKSSSSS
+	  std::string_view nodePath = this->path();
+	  if (nodePath.find(searchPath) != std::string_view::npos) {
+	    std::cout << "found volume :) !" << std::endl;
+	    std::cout << "nodePath = " << nodePath << std::endl;
+	    std::cout << "specPath = " << path << std::endl;
+	    std::cout << "searchPath = " << searchPath << std::endl;
+	    return mySpecParSection->value<std::vector<T>>(parameterName);
+	    //return mySpecParSection->dblValue(parameterName);
+	  }
+	}
+      }
+
+      return std::vector<T>();
+    }
+
+    template <typename T>
+      T getParameterValueFromSpecParSections(const std::string& parameterName,
+					     const unsigned int parameterValueIndex = 0) {
+      const std::vector<T>& allParameterValues =
+	getAllParameterValuesFromSpecParSections<T>(parameterName);
+
+      if (parameterValueIndex < allParameterValues.size()) {
+	return allParameterValues.at(parameterValueIndex);
+      }
+      return T();
+    }
+
+
     //! return the stack of sibling numbers which indicates
     //  the current position in the DDFilteredView
     nav_type navPos() const;

@@ -107,17 +107,75 @@ GeometricDet::GeometricDet(cms::DDFilteredView* fv, GeometricEnumType type)
     rot_(fv->rotation()),
     shape_(fv->shape()),
     params_(computeLegacyShapeParameters(shape_, fv->solid())),
-    radLength_(fv->get<double>("TrackerRadLength")),  // To be studied
-    xi_(fv->get<double>("TrackerXi")),                // To be studied
-    pixROCRows_(fv->get<double>("PixelROCRows")),
-    pixROCCols_(fv->get<double>("PixelROCCols")),
-  pixROCx_(fv->get<double>("PixelROC_X")),
-  pixROCy_(fv->get<double>("PixelROC_Y")),
-  stereo_(fv->get<std::string_view>("TrackerStereoDetectors") == strue),
-  isLowerSensor_(fv->get<std::string_view>("TrackerLowerDetectors") == strue),
-  isUpperSensor_(fv->get<std::string_view>("TrackerUpperDetectors") == strue),
-  siliconAPVNum_(fv->get<double>("SiliconAPVNumber")),
-  isFromDD4hep_(true) {}
+
+
+    //radLength_(fv->get("TrackerStereoDetectorsPar", "TrackerRadLength")),
+    //stereo_(fv->getString("TrackerStereoDetectors") == strue),
+    //radLength_(getDouble("TrackerRadLength", *fv)),
+
+    // OLD SLOW GETTERS
+    /*
+      radLength_(fv->get<double>("TrackerRadLength")),                // To be studied
+      xi_(fv->get<double>("TrackerXi")),                // To be studied
+      pixROCRows_(fv->get<double>("PixelROCRows")),
+      pixROCCols_(fv->get<double>("PixelROCCols")),
+      pixROCx_(fv->get<double>("PixelROC_X")),
+      pixROCy_(fv->get<double>("PixelROC_Y")),
+      stereo_(fv->get<std::string_view>("TrackerStereoDetectors") == strue),
+      isLowerSensor_(fv->get<std::string_view>("TrackerLowerDetectors") == strue),
+      isUpperSensor_(fv->get<std::string_view>("TrackerUpperDetectors") == strue),
+      siliconAPVNum_(fv->get<double>("SiliconAPVNumber")),
+      isFromDD4hep_(true)*/
+
+    
+    radLength_(fv->getParameterValueFromSpecParSections<double>("TrackerRadLength")),                // To be studied
+    xi_(fv->getParameterValueFromSpecParSections<double>("TrackerXi")),                // To be studied
+  pixROCRows_(fv->getParameterValueFromSpecParSections<double>("PixelROCRows")),
+  pixROCCols_(fv->getParameterValueFromSpecParSections<double>("PixelROCCols")),
+  pixROCx_(fv->getParameterValueFromSpecParSections<double>("PixelROC_X")),
+  pixROCy_(fv->getParameterValueFromSpecParSections<double>("PixelROC_Y")),
+  stereo_(fv->getParameterValueFromSpecParSections<std::string>("TrackerStereoDetectors") == strue),
+  isLowerSensor_(fv->getParameterValueFromSpecParSections<std::string>("TrackerLowerDetectors") == strue),
+  isUpperSensor_(fv->getParameterValueFromSpecParSections<std::string>("TrackerUpperDetectors") == strue),
+  siliconAPVNum_(fv->getParameterValueFromSpecParSections<double>("SiliconAPVNumber")),
+  isFromDD4hep_(true)
+{
+  
+
+  /* MAGIC WORKS: FAST GETTERS
+  std::cout << "fv->path() = " << fv->path() << std::endl;
+  std::cout << "ddname_ = " << ddname_ << std::endl;
+  //const cms::DDSpecParRegistry& allSpecParSections = cpv.specpars();
+  const cms::DDSpecParRegistry& allSpecParSections = fv->getAllSpecParSections();
+  const std::string& parameterName = "PixelROC_X";
+  std::cout << "Filter allSections with PixelROC_X" << std::endl;
+  cms::DDSpecParRefs filteredSpecParSections;
+  allSpecParSections.filter(filteredSpecParSections, parameterName);
+  for (const auto& mySpecParSection : filteredSpecParSections) {
+    for (const auto& path : mySpecParSection->paths) {
+      std::cout << "path = " << path << std::endl;
+      const std::string startSpecPartPath = "//";
+      const auto& found = path.find(startSpecPartPath);
+      const std::string& searchPath = (found != std::string::npos) ? path.substr(found + startSpecPartPath.size()) : path;
+      std::cout << "searchPath = " << searchPath << std::endl;
+
+
+      //if (mySpecParSection->hasPath(fv->path())) {
+      // if (path.find(ddname_) != std::string::npos) { // WORKSSSSS
+      if (fv->path().find(searchPath) != std::string::npos) {
+	std::cout << "found volume :) !" << std::endl;
+	pixROCx_ = mySpecParSection->value<std::vector<double>>(parameterName).at(0);
+	//pixROCx_ = mySpecParSection->dblValue(parameterName);
+      }
+    }
+  }
+
+  MAGIC WORKS */
+
+ 
+
+  std::cout << "pixROCx_ = " << pixROCx_ << std::endl;
+}
 
 /*
   Constructor from persistent version (DB).
@@ -305,7 +363,7 @@ std::vector<double> GeometricDet::computeLegacyShapeParameters(const cms::DDSoli
         geant_units::operators::convertCmToMm(myTube->GetDz()),
         geant_units::operators::convertCmToMm(myTube->GetRmin()),
         geant_units::operators::convertCmToMm(myTube->GetRmax()),
-        static_cast<double>(angle_units::operators::convertDegToRad(myTube->GetPhi1())),
+        static_cast<double>(fmod(angle_units::operators::convertDegToRad(myTube->GetPhi1())-2.*M_PI, 2.*M_PI)),
         static_cast<double>(angle_units::operators::convertDegToRad(myTube->GetPhi2() - myTube->GetPhi1()))};
   }
 
