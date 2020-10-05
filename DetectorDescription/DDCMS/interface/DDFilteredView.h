@@ -218,29 +218,67 @@ namespace cms {
       cms::DDSpecParRefs filteredSpecParSections;
       //allSpecParSections.filter(filteredSpecParSections, parameterName);
       registry_->filter(filteredSpecParSections, parameterName);
+      std::string nodePath = this->path();
+
+      // loop on all SpecPar sections
       for (const auto& mySpecParSection : filteredSpecParSections) {
-	for (const auto& path : mySpecParSection->paths) {
+	// Loop on all paths of a given SpecPar section
+	for (const auto& specPathFromXML : mySpecParSection->paths) {
 
-	  /*
-	  const std::string startSpecPartPath = "//";
-	  const auto& found = path.find(startSpecPartPath);
-	  const std::string& searchPath = (found != std::string::npos) ? path.substr(found + startSpecPartPath.size()) : path;*/
-	  std::string_view searchPath = dd4hep::dd::realTopName(path);
+	  std::string_view specPathFromXMLWithNoPrefix = dd4hep::dd::realTopName(specPathFromXML);	  
+	  std::vector<std::string_view> specPathFromXMLCuts = dd4hep::dd::split(specPathFromXMLWithNoPrefix, "/");
 
-	  //if (mySpecParSection->hasPath(fv->path())) {
-	  // if (path.find(ddname_) != std::string::npos) { // WORKSSSSS
-	  std::string_view nodePath = this->path();
-	  if (nodePath.find(searchPath) != std::string_view::npos) {
-	    std::cout << "found volume :) !" << std::endl;
-	    std::cout << "nodePath = " << nodePath << std::endl;
-	    std::cout << "specPath = " << path << std::endl;
-	    std::cout << "searchPath = " << searchPath << std::endl;
+	  bool isMatching = true;
+	  std::size_t start = 0;
+
+	  // Loop on all volumes names of the path
+	  for (auto volumeNameFromXML : specPathFromXMLCuts) {
+
+	    if (parameterName == "TrackerRadLength") {
+	      std::cout << "nodePath = " << nodePath << std::endl;
+	      std::cout << "specPathFromXML = " << specPathFromXML << std::endl;
+	      std::cout << "specPathFromXMLCuts.size() = " << specPathFromXMLCuts.size() << std::endl;
+	      std::cout << "volumeNameFromXML = " << volumeNameFromXML << std::endl;
+	    }
+
+	    const std::size_t&found = nodePath.find(volumeNameFromXML, start);
+	    if (found == std::string::npos) { 
+	      if (parameterName == "TrackerRadLength") {
+		std::cout << "break" << std::endl; 
+		std::cout << "found = " << found << std::endl;
+		std::cout << " " << std::endl;
+		std::cout << " " << std::endl;
+		std::cout << "----------------------------------- " << std::endl;
+	      }
+	      isMatching = false;
+	      break;     
+	    }
+	    else {  
+	      start = found;
+	      if (parameterName == "TrackerRadLength") {
+		std::cout << "found = " << found << std::endl;
+		std::cout << "std::string::npos = " << std::string::npos << std::endl;
+		std::cout << "going on to next volume name" << std::endl;
+		std::cout << " " << std::endl;
+	      }
+	    }   
+	  } // loop on all volumes in path from XML
+
+	  if (isMatching) {
+	    // found volume!
+	    if (parameterName == "TrackerRadLength") {
+	      std::cout << "found volume :) !" << std::endl;
+	      std::cout << " " << std::endl;
+	      std::cout << " " << std::endl;
+	      std::cout << "----------------------------------- " << std::endl;
+	    }
 	    return mySpecParSection->value<std::vector<T>>(parameterName);
 	    //return mySpecParSection->dblValue(parameterName);
 	  }
+	  
+
 	}
       }
-
       return std::vector<T>();
     }
 
