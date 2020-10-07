@@ -791,7 +791,9 @@ void Converter<DDLLogicalPart>::operator()(xml_h element) const {
   xml_dim_t e(element);
   string sol = e.child(DD_CMU(rSolid)).attr<string>(_U(name));
   string mat = e.child(DD_CMU(rMaterial)).attr<string>(_U(name));
-  string volName = e.attr<string>(_U(name));
+  //string volName = e.attr<string>(_U(name));
+  string volName = ns.prepend(e.attr<string>(_U(name)));
+  std::cout << "volName = " << volName << std::endl;
   Solid solid = ns.solid(sol);
   Material material = ns.material(mat);
   Volume volume = ns.addVolume(Volume(volName, solid, material));
@@ -851,6 +853,7 @@ void Converter<DDLPosPart>::operator()(xml_h element) const {
   string childName = ns.attr<string>(e.child(DD_CMU(rChild)), _U(name));
   Volume parent = ns.volume(parentName, false);
   Volume child = ns.volume(childName, false);
+  std::cout << "childName = " << childName  << std::endl;
   printout(ns.context()->debug_placements ? ALWAYS : DEBUG,
            "DD4CMS",
            "+++ %s Parent: %-24s [%s] Child: %-32s [%s] copy:%d",

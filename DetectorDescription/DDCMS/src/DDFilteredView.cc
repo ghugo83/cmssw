@@ -45,8 +45,22 @@ DDFilteredView::DDFilteredView(const DDDetector* det, const Volume volume) : reg
 
 DDFilteredView::DDFilteredView(const DDCompactView& cpv, const cms::DDFilter& filter) : registry_(&cpv.specpars()) {
   it_.emplace_back(Iterator(cpv.detector()->worldVolume()));
+
+  std::cout << "cpv.detector()->worldVolume().name() = " << cpv.detector()->worldVolume().name() << std::endl;
+
   registry_->filter(refs_, filter.attribute(), filter.value());
   mergedSpecifics(refs_);
+
+  std::cout << "printFilter()" << std::endl;
+  printFilter();
+  std::cout << "currentFilter()" << std::endl;
+  currentFilter_->print();
+
+
+
+
+
+  //std::cout << "registry_->size() = " << registry_->size() << std::endl;
   LogVerbatim("Geometry").log([&](auto& log) {
     log << "Filtered by an attribute " << filter.attribute() << "==" << filter.value()
         << " DD SpecPar Registry size: " << refs_.size() << "\n";
@@ -64,6 +78,33 @@ DDFilteredView::DDFilteredView(const DDCompactView& cpv, const cms::DDFilter& fi
       }
     }
   });
+
+
+ 
+  
+  if (it_.empty()) {
+    LogVerbatim("DDFilteredView") << "Iterator vector has zero size.";
+  }
+  it_.back().SetType(0);
+  Node* node = nullptr;
+  std::cout << "DDFilteredView::DDFilteredViewfirstChild() enter " << std::endl; 
+
+  while ((node = it_.back().Next())) {
+    std::cout << "DDFilteredView::DDFilteredViewfirstChild() node->GetVolume()->GetName() = " << node->GetVolume()->GetName() << std::endl;
+    //if (accept(noNamespace(node->GetVolume()->GetName()))) {
+    if (accept(noNamespace(node->GetVolume()->GetName())) || accept(node->GetVolume()->GetName())) {
+      std::cout << "DDFilteredView::DDFilteredViewfirstChild() node accepted" << std::endl;
+      node_ = node;
+      startLevel_ = it_.back().GetLevel();
+      break;;
+    }
+  }
+  //LogVerbatim("DDFilteredView") << "Search for first child failed.";
+ 
+
+  
+
+
 }
 
 const PlacedVolume DDFilteredView::volume() const {
@@ -223,8 +264,15 @@ bool DDFilteredView::firstChild() {
   }
   it_.back().SetType(0);
   Node* node = nullptr;
+  //std::cout << "call firstChild()" << std::endl;
   while ((node = it_.back().Next())) {
-    if (accept(noNamespace(node->GetVolume()->GetName()))) {
+    /*std::cout << "node->GetVolume()->GetName() = " << node->GetVolume()->GetName() << std::endl;
+    std::cout << "node->GetName() = " << node->GetName() << std::endl;
+    std::cout << "node->GetNSName() = " << path() << std::endl;*/
+
+    //if (accept(noNamespace(node->GetVolume()->GetName()))) {
+    if (accept(noNamespace(node->GetVolume()->GetName())) || accept(node->GetVolume()->GetName())) {
+      //std::cout << "accepted one above" << std::endl;
       node_ = node;
       startLevel_ = it_.back().GetLevel();
       return true;
@@ -436,6 +484,13 @@ void DDFilteredView::up() {
 }
 
 bool DDFilteredView::accept(std::string_view name) {
+  //std::cout << "enter DDFilteredView::accept(" << std::endl;
+  //std::cout << "printFilter()" << std::endl;
+  //printFilter();
+  //std::cout << "currentFilter()" << std::endl;
+  //currentFilter_->print();
+
+
   bool result = false;
   for (const auto& it : filters_) {
     currentFilter_ = it.get();

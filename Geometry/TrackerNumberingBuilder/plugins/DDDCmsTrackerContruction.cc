@@ -65,6 +65,11 @@ std::unique_ptr<GeometricDet> DDDCmsTrackerContruction::construct(const cms::DDC
   cms::DDFilteredView fv(cpv, cms::DDFilter(attribute));
 
   CmsTrackerStringToEnum theCmsTrackerStringToEnum;
+
+  std::cout << "ExtractStringFromDDD<cms::DDFilteredView>::getString(TkDDDStructure, &fv = " << ExtractStringFromDDD<cms::DDFilteredView>::getString("TkDDDStructure", &fv) << std::endl;
+  std::cout << "theCmsTrackerStringToEnum.type(ExtractStringFromDDD<cms::DDFilteredView>::getString(TkDDDStructure, &fv = " << theCmsTrackerStringToEnum.type(ExtractStringFromDDD<cms::DDFilteredView>::getString("TkDDDStructure", &fv)) << std::endl;
+  std::cout << "GeometricDet::Tracker = " << GeometricDet::Tracker << std::endl;
+
   if (theCmsTrackerStringToEnum.type(ExtractStringFromDDD<cms::DDFilteredView>::getString("TkDDDStructure", &fv)) !=
       GeometricDet::Tracker) {
     fv.firstChild();

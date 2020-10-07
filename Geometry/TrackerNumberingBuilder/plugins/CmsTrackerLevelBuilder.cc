@@ -7,7 +7,7 @@
 
 #include <cmath>
 
-#define DEBUG false
+#define DEBUG true
 
 bool CmsTrackerLevelBuilderHelper::subDetByType(const GeometricDet* a, const GeometricDet* b) {
   // it relies on the fact that the GeometricDet::GDEnumType enumerators used

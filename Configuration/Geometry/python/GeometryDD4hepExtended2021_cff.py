@@ -5,7 +5,8 @@ import FWCore.ParameterSet.Config as cms
 #
 # Ideal geometry, needed for simulation
 DDDetectorESProducer = cms.ESSource("DDDetectorESProducer",
-                                    confGeomXMLFiles = cms.FileInPath('Geometry/CMSCommonData/data/dd4hep/cmsExtendedGeometry2021.xml'),
+                                    #confGeomXMLFiles = cms.FileInPath('Geometry/CMSCommonData/data/dd4hep/cmsExtendedGeometry2021.xml'),
+                                    confGeomXMLFiles = cms.FileInPath('Geometry/CMSCommonData/data/dd4hep/cmsExtendedGeometry2026D62.xml'),
                                     appendToDataLabel = cms.string('')
 )
 
