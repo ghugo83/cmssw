@@ -15,6 +15,102 @@ using namespace std;
 using namespace cms::dd;
 using namespace dd4hep::dd;
 
+
+
+namespace cms { 
+namespace gabie {
+ 
+  bool isMatch(string_view node, string_view name) {
+    if (!dd4hep::dd::isRegex(name)) {
+      return (name == node);
+    } else {
+      regex pattern({name.data(), name.size()});
+      return regex_match(begin(node), end(node), pattern);
+    }
+  }
+ 
+  bool compareEqual(string_view node, string_view name) { return (name == node); }
+ 
+  bool compareEqual(string_view node, regex pattern) {
+    return regex_match(std::string(node.data(), node.size()), pattern);
+  }
+ 
+  bool accepted(vector<std::string_view> const& keys, string_view node) {
+    return (find_if(begin(keys), end(keys), [&](const auto& n) -> bool { return compareEqual(node, n); }) !=
+	    end(keys));
+  }
+
+  bool accepted(vector<std::regex> const& keys, string_view node) {
+    return (find_if(begin(keys), end(keys), [&](const auto& n) -> bool { return compareEqual(node, n); }) !=
+	    end(keys));
+  }
+ 
+  bool isRegex(string_view input) {
+    //return (input.find(".") != std::string_view::npos) || (input.find("*") != std::string_view::npos);
+    return (input.find_first_of(".*") != std::string_view::npos);
+  }
+ 
+  string_view realTopName(string_view input) {
+    string_view v = input;
+    auto first = v.find_first_of("//");
+    v.remove_prefix(min(first + 2, v.size()));
+    return v;
+  }
+ 
+  vector<string_view> split(string_view str, const char* delims) {
+    vector<string_view> ret;
+ 
+    string_view::size_type start = 0;
+    auto pos = str.find_first_of(delims, start);
+    while (pos != string_view::npos) {
+      if (pos != start) {
+	ret.emplace_back(str.substr(start, pos - start));
+      }
+      start = pos + 1;
+      pos = str.find_first_of(delims, start);
+    }
+    if (start < str.length())
+      ret.emplace_back(str.substr(start, str.length() - start));
+    return ret;
+  }
+ 
+  std::string_view noNamespace(std::string_view input) {
+    std::string_view v = input;
+    //auto first = v.find_first_of(":");
+    auto first = v.find(':');
+    v.remove_prefix(std::min(first + 1, v.size()));
+    return v;
+  }
+}  // namespace gabie
+} // namespace cms 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 dd4hep::Solid DDSolid::solidA() const {
   if (dd4hep::isA<dd4hep::SubtractionSolid>(solid_) or dd4hep::isA<dd4hep::UnionSolid>(solid_) or
       dd4hep::isA<dd4hep::IntersectionSolid>(solid_)) {
@@ -59,7 +155,7 @@ DDFilteredView::DDFilteredView(const DDCompactView& cpv, const cms::DDFilter& fi
 
 
 
-
+  
   //std::cout << "registry_->size() = " << registry_->size() << std::endl;
   LogVerbatim("Geometry").log([&](auto& log) {
     log << "Filtered by an attribute " << filter.attribute() << "==" << filter.value()
@@ -80,8 +176,8 @@ DDFilteredView::DDFilteredView(const DDCompactView& cpv, const cms::DDFilter& fi
   });
 
 
- 
-  
+  firstChild();
+  /* Phase 2 fix
   if (it_.empty()) {
     LogVerbatim("DDFilteredView") << "Iterator vector has zero size.";
   }
@@ -91,14 +187,14 @@ DDFilteredView::DDFilteredView(const DDCompactView& cpv, const cms::DDFilter& fi
 
   while ((node = it_.back().Next())) {
     std::cout << "DDFilteredView::DDFilteredViewfirstChild() node->GetVolume()->GetName() = " << node->GetVolume()->GetName() << std::endl;
-    //if (accept(noNamespace(node->GetVolume()->GetName()))) {
-    if (accept(noNamespace(node->GetVolume()->GetName())) || accept(node->GetVolume()->GetName())) {
+    //if (accept(gabie::noNamespace(node->GetVolume()->GetName()))) {
+    if (accept(gabie::noNamespace(node->GetVolume()->GetName())) || accept(node->GetVolume()->GetName())) {
       std::cout << "DDFilteredView::DDFilteredViewfirstChild() node accepted" << std::endl;
       node_ = node;
       startLevel_ = it_.back().GetLevel();
       break;;
     }
-  }
+    }*/
   //LogVerbatim("DDFilteredView") << "Search for first child failed.";
  
 
@@ -203,9 +299,11 @@ void DDFilteredView::mergedSpecifics(DDSpecParRefs const& specs) {
     filters_.clear();
     filters_.shrink_to_fit();
   }
+  // i is one XML SPecPar section
   for (const auto& i : specs) {
+    // j is one path
     for (const auto& j : i->paths) {
-      vector<string_view> toks = split(j, "/");
+      vector<string_view> toks = gabie::split(j, "/");  // lots of copies?????
       auto const& filter = find_if(begin(filters_), end(filters_), [&](auto const& f) {
         auto const& k = find_if(begin(f->skeys), end(f->skeys), [&](auto const& p) { return toks.front() == p; });
         if (k != end(f->skeys)) {
@@ -270,8 +368,8 @@ bool DDFilteredView::firstChild() {
     std::cout << "node->GetName() = " << node->GetName() << std::endl;
     std::cout << "node->GetNSName() = " << path() << std::endl;*/
 
-    //if (accept(noNamespace(node->GetVolume()->GetName()))) {
-    if (accept(noNamespace(node->GetVolume()->GetName())) || accept(node->GetVolume()->GetName())) {
+    //if (accept(gabie::noNamespace(node->GetVolume()->GetName()))) {
+    if (accept(gabie::noNamespace(node->GetVolume()->GetName())) || accept(node->GetVolume()->GetName())) {
       //std::cout << "accepted one above" << std::endl;
       node_ = node;
       startLevel_ = it_.back().GetLevel();
@@ -292,9 +390,9 @@ int DDFilteredView::nodeCopyNo(const std::string_view copyNo) const {
 
 std::vector<std::pair<std::string_view, int>> DDFilteredView::toNodeNames(const std::string& path) {
   std::vector<std::pair<std::string_view, int>> result;
-  std::vector<string_view> names = split(path, "/");
+  std::vector<string_view> names = gabie::split(path, "/");
   for (const auto& i : names) {
-    auto name = noNamespace(i);
+    auto name = gabie::noNamespace(i);
     int copyNo = -1;
     auto lpos = name.find_first_of('[');
     if (lpos != std::string::npos) {
@@ -313,9 +411,9 @@ std::vector<std::pair<std::string_view, int>> DDFilteredView::toNodeNames(const 
 
 bool DDFilteredView::match(const std::string& path, const std::vector<std::pair<std::string_view, int>>& names) const {
   std::vector<std::pair<std::string_view, int>> toks;
-  std::vector<string_view> pnames = split(path, "/");
+  std::vector<string_view> pnames = gabie::split(path, "/");
   for (const auto& i : pnames) {
-    auto name = noNamespace(i);
+    auto name = gabie::noNamespace(i);
     auto lpos = name.find_first_of('_');
     if (lpos != std::string::npos) {
       int copyNo = nodeCopyNo(name.substr(lpos + 1));
@@ -387,7 +485,7 @@ bool DDFilteredView::firstSibling() {
   else
     return false;
   do {
-    if (accepted(currentFilter_->keys, noNamespace(node->GetVolume()->GetName()))) {
+    if (gabie::accepted(currentFilter_->keys, gabie::noNamespace(node->GetVolume()->GetName()))) {
       node_ = node;
       return true;
     }
@@ -407,7 +505,7 @@ bool DDFilteredView::nextSibling() {
     it_.back().SetType(1);
     Node* node = node_;
     do {
-      if (accepted(currentFilter_->keys, noNamespace(node->GetVolume()->GetName()))) {
+      if (gabie::accepted(currentFilter_->keys, gabie::noNamespace(node->GetVolume()->GetName()))) {
         node_ = node;
         return true;
       }
@@ -423,7 +521,7 @@ bool DDFilteredView::sibling() {
   it_.back().SetType(1);
   Node* node = nullptr;
   while ((node = it_.back().Next())) {
-    if (accepted(currentFilter_->keys, node->GetVolume()->GetName())) {
+    if (gabie::accepted(currentFilter_->keys, node->GetVolume()->GetName())) {
       node_ = node;
       return true;
     }
@@ -437,7 +535,7 @@ bool DDFilteredView::checkChild() {
   it_.back().SetType(1);
   Node* node = nullptr;
   while ((node = it_.back().Next())) {
-    if (accepted(currentFilter_->keys, node->GetVolume()->GetName())) {
+    if (gabie::accepted(currentFilter_->keys, node->GetVolume()->GetName())) {
       return true;
     }
   }
@@ -494,7 +592,8 @@ bool DDFilteredView::accept(std::string_view name) {
   bool result = false;
   for (const auto& it : filters_) {
     currentFilter_ = it.get();
-    result = accepted(currentFilter_->keys, name);
+    //result = gabie::accepted(currentFilter_->keys, name);
+    result = gabie::accepted(currentFilter_->skeys, name);
     if (result)
       return result;
   }
@@ -654,7 +753,7 @@ const ExpandedNodes& DDFilteredView::history() {
   for (int nit = level; nit > 0; --nit) {
     for_each(begin(registry_->specpars), end(registry_->specpars), [&](auto const& i) {
       auto k = find_if(begin(i.second.paths), end(i.second.paths), [&](auto const& j) {
-        return (isMatch(noNamespace(it_.back().GetNode(nit)->GetVolume()->GetName()), *begin(split(j, "/"))) and
+        return (gabie::isMatch(gabie::noNamespace(it_.back().GetNode(nit)->GetVolume()->GetName()), *begin(gabie::split(j, "/"))) and
                 (i.second.hasValue("CopyNoTag") or i.second.hasValue("CopyNoOffset")));
       });
       if (k != end(i.second.paths)) {
@@ -701,7 +800,7 @@ const DDSpecPar* DDFilteredView::find(const std::string& key) const {
 
             // Get XML volume name
             std::string_view myXMLVolumeName{&myXMLPath[myXMLVolumeNameStart + 1],
-                                             myXMLVolumeNameEnd - myXMLVolumeNameStart - 1};
+		myXMLVolumeNameEnd - myXMLVolumeNameStart - 1};
 
             // Re-initilialize
             myXMLVolumeNameEnd = myXMLVolumeNameStart;
@@ -713,7 +812,7 @@ const DDSpecPar* DDFilteredView::find(const std::string& key) const {
             // XML name has no namespace:
             if (foundXMLNamespace == std::string_view::npos) {
               // remove namespace from node name
-              myNodeName = noNamespace(myNodeName);
+              myNodeName = gabie::noNamespace(myNodeName);
             }
             // XML name has a namespace:
             else {
@@ -746,10 +845,20 @@ const DDSpecPar* DDFilteredView::find(const std::string& key) const {
 
             // VOLUME NAME
             // Now that copy numbers are compared, compare the rest: the volume names.
-            const bool isRegex = dd4hep::dd::isRegex(myXMLVolumeName);
-            const bool areVolumeNamesEqual = (!isRegex ? dd4hep::dd::compareEqual(myNodeName, myXMLVolumeName)
-                                                       : regex_match(std::string(myNodeName.data(), myNodeName.size()),
-                                                                     regex(std::string(myXMLVolumeName))));
+            const bool isRegex = gabie::isRegex(myXMLVolumeName);
+            /*const bool areVolumeNamesEqual = (!isRegex ? gabie::compareEqual(myNodeName, myXMLVolumeName)
+	      : regex_match(std::string(myNodeName.data(), myNodeName.size()),
+	      regex(std::string(myXMLVolumeName))));*/
+
+	    /*std::regex re{"foo"};
+	    std::match_results<std::string_view::const_iterator> m;
+	    if(std::regex_match(input.begin(), input.end(), m, re)*/
+
+
+
+	    const bool areVolumeNamesEqual = (!isRegex ? gabie::compareEqual(myNodeName, myXMLVolumeName)
+					      : regex_match(myNodeName.begin(), myNodeName.end(),
+							    regex(myXMLVolumeName.begin(), myXMLVolumeName.end())));
             // If names are not matching, exit.
             if (!areVolumeNamesEqual) {
               arePathsMatching = false;

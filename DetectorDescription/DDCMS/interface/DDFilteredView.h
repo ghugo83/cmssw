@@ -27,6 +27,8 @@
 #include <tuple>
 #include <vector>
 
+#include <regex> // heeeeeeere
+
 namespace cms {
 
   struct DDSolid {
@@ -40,13 +42,58 @@ namespace cms {
     dd4hep::Solid solid_;
   };
 
+ 
+
+
+  namespace gabie {
+
+    using DDSpecPar = dd4hep::SpecPar;
+
+    struct Filter {
+      void print() const {
+	std::cout << "string keys = " << std::endl;
+	for (const auto& it : skeys) {
+	  std::cout << it << ", ";
+	}
+	std::cout << " " << std::endl;
+	/*
+	std::cout << "regex keys = " << std::endl;
+	for (const auto& it : keys) {
+	  std::cout << it << ", ";
+	} 
+	std::cout << " " << std::endl;*/
+      }
+ 
+      std::vector<std::string_view> skeys;
+      std::vector<std::regex> keys;
+      std::unique_ptr<Filter> next;
+      struct Filter* up;
+      const DDSpecPar* spec = nullptr;
+    };
+ 
+
+    bool accepted(std::vector<std::regex> const&, std::string_view);
+    bool isRegex(std::string_view);
+    bool isMatch(std::string_view, std::string_view);
+    bool compareEqual(std::string_view, std::string_view);
+    bool compareEqual(std::string_view, std::regex);
+    std::string_view realTopName(std::string_view);
+    std::vector<std::string_view> split(std::string_view, const char*);
+    std::string_view noNamespace(std::string_view);
+ 
+  } // namespace gabie
+
+
+
+
   class DDDetector;
   class DDCompactView;
 
   using Volume = dd4hep::Volume;
   using PlacedVolume = dd4hep::PlacedVolume;
   using ExpandedNodes = cms::ExpandedNodes;
-  using Filter = dd4hep::Filter;
+  //using Filter = dd4hep::Filter;    // heeeere
+  using Filter = gabie::Filter;    // heeeere
   using DDSpecPar = dd4hep::SpecPar;
   using DDSpecParRefs = dd4hep::SpecParRefs;
   using DDSpecParRegistry = dd4hep::SpecParRegistry;
