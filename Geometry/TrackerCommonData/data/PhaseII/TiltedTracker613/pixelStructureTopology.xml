@@ -14,103 +14,103 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
        <Parameter name="TkDDDStructure" value="FullTracker"/>
      </SpecPar>
 <SpecPar name="Phase2PixelBarrelPar">
-<PartSelector path="//Phase2PixelBarrel"/>
+<PartSelector path="//pixbar:Phase2PixelBarrel"/>
 <Parameter name="TkDDDStructure" value="PixelPhase2Barrel"/>
 </SpecPar>
 <SpecPar name="PixelBarrelLayerPar">
-<PartSelector path="//Phase2PixelBarrel/Layer1"/>
-<PartSelector path="//Phase2PixelBarrel/Layer2"/>
-<PartSelector path="//Phase2PixelBarrel/Layer3"/>
-<PartSelector path="//Phase2PixelBarrel/Layer4"/>
+<PartSelector path="//pixel:Layer1"/>
+<PartSelector path="//pixel:Layer2"/>
+<PartSelector path="//pixel:Layer3"/>
+<PartSelector path="//pixel:Layer4"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelLayer"/>
 </SpecPar>
 <SpecPar name="Phase2PixelBarrelRodPar">
-<PartSelector path="//Phase2PixelBarrel/*/RodUnflipped1"/>
-<PartSelector path="//Phase2PixelBarrel/*/RodFlipped1"/>
-<PartSelector path="//Phase2PixelBarrel/*/RodUnflipped2"/>
-<PartSelector path="//Phase2PixelBarrel/*/RodFlipped2"/>
-<PartSelector path="//Phase2PixelBarrel/*/RodUnflipped3"/>
-<PartSelector path="//Phase2PixelBarrel/*/RodFlipped3"/>
-<PartSelector path="//Phase2PixelBarrel/*/RodUnflipped4"/>
-<PartSelector path="//Phase2PixelBarrel/*/RodFlipped4"/>
+<PartSelector path="//pixel:RodUnflipped1"/>
+<PartSelector path="//pixel:RodFlipped1"/>
+<PartSelector path="//pixel:RodUnflipped2"/>
+<PartSelector path="//pixel:RodFlipped2"/>
+<PartSelector path="//pixel:RodUnflipped3"/>
+<PartSelector path="//pixel:RodFlipped3"/>
+<PartSelector path="//pixel:RodUnflipped4"/>
+<PartSelector path="//pixel:RodFlipped4"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelLadder"/>
 </SpecPar>
 <SpecPar name="PixelPhase2EndcapSubDetPar">
-<PartSelector path="//Phase2PixelEndcap"/>
+<PartSelector path="//pixfwd:Phase2PixelEndcap"/>
 <Parameter name="TkDDDStructure" value="PixelPhase2EndcapSubDet"/>
 </SpecPar>
 <SpecPar name="PixelEndcapDiskPar">
-<PartSelector path="//Phase2PixelEndcap/Disc1"/>
-<PartSelector path="//Phase2PixelEndcap/Disc2"/>
-<PartSelector path="//Phase2PixelEndcap/Disc3"/>
-<PartSelector path="//Phase2PixelEndcap/Disc4"/>
-<PartSelector path="//Phase2PixelEndcap/Disc5"/>
-<PartSelector path="//Phase2PixelEndcap/Disc6"/>
-<PartSelector path="//Phase2PixelEndcap/Disc7"/>
-<PartSelector path="//Phase2PixelEndcap/Disc8"/>
-<PartSelector path="//Phase2PixelEndcap/Disc9"/>
-<PartSelector path="//Phase2PixelEndcap/Disc10"/>
-<PartSelector path="//Phase2PixelEndcap/Disc11"/>
-<PartSelector path="//Phase2PixelEndcap/Disc12"/>
+<PartSelector path="//pixel:Disc1"/>
+<PartSelector path="//pixel:Disc2"/>
+<PartSelector path="//pixel:Disc3"/>
+<PartSelector path="//pixel:Disc4"/>
+<PartSelector path="//pixel:Disc5"/>
+<PartSelector path="//pixel:Disc6"/>
+<PartSelector path="//pixel:Disc7"/>
+<PartSelector path="//pixel:Disc8"/>
+<PartSelector path="//pixel:Disc9"/>
+<PartSelector path="//pixel:Disc10"/>
+<PartSelector path="//pixel:Disc11"/>
+<PartSelector path="//pixel:Disc12"/>
 <Parameter name="TkDDDStructure" value="PixelPhase2EndcapTDRDisk"/>
 </SpecPar>
 <SpecPar name="PixelEndcapRingPar">
-<PartSelector path="//Phase2PixelEndcap/*/Ring1Disc1"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring2Disc1"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring3Disc1"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring4Disc1"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring1Disc2"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring2Disc2"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring3Disc2"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring4Disc2"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring1Disc3"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring2Disc3"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring3Disc3"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring4Disc3"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring1Disc4"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring2Disc4"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring3Disc4"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring4Disc4"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring1Disc5"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring2Disc5"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring3Disc5"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring4Disc5"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring1Disc6"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring2Disc6"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring3Disc6"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring4Disc6"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring1Disc7"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring2Disc7"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring3Disc7"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring4Disc7"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring1Disc8"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring2Disc8"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring3Disc8"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring4Disc8"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring1Disc9"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring2Disc9"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring3Disc9"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring4Disc9"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring5Disc9"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring1Disc10"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring2Disc10"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring3Disc10"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring4Disc10"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring5Disc10"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring1Disc11"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring2Disc11"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring3Disc11"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring4Disc11"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring5Disc11"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring1Disc12"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring2Disc12"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring3Disc12"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring4Disc12"/>
-<PartSelector path="//Phase2PixelEndcap/*/Ring5Disc12"/>
+<PartSelector path="//pixel:Ring1Disc1"/>
+<PartSelector path="//pixel:Ring2Disc1"/>
+<PartSelector path="//pixel:Ring3Disc1"/>
+<PartSelector path="//pixel:Ring4Disc1"/>
+<PartSelector path="//pixel:Ring1Disc2"/>
+<PartSelector path="//pixel:Ring2Disc2"/>
+<PartSelector path="//pixel:Ring3Disc2"/>
+<PartSelector path="//pixel:Ring4Disc2"/>
+<PartSelector path="//pixel:Ring1Disc3"/>
+<PartSelector path="//pixel:Ring2Disc3"/>
+<PartSelector path="//pixel:Ring3Disc3"/>
+<PartSelector path="//pixel:Ring4Disc3"/>
+<PartSelector path="//pixel:Ring1Disc4"/>
+<PartSelector path="//pixel:Ring2Disc4"/>
+<PartSelector path="//pixel:Ring3Disc4"/>
+<PartSelector path="//pixel:Ring4Disc4"/>
+<PartSelector path="//pixel:Ring1Disc5"/>
+<PartSelector path="//pixel:Ring2Disc5"/>
+<PartSelector path="//pixel:Ring3Disc5"/>
+<PartSelector path="//pixel:Ring4Disc5"/>
+<PartSelector path="//pixel:Ring1Disc6"/>
+<PartSelector path="//pixel:Ring2Disc6"/>
+<PartSelector path="//pixel:Ring3Disc6"/>
+<PartSelector path="//pixel:Ring4Disc6"/>
+<PartSelector path="//pixel:Ring1Disc7"/>
+<PartSelector path="//pixel:Ring2Disc7"/>
+<PartSelector path="//pixel:Ring3Disc7"/>
+<PartSelector path="//pixel:Ring4Disc7"/>
+<PartSelector path="//pixel:Ring1Disc8"/>
+<PartSelector path="//pixel:Ring2Disc8"/>
+<PartSelector path="//pixel:Ring3Disc8"/>
+<PartSelector path="//pixel:Ring4Disc8"/>
+<PartSelector path="//pixel:Ring1Disc9"/>
+<PartSelector path="//pixel:Ring2Disc9"/>
+<PartSelector path="//pixel:Ring3Disc9"/>
+<PartSelector path="//pixel:Ring4Disc9"/>
+<PartSelector path="//pixel:Ring5Disc9"/>
+<PartSelector path="//pixel:Ring1Disc10"/>
+<PartSelector path="//pixel:Ring2Disc10"/>
+<PartSelector path="//pixel:Ring3Disc10"/>
+<PartSelector path="//pixel:Ring4Disc10"/>
+<PartSelector path="//pixel:Ring5Disc10"/>
+<PartSelector path="//pixel:Ring1Disc11"/>
+<PartSelector path="//pixel:Ring2Disc11"/>
+<PartSelector path="//pixel:Ring3Disc11"/>
+<PartSelector path="//pixel:Ring4Disc11"/>
+<PartSelector path="//pixel:Ring5Disc11"/>
+<PartSelector path="//pixel:Ring1Disc12"/>
+<PartSelector path="//pixel:Ring2Disc12"/>
+<PartSelector path="//pixel:Ring3Disc12"/>
+<PartSelector path="//pixel:Ring4Disc12"/>
+<PartSelector path="//pixel:Ring5Disc12"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapPanel"/>
 </SpecPar>
 <SpecPar name="BModule1Layer1InnerPixelActivePar">
-<PartSelector path="//BModule1Layer1InnerPixelActive"/>
+<PartSelector path="//pixel:BModule1Layer1InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -118,7 +118,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="BModule2Layer1InnerPixelActivePar">
-<PartSelector path="//BModule2Layer1InnerPixelActive"/>
+<PartSelector path="//pixel:BModule2Layer1InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -126,7 +126,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="BModule3Layer1InnerPixelActivePar">
-<PartSelector path="//BModule3Layer1InnerPixelActive"/>
+<PartSelector path="//pixel:BModule3Layer1InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -134,7 +134,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="BModule4Layer1InnerPixelActivePar">
-<PartSelector path="//BModule4Layer1InnerPixelActive"/>
+<PartSelector path="//pixel:BModule4Layer1InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -142,7 +142,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="BModule5Layer1InnerPixelActivePar">
-<PartSelector path="//BModule5Layer1InnerPixelActive"/>
+<PartSelector path="//pixel:BModule5Layer1InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -150,7 +150,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="BModule1Layer2InnerPixelActivePar">
-<PartSelector path="//BModule1Layer2InnerPixelActive"/>
+<PartSelector path="//pixel:BModule1Layer2InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -158,7 +158,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="BModule2Layer2InnerPixelActivePar">
-<PartSelector path="//BModule2Layer2InnerPixelActive"/>
+<PartSelector path="//pixel:BModule2Layer2InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -166,7 +166,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="BModule3Layer2InnerPixelActivePar">
-<PartSelector path="//BModule3Layer2InnerPixelActive"/>
+<PartSelector path="//pixel:BModule3Layer2InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -174,7 +174,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="BModule4Layer2InnerPixelActivePar">
-<PartSelector path="//BModule4Layer2InnerPixelActive"/>
+<PartSelector path="//pixel:BModule4Layer2InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -182,7 +182,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="BModule5Layer2InnerPixelActivePar">
-<PartSelector path="//BModule5Layer2InnerPixelActive"/>
+<PartSelector path="//pixel:BModule5Layer2InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -190,7 +190,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="BModule1Layer3InnerPixelActivePar">
-<PartSelector path="//BModule1Layer3InnerPixelActive"/>
+<PartSelector path="//pixel:BModule1Layer3InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -198,7 +198,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="BModule2Layer3InnerPixelActivePar">
-<PartSelector path="//BModule2Layer3InnerPixelActive"/>
+<PartSelector path="//pixel:BModule2Layer3InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -206,7 +206,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="BModule3Layer3InnerPixelActivePar">
-<PartSelector path="//BModule3Layer3InnerPixelActive"/>
+<PartSelector path="//pixel:BModule3Layer3InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -214,7 +214,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="BModule4Layer3InnerPixelActivePar">
-<PartSelector path="//BModule4Layer3InnerPixelActive"/>
+<PartSelector path="//pixel:BModule4Layer3InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -222,7 +222,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="BModule5Layer3InnerPixelActivePar">
-<PartSelector path="//BModule5Layer3InnerPixelActive"/>
+<PartSelector path="//pixel:BModule5Layer3InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -230,7 +230,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="BModule1Layer4InnerPixelActivePar">
-<PartSelector path="//BModule1Layer4InnerPixelActive"/>
+<PartSelector path="//pixel:BModule1Layer4InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -238,7 +238,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="BModule2Layer4InnerPixelActivePar">
-<PartSelector path="//BModule2Layer4InnerPixelActive"/>
+<PartSelector path="//pixel:BModule2Layer4InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -246,7 +246,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="BModule3Layer4InnerPixelActivePar">
-<PartSelector path="//BModule3Layer4InnerPixelActive"/>
+<PartSelector path="//pixel:BModule3Layer4InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -254,7 +254,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="BModule4Layer4InnerPixelActivePar">
-<PartSelector path="//BModule4Layer4InnerPixelActive"/>
+<PartSelector path="//pixel:BModule4Layer4InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -262,7 +262,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="BModule5Layer4InnerPixelActivePar">
-<PartSelector path="//BModule5Layer4InnerPixelActive"/>
+<PartSelector path="//pixel:BModule5Layer4InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelBarrelDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -270,7 +270,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule1Disc1InnerPixelActivePar">
-<PartSelector path="//EModule1Disc1InnerPixelActive"/>
+<PartSelector path="//pixel:EModule1Disc1InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -278,7 +278,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule2Disc1InnerPixelActivePar">
-<PartSelector path="//EModule2Disc1InnerPixelActive"/>
+<PartSelector path="//pixel:EModule2Disc1InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -286,7 +286,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule3Disc1InnerPixelActivePar">
-<PartSelector path="//EModule3Disc1InnerPixelActive"/>
+<PartSelector path="//pixel:EModule3Disc1InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -294,7 +294,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule4Disc1InnerPixelActivePar">
-<PartSelector path="//EModule4Disc1InnerPixelActive"/>
+<PartSelector path="//pixel:EModule4Disc1InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -302,7 +302,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule1Disc2InnerPixelActivePar">
-<PartSelector path="//EModule1Disc2InnerPixelActive"/>
+<PartSelector path="//pixel:EModule1Disc2InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -310,7 +310,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule2Disc2InnerPixelActivePar">
-<PartSelector path="//EModule2Disc2InnerPixelActive"/>
+<PartSelector path="//pixel:EModule2Disc2InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -318,7 +318,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule3Disc2InnerPixelActivePar">
-<PartSelector path="//EModule3Disc2InnerPixelActive"/>
+<PartSelector path="//pixel:EModule3Disc2InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -326,7 +326,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule4Disc2InnerPixelActivePar">
-<PartSelector path="//EModule4Disc2InnerPixelActive"/>
+<PartSelector path="//pixel:EModule4Disc2InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -334,7 +334,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule1Disc3InnerPixelActivePar">
-<PartSelector path="//EModule1Disc3InnerPixelActive"/>
+<PartSelector path="//pixel:EModule1Disc3InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -342,7 +342,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule2Disc3InnerPixelActivePar">
-<PartSelector path="//EModule2Disc3InnerPixelActive"/>
+<PartSelector path="//pixel:EModule2Disc3InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -350,7 +350,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule3Disc3InnerPixelActivePar">
-<PartSelector path="//EModule3Disc3InnerPixelActive"/>
+<PartSelector path="//pixel:EModule3Disc3InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -358,7 +358,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule4Disc3InnerPixelActivePar">
-<PartSelector path="//EModule4Disc3InnerPixelActive"/>
+<PartSelector path="//pixel:EModule4Disc3InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -366,7 +366,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule1Disc4InnerPixelActivePar">
-<PartSelector path="//EModule1Disc4InnerPixelActive"/>
+<PartSelector path="//pixel:EModule1Disc4InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -374,7 +374,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule2Disc4InnerPixelActivePar">
-<PartSelector path="//EModule2Disc4InnerPixelActive"/>
+<PartSelector path="//pixel:EModule2Disc4InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -382,7 +382,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule3Disc4InnerPixelActivePar">
-<PartSelector path="//EModule3Disc4InnerPixelActive"/>
+<PartSelector path="//pixel:EModule3Disc4InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -390,7 +390,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule4Disc4InnerPixelActivePar">
-<PartSelector path="//EModule4Disc4InnerPixelActive"/>
+<PartSelector path="//pixel:EModule4Disc4InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -398,7 +398,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule1Disc5InnerPixelActivePar">
-<PartSelector path="//EModule1Disc5InnerPixelActive"/>
+<PartSelector path="//pixel:EModule1Disc5InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -406,7 +406,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule2Disc5InnerPixelActivePar">
-<PartSelector path="//EModule2Disc5InnerPixelActive"/>
+<PartSelector path="//pixel:EModule2Disc5InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -414,7 +414,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule3Disc5InnerPixelActivePar">
-<PartSelector path="//EModule3Disc5InnerPixelActive"/>
+<PartSelector path="//pixel:EModule3Disc5InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -422,7 +422,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule4Disc5InnerPixelActivePar">
-<PartSelector path="//EModule4Disc5InnerPixelActive"/>
+<PartSelector path="//pixel:EModule4Disc5InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -430,7 +430,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule1Disc6InnerPixelActivePar">
-<PartSelector path="//EModule1Disc6InnerPixelActive"/>
+<PartSelector path="//pixel:EModule1Disc6InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -438,7 +438,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule2Disc6InnerPixelActivePar">
-<PartSelector path="//EModule2Disc6InnerPixelActive"/>
+<PartSelector path="//pixel:EModule2Disc6InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -446,7 +446,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule3Disc6InnerPixelActivePar">
-<PartSelector path="//EModule3Disc6InnerPixelActive"/>
+<PartSelector path="//pixel:EModule3Disc6InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -454,7 +454,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule4Disc6InnerPixelActivePar">
-<PartSelector path="//EModule4Disc6InnerPixelActive"/>
+<PartSelector path="//pixel:EModule4Disc6InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -462,7 +462,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule1Disc7InnerPixelActivePar">
-<PartSelector path="//EModule1Disc7InnerPixelActive"/>
+<PartSelector path="//pixel:EModule1Disc7InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -470,7 +470,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule2Disc7InnerPixelActivePar">
-<PartSelector path="//EModule2Disc7InnerPixelActive"/>
+<PartSelector path="//pixel:EModule2Disc7InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -478,7 +478,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule3Disc7InnerPixelActivePar">
-<PartSelector path="//EModule3Disc7InnerPixelActive"/>
+<PartSelector path="//pixel:EModule3Disc7InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -486,7 +486,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule4Disc7InnerPixelActivePar">
-<PartSelector path="//EModule4Disc7InnerPixelActive"/>
+<PartSelector path="//pixel:EModule4Disc7InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -494,7 +494,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule1Disc8InnerPixelActivePar">
-<PartSelector path="//EModule1Disc8InnerPixelActive"/>
+<PartSelector path="//pixel:EModule1Disc8InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -502,7 +502,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule2Disc8InnerPixelActivePar">
-<PartSelector path="//EModule2Disc8InnerPixelActive"/>
+<PartSelector path="//pixel:EModule2Disc8InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="672"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -510,7 +510,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule3Disc8InnerPixelActivePar">
-<PartSelector path="//EModule3Disc8InnerPixelActive"/>
+<PartSelector path="//pixel:EModule3Disc8InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -518,7 +518,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule4Disc8InnerPixelActivePar">
-<PartSelector path="//EModule4Disc8InnerPixelActive"/>
+<PartSelector path="//pixel:EModule4Disc8InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -526,7 +526,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule1Disc9InnerPixelActivePar">
-<PartSelector path="//EModule1Disc9InnerPixelActive"/>
+<PartSelector path="//pixel:EModule1Disc9InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -534,7 +534,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule2Disc9InnerPixelActivePar">
-<PartSelector path="//EModule2Disc9InnerPixelActive"/>
+<PartSelector path="//pixel:EModule2Disc9InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -542,7 +542,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule3Disc9InnerPixelActivePar">
-<PartSelector path="//EModule3Disc9InnerPixelActive"/>
+<PartSelector path="//pixel:EModule3Disc9InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -550,7 +550,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule4Disc9InnerPixelActivePar">
-<PartSelector path="//EModule4Disc9InnerPixelActive"/>
+<PartSelector path="//pixel:EModule4Disc9InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -558,7 +558,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule5Disc9InnerPixelActivePar">
-<PartSelector path="//EModule5Disc9InnerPixelActive"/>
+<PartSelector path="//pixel:EModule5Disc9InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -566,7 +566,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule1Disc10InnerPixelActivePar">
-<PartSelector path="//EModule1Disc10InnerPixelActive"/>
+<PartSelector path="//pixel:EModule1Disc10InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -574,7 +574,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule2Disc10InnerPixelActivePar">
-<PartSelector path="//EModule2Disc10InnerPixelActive"/>
+<PartSelector path="//pixel:EModule2Disc10InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -582,7 +582,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule3Disc10InnerPixelActivePar">
-<PartSelector path="//EModule3Disc10InnerPixelActive"/>
+<PartSelector path="//pixel:EModule3Disc10InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -590,7 +590,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule4Disc10InnerPixelActivePar">
-<PartSelector path="//EModule4Disc10InnerPixelActive"/>
+<PartSelector path="//pixel:EModule4Disc10InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -598,7 +598,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule5Disc10InnerPixelActivePar">
-<PartSelector path="//EModule5Disc10InnerPixelActive"/>
+<PartSelector path="//pixel:EModule5Disc10InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -606,7 +606,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule1Disc11InnerPixelActivePar">
-<PartSelector path="//EModule1Disc11InnerPixelActive"/>
+<PartSelector path="//pixel:EModule1Disc11InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -614,7 +614,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule2Disc11InnerPixelActivePar">
-<PartSelector path="//EModule2Disc11InnerPixelActive"/>
+<PartSelector path="//pixel:EModule2Disc11InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -622,7 +622,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule3Disc11InnerPixelActivePar">
-<PartSelector path="//EModule3Disc11InnerPixelActive"/>
+<PartSelector path="//pixel:EModule3Disc11InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -630,7 +630,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule4Disc11InnerPixelActivePar">
-<PartSelector path="//EModule4Disc11InnerPixelActive"/>
+<PartSelector path="//pixel:EModule4Disc11InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -638,7 +638,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule5Disc11InnerPixelActivePar">
-<PartSelector path="//EModule5Disc11InnerPixelActive"/>
+<PartSelector path="//pixel:EModule5Disc11InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -646,7 +646,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule1Disc12InnerPixelActivePar">
-<PartSelector path="//EModule1Disc12InnerPixelActive"/>
+<PartSelector path="//pixel:EModule1Disc12InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -654,7 +654,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule2Disc12InnerPixelActivePar">
-<PartSelector path="//EModule2Disc12InnerPixelActive"/>
+<PartSelector path="//pixel:EModule2Disc12InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -662,7 +662,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule3Disc12InnerPixelActivePar">
-<PartSelector path="//EModule3Disc12InnerPixelActive"/>
+<PartSelector path="//pixel:EModule3Disc12InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -670,7 +670,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule4Disc12InnerPixelActivePar">
-<PartSelector path="//EModule4Disc12InnerPixelActive"/>
+<PartSelector path="//pixel:EModule4Disc12InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
@@ -678,7 +678,7 @@ note: see OT616_200_IT613_2019_02_20.cfg for full config files
 <Parameter name="PixelROC_Y" value="2"/>
 </SpecPar>
 <SpecPar name="EModule5Disc12InnerPixelActivePar">
-<PartSelector path="//EModule5Disc12InnerPixelActive"/>
+<PartSelector path="//pixel:EModule5Disc12InnerPixelActive"/>
 <Parameter name="TkDDDStructure" value="PixelEndcapDet"/>
 <Parameter name="PixelROCRows" value="677"/>
 <Parameter name="PixelROCCols" value="217"/>
