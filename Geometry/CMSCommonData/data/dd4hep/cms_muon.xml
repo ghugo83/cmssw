@@ -2,25 +2,13 @@
 <DDDefinition>
 
   <debug>
-<!-- 
-    <debug_placements/>
-    <debug_rotations/>
-    <debug_includes/>
-    <debug_materials/>
-
-    <debug_shapes/>
-    <debug_volumes/>
-    <debug_namespaces/>
-    <debug_visattr/>
-    <debug_constants/>
-    <debug_algorithms/>
--->
   </debug>
+
 
   <open_geometry/>
   <close_geometry/>
   
-
+  
   <ConstantsSection label="" eval="true">
     <Constant name="world_x" value="5*m"/>
     <Constant name="world_y" value="5*m"/>
@@ -40,58 +28,15 @@
   <IncludeSection>
     <Include ref="../../DD4hep/examples/DDCMS/data/materials.xml"/>
     <Include ref="../../DD4hep/examples/DDCMS/data/rotations.xml"/>   
-    <Include ref="../../DD4hep/examples/DDCMS/data/trackermaterial.xml"/>
-    
 
-    
-    <Include ref="../../DD4hep/examples/DDCMS/data/vacuum.xml"/>
-    <Include ref="../../DD4hep/examples/DDCMS/data/cmsextent.xml"/>
     <Include ref="../../DD4hep/examples/DDCMS/data/cms.xml"/>
-    
-     <Include ref='Geometry/CMSCommonData/data/cms/2021/v3/cms.xml'/>
-     <Include ref='Geometry/CMSCommonData/data/rotations.xml'/>
-     <Include ref='Geometry/CMSCommonData/data/cavernData/2021/v1/cavernData.xml'/>
-
- 
+    <Include ref="../../DD4hep/examples/DDCMS/data/cmsextent.xml"/>
+    <Include ref="../../DD4hep/examples/DDCMS/data/cavernData.xml"/>
  
     <Include ref='Geometry/CMSCommonData/data/muonBase/2018/v1/muonBase.xml'/>
-    <!--<Include ref='Geometry/CMSCommonData/data/cmsMuon.xml'/>
-    <Include ref='Geometry/CMSCommonData/data/mgnt.xml'/>-->
-    
-    <!--
-    <Include ref='Geometry/CMSCommonData/data/muonMB.xml'/>
-    <Include ref='Geometry/CMSCommonData/data/muonMagnet.xml'/>-->
-    
-    
-    <!--<Include ref='Geometry/CMSCommonData/data/cavern/2021/v1/cavern.xml'/>
-    <Include ref='Geometry/CMSCommonData/data/cavernFloor/2017/v1/cavernFloor.xml'/>-->
- 
-    <!--<Include ref='Geometry/MuonCommonData/data/mbCommon/2021/v2/mbCommon.xml'/>
-    <Include ref='Geometry/MuonCommonData/data/mb1/2021/v1/mb1.xml'/>
-    <Include ref='Geometry/MuonCommonData/data/mb2/2021/v1/mb2.xml'/>
-    <Include ref='Geometry/MuonCommonData/data/mb3/2021/v1/mb3.xml'/>
-    <Include ref='Geometry/MuonCommonData/data/mb4/2015/v2/mb4.xml'/>
-    <Include ref='Geometry/MuonCommonData/data/mb4Shield/2021/v1/mb4Shield.xml'/>
-    <Include ref='Geometry/MuonCommonData/data/muonYoke/2021/v5/muonYoke.xml'/>-->
     <Include ref='Geometry/MuonCommonData/data/mf/2021/v2/mf.xml'/>
-    <!--<Include ref='Geometry/MuonCommonData/data/rpcf/2015/v1/rpcf.xml'/>
-    <Include ref='Geometry/MuonCommonData/data/gemf/TDR_BaseLine/gemf.xml'/>
-    <Include ref='Geometry/MuonCommonData/data/gem11/TDR_BaseLine/gem11.xml'/>-->
-    <Include ref='Geometry/MuonCommonData/data/csc/2021/v3/csc.xml'/>
-    
-    <!--<Include ref='Geometry/MuonCommonData/data/mfshield/2017/v2/mfshield.xml'/>-->
-    
-    
-    <!--<Include ref='Geometry/MuonCommonData/data/muonNumbering/2021/v3/muonNumbering.xml'/>-->
-   
-  
-  
-  
-  
-  
-  
+    <Include ref='Geometry/MuonCommonData/data/csc/2021/v3/csc.xml'/>  
   </IncludeSection>
-  
   
   
    <PosPartSection label="">
@@ -102,6 +47,5 @@
    </PosPart>
   </PosPartSection>
 
-  
   
 </DDDefinition>
