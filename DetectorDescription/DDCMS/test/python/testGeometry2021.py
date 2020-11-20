@@ -8,7 +8,9 @@ process.maxEvents = cms.untracked.PSet(
     )
 
 process.DDDetectorESProducer = cms.ESSource("DDDetectorESProducer",
-                                            confGeomXMLFiles = cms.FileInPath('Geometry/CMSCommonData/data/dd4hep/cmsExtendedGeometry2021.xml'),
+                                            #confGeomXMLFiles = cms.FileInPath('Geometry/CMSCommonData/data/dd4hep/cmsExtendedGeometry2021.xml'),
+                                            #confGeomXMLFiles = cms.FileInPath('Geometry/CMSCommonData/data/dd4hep/cms_muon.xml'),
+                                            confGeomXMLFiles = cms.FileInPath('Geometry/CMSCommonData/data/dd4hep/cms_ecalEndcap.xml'),
                                             appendToDataLabel = cms.string('CMS')
                                             )
 
