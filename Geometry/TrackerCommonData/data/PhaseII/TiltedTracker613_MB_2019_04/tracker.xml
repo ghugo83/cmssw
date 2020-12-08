@@ -483,9 +483,23 @@ note: see OT616_200_IT613_2019_04_25.cfg for full config files
 <rMaterial name="tracker:tkLayout_C"/>
 </MaterialFraction>
 </CompositeMaterial>
-<CompositeMaterial name="tkLayout_CFRP" density="1.43*g/cm3" method="mixture by weight">
+<CompositeMaterial name="tkLayout_CH2OCN" density="1.16*g/cm3" method="mixture by weight">
+<MaterialFraction fraction="0.428628">
+<rMaterial name="tracker:tkLayout_C"/>
+</MaterialFraction>
+<MaterialFraction fraction="0.0359717">
+<rMaterial name="tracker:tkLayout_H"/>
+</MaterialFraction>
+<MaterialFraction fraction="0.249929">
+<rMaterial name="tracker:tkLayout_N"/>
+</MaterialFraction>
+<MaterialFraction fraction="0.285472">
+<rMaterial name="tracker:tkLayout_O"/>
+</MaterialFraction>
+</CompositeMaterial>
+<CompositeMaterial name="tkLayout_Epoxy" density="1.16*g/cm3" method="mixture by weight">
 <MaterialFraction fraction="1">
-<rMaterial name="tracker:tkLayout_CFRP_EPX"/>
+<rMaterial name="tracker:tkLayout_CH2OCN"/>
 </MaterialFraction>
 </CompositeMaterial>
 <CompositeMaterial name="tkLayout_CFRP_EPX" density="1.43*g/cm3" method="mixture by weight">
@@ -494,6 +508,11 @@ note: see OT616_200_IT613_2019_04_25.cfg for full config files
 </MaterialFraction>
 <MaterialFraction fraction="0.29">
 <rMaterial name="tracker:tkLayout_Epoxy"/>
+</MaterialFraction>
+</CompositeMaterial>
+<CompositeMaterial name="tkLayout_CFRP" density="1.43*g/cm3" method="mixture by weight">
+<MaterialFraction fraction="1">
+<rMaterial name="tracker:tkLayout_CFRP_EPX"/>
 </MaterialFraction>
 </CompositeMaterial>
 <CompositeMaterial name="tkLayout_CFRP_FPX" density="2.198*g/cm3" method="mixture by weight">
@@ -523,20 +542,6 @@ note: see OT616_200_IT613_2019_04_25.cfg for full config files
 <CompositeMaterial name="tkLayout_CFRP_module" density="1.43*g/cm3" method="mixture by weight">
 <MaterialFraction fraction="1">
 <rMaterial name="tracker:tkLayout_CFRP_EPX"/>
-</MaterialFraction>
-</CompositeMaterial>
-<CompositeMaterial name="tkLayout_CH2OCN" density="1.16*g/cm3" method="mixture by weight">
-<MaterialFraction fraction="0.428628">
-<rMaterial name="tracker:tkLayout_C"/>
-</MaterialFraction>
-<MaterialFraction fraction="0.0359717">
-<rMaterial name="tracker:tkLayout_H"/>
-</MaterialFraction>
-<MaterialFraction fraction="0.249929">
-<rMaterial name="tracker:tkLayout_N"/>
-</MaterialFraction>
-<MaterialFraction fraction="0.285472">
-<rMaterial name="tracker:tkLayout_O"/>
 </MaterialFraction>
 </CompositeMaterial>
 <CompositeMaterial name="tkLayout_CO2" density="1*g/cm3" method="mixture by weight">
@@ -665,11 +670,6 @@ note: see OT616_200_IT613_2019_04_25.cfg for full config files
 <CompositeMaterial name="tkLayout_Cu_Elinks_TFPX_R4" density="8.96*g/cm3" method="mixture by weight">
 <MaterialFraction fraction="1">
 <rMaterial name="tracker:tkLayout_Cu_Elinks_TBPX_L1"/>
-</MaterialFraction>
-</CompositeMaterial>
-<CompositeMaterial name="tkLayout_Epoxy" density="1.16*g/cm3" method="mixture by weight">
-<MaterialFraction fraction="1">
-<rMaterial name="tracker:tkLayout_CH2OCN"/>
 </MaterialFraction>
 </CompositeMaterial>
 <CompositeMaterial name="tkLayout_FPIX_Al" density="2.698*g/cm3" method="mixture by weight">
