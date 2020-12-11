@@ -55,7 +55,7 @@ note: see OT616_IT615_2019_11_28.cfg for full config files
 </MaterialFraction>
 </CompositeMaterial>
 <CompositeMaterial name="hybridcompositeBModule1Layer3Hybrid" density="1.22194*g/cm3" method="mixture by weight">
-<MaterialFraction fraction="0.0569586">
+<!--<MaterialFraction fraction="0.0569586">
 <rMaterial name="tracker:tkLayout_Epoxy"/>
 </MaterialFraction>
 <MaterialFraction fraction="0.574136">
@@ -63,6 +63,9 @@ note: see OT616_IT615_2019_11_28.cfg for full config files
 </MaterialFraction>
 <MaterialFraction fraction="0.368905">
 <rMaterial name="tracker:tkLayout_Pix_Caps"/>
+</MaterialFraction>-->
+<MaterialFraction fraction="1.0">
+<rMaterial name="tracker:tkLayout_IT-HDI-mix"/>
 </MaterialFraction>
 </CompositeMaterial>
 <CompositeMaterial name="hybridcompositeBModule1Layer3Chip" density="4.59195*g/cm3" method="mixture by weight">

@@ -28,6 +28,7 @@ void DDLCompositeMaterial::processElement(const std::string& name, const std::st
   DDXMLAttribute atts = getAttributeSet();
 
   DDName ddn = getDDName(nmspace);
+  std::cout << "DDD XML PARSER: DDLCompositeMaterial::processElement composite material = " << ddn.name() << std::endl;
   DDMaterial mat;
 
   mat = DDMaterial(ddn, ev.eval(nmspace, atts.find("density")->second));
@@ -58,6 +59,7 @@ void DDLCompositeMaterial::processElement(const std::string& name, const std::st
   }
   for (size_t i = 0; i < myrMaterial->size(); ++i) {
     atts = myMF->getAttributeSet(i);
+    std::cout << "has consitituent = " << myrMaterial->getDDName(nmspace, "name", i).name() << std::endl;
     mat.addMaterial(myrMaterial->getDDName(nmspace, "name", i), ev.eval(nmspace, atts.find("fraction")->second));
   }
   // clears and sets new reference to THIS material.
