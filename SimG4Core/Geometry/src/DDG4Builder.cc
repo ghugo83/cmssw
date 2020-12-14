@@ -73,21 +73,21 @@ G4Material *DDG4Builder::convertMaterial(const DDMaterial &material) {
   int c = 0;
   if ((c = material.noOfConstituents())) {
     // it's a composite material
-    edm::LogVerbatim("SimG4CoreGeometry")
-        << "  creating a G4-composite material. c=" << c << " d=" << material.density() / CLHEP::g * CLHEP::mole;
+    std::cout << "  creating a G4-composite material name() = " << material.name().name() << ", numberOfCons =" << c << " density =" << material.density() / CLHEP::g * CLHEP::mole << std::endl;
     result = new G4Material(material.name().name(), material.density(), c);
     for (int i = 0; i < c; ++i) {
       // recursive building of constituents
-      edm::LogVerbatim("SimG4CoreGeometry")
-          << "  adding the composite=" << material.name() << " fm=" << material.constituent(i).second;
+      
+      std::cout   << "  has the composite=" << material.constituent(i).first.name().name() << " fm=" << material.constituent(i).second << std::endl;
       result->AddMaterial(convertMaterial(material.constituent(i).first),
                           material.constituent(i).second);  // fractionmass
     }
+    std::cout << "G4-composite material creation is done" << std::endl;
   } else {
     // it's an elementary material
-    edm::LogVerbatim("SimG4CoreGeometry") << "  building an elementary material"
-                                          << " z=" << material.z() << " a=" << material.a() / CLHEP::g * CLHEP::mole
-                                          << " d=" << material.density() / CLHEP::g * CLHEP::cm3;
+    std::cout << "  building an elementary material"
+	      << " z=" << material.z() << " a=" << material.a() / CLHEP::g * CLHEP::mole
+	      << " d=" << material.density() / CLHEP::g * CLHEP::cm3 << std::endl;
     result = new G4Material(material.name().name(), material.z(), material.a(), material.density());
   }
   mats_[material] = result;

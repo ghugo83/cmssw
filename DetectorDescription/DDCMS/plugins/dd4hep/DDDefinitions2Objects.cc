@@ -508,7 +508,7 @@ void Converter<DDLElementaryMaterial>::operator()(xml_h element) const {
     if (elt) {
       // A is Mass of a mole in Geant4 units for atoms with atomic shell
 
-#ifdef EDM_ML_DEBUG
+      //#ifdef EDM_ML_DEBUG
 
       printout(ns.context()->debug_materials ? ALWAYS : DEBUG,
                "DD4CMS",
@@ -522,7 +522,7 @@ void Converter<DDLElementaryMaterial>::operator()(xml_h element) const {
                "+++ Compared to XML values: Atomic weight %g, Atomic number %u",
                atomicWeight,
                atomicNumber);
-#endif
+      //#endif
 
       static constexpr double const weightTolerance = 1.0e-6;
       if (atomicNumber != elt->Z() ||
@@ -532,7 +532,7 @@ void Converter<DDLElementaryMaterial>::operator()(xml_h element) const {
 
     if (!elt || newMatDef) {
       if (newMatDef) {
-#ifdef EDM_ML_DEBUG
+	//#ifdef EDM_ML_DEBUG
 
         printout(ns.context()->debug_materials ? ALWAYS : DEBUG,
                  "DD4CMS Warning",
@@ -540,17 +540,17 @@ void Converter<DDLElementaryMaterial>::operator()(xml_h element) const {
                  "MATERIAL]",
                  matname);
 
-#endif
+	//#endif
 
       } else {
-#ifdef EDM_ML_DEBUG
+	//#ifdef EDM_ML_DEBUG
 
         printout(ns.context()->debug_materials ? ALWAYS : DEBUG,
                  "DD4CMS Warning",
                  "+++ Converter<ElementaryMaterial> No default element present with name:%s  [CREATE NEW MATERIAL]",
                  matname);
 
-#endif
+	//#endif
       }
       elt = new TGeoElement(xmat.nameStr().c_str(), "CMS element", atomicNumber, atomicWeight);
     }
@@ -574,6 +574,7 @@ void Converter<DDLCompositeMaterial>::operator()(xml_h element) const {
   cms::DDNamespace ns(_param<cms::DDParsingContext>());
   xml_dim_t xmat(element);
   string nam = ns.prepend(xmat.nameStr());
+  std::cout << "Converter<DDLCompositeMaterial> name = " << nam << std::endl;
 
   TGeoManager& mgr = description.manager();
   TGeoMaterial* mat = mgr.GetMaterial(nam.c_str());
@@ -583,7 +584,7 @@ void Converter<DDLCompositeMaterial>::operator()(xml_h element) const {
     xml_coll_t composites(xmat, DD_CMU(MaterialFraction));
     TGeoMixture* mix = new TGeoMixture(nam.c_str(), composites.size(), density);
 
-#ifdef EDM_ML_DEBUG
+    //#ifdef EDM_ML_DEBUG
 
     printout(ns.context()->debug_materials ? ALWAYS : DEBUG,
              "DD4CMS",
@@ -592,33 +593,40 @@ void Converter<DDLCompositeMaterial>::operator()(xml_h element) const {
              density,
              mix->GetDensity());
 
-#endif
+    //#endif
 
-    for (composites.reset(); composites; ++composites) {
-      xml_dim_t xfrac(composites);
-      xml_dim_t xfrac_mat(xfrac.child(DD_CMU(rMaterial)));
-      double fraction = xfrac.fraction();
-      string fracname = ns.realName(xfrac_mat.nameStr());
+      for (composites.reset(); composites; ++composites) {
+	xml_dim_t xfrac(composites);
+	xml_dim_t xfrac_mat(xfrac.child(DD_CMU(rMaterial)));
+	double fraction = xfrac.fraction();
+	string fracname = ns.realName(xfrac_mat.nameStr());
+	std::cout << "fracname = " << fracname << std::endl;
+	std::cout << "fraction = " << fraction << std::endl;
 
-      TGeoMaterial* frac_mat = mgr.GetMaterial(fracname.c_str());
-      if (frac_mat == nullptr)  // Try to find it within this namespace
-        frac_mat = mgr.GetMaterial(ns.prepend(fracname).c_str());
-      if (frac_mat) {
-        mix->AddElement(frac_mat, fraction);
-        continue;
-      }
+	TGeoMaterial* frac_mat = mgr.GetMaterial(fracname.c_str());
+	if (frac_mat == nullptr) { // Try to find it within this namespace 
+	  std::cout << "frac_mat == nullptr, try to find it within namespace, looking for " << ns.prepend(fracname).c_str() << std::endl;
+	  frac_mat = mgr.GetMaterial(ns.prepend(fracname).c_str());
+	}
+	if (frac_mat) {
+	  mix->AddElement(frac_mat, fraction);
+	  std::cout << "good, fracname found in namespace and added to the list of the composite" << std::endl; 
+	  continue;
+	}
 
-#ifdef EDM_ML_DEBUG
+	//#ifdef EDM_ML_DEBUG
 
-      printout(ns.context()->debug_materials ? ALWAYS : DEBUG,
-               "DD4CMS Warning",
-               "+++ Composite material \"%s\" [nor \"%s\"] not present! [delay resolution]",
-               fracname.c_str(),
-               ns.prepend(fracname).c_str());
+	// printout(ns.context()->debug_materials ? ALWAYS : DEBUG,
+	std::cout <<
+	  "DD4CMS WARNINGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG +++ Composite material not present! [delay resolution]"
+		  << fracname.c_str()
+		  << " NOR "
+		  << ns.prepend(fracname).c_str() 
+		  << std::endl;
 
-#endif
+	//#endif
 
-      ns.context()->unresolvedMaterials[nam].emplace_back(
+	  ns.context()->unresolvedMaterials[nam].emplace_back(
           cms::DDParsingContext::CompositeMaterial(ns.prepend(fracname), fraction));
     }
     mix->SetRadLen(0e0);
@@ -786,9 +794,12 @@ void Converter<DDLLogicalPart>::operator()(xml_h element) const {
   xml_dim_t e(element);
   string sol = e.child(DD_CMU(rSolid)).attr<string>(_U(name));
   string mat = e.child(DD_CMU(rMaterial)).attr<string>(_U(name));
+  std::cout << "mat = " << mat << std::endl;
   string volName = ns.prepend(e.attr<string>(_U(name)));
+  std::cout << "volName = " << volName << std::endl;
   Solid solid = ns.solid(sol);
   Material material = ns.material(mat);
+  //std::cout << "volName = " << volName << std::endl;
 
 #ifdef EDM_ML_DEBUG
   Volume volume =
@@ -796,7 +807,7 @@ void Converter<DDLLogicalPart>::operator()(xml_h element) const {
 
       ns.addVolume(Volume(volName, solid, material));
 
-#ifdef EDM_ML_DEBUG
+  //#ifdef EDM_ML_DEBUG
 
   printout(ns.context()->debug_volumes ? ALWAYS : DEBUG,
            "DD4CMS",
@@ -809,7 +820,7 @@ void Converter<DDLLogicalPart>::operator()(xml_h element) const {
            mat.c_str(),
            material.isValid() ? "VALID" : "INVALID");
 
-#endif
+  //#endif
 }
 
 /// Helper converter
@@ -2118,16 +2129,17 @@ static long load_dddefinition(Detector& det, xml_h element) {
         xml_coll_t(d.root(), DD_CMU(MaterialSection)).for_each(Converter<MaterialSection>(det, &context));
       }
       {
-        printout(context.debug_materials ? ALWAYS : DEBUG,
-                 "DD4CMS",
-                 "+++ RESOLVING %ld unknown material constituents.....",
-                 context.unresolvedMaterials.size());
+	context.debug_materials = true;
+	std::cout << "!!!!!!!!! STARTS RESOLVING COMPOISTE MATERIALS, total" 
+		  << context.unresolvedMaterials.size() << " unknown composites."
+		  << std::endl;
 
         // Resolve referenced materials (if any)
 
         while (!context.unresolvedMaterials.empty()) {
           for (auto it = context.unresolvedMaterials.begin(); it != context.unresolvedMaterials.end();) {
             auto const& name = it->first;
+	    std::cout << "!!!!!!!!! unresolved composite name = " << name << ", with size = " << it->second.size() << std::endl;
             std::vector<bool> valid;
 
             printout(context.debug_materials ? ALWAYS : DEBUG,
@@ -2143,24 +2155,37 @@ static long load_dddefinition(Detector& det, xml_h element) {
                        "+++           component  %-48s Fraction: %.6f",
                        mit.name.c_str(),
                        mit.fraction);
+	      std::cout << "constituent name = " << mit.name << " and fraction = " << mit.fraction << std::endl;
               auto fmat = ns.material(mit.name);
               if (nullptr != fmat.ptr()) {
                 if (mat.ptr()->GetMaterial()->IsMixture()) {
                   valid.emplace_back(true);
+		  std::cout << "@ constituent name = " << mit.name << " was found :))))))))))))))" << std::endl;
                   static_cast<TGeoMixture*>(mat.ptr()->GetMaterial())
                       ->AddElement(fmat.ptr()->GetMaterial(), mit.fraction);
                 }
               }
             }
             // All components are resolved
-            if (valid.size() == it->second.size())
+            if (valid.size() == it->second.size()) {
+	      std::cout << "remove composite " << name << " was solved, had size " << it->second.size() << std::endl;
+	      TGeoMixture* myMix = static_cast<TGeoMixture*>(mat.ptr()->GetMaterial());
+	      std::cout << "FINISHED TGEo composite name = " << name << std::endl;
+	      std::cout << "with density = " << myMix->GetDensity() << std::endl;
+
+	      for (int index = 0; index < myMix->GetNelements(); ++index) {
+		myMix->GetElement(index)->Print();
+	      }
+
               it = context.unresolvedMaterials.erase(it);
+	    }
             else
               ++it;
           }
           // Do it again if there are unresolved
           // materials left after this pass
         }
+	std::cout << "FINISHED treating unresolved composite materials, 0 left." << std::endl;
       }
       if (open_geometry) {
         det.init();
