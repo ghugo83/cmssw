@@ -167,14 +167,14 @@ bool HcalSimParametersFromDD::build(const cms::DDCompactView& cpv, HcalSimulatio
 }
 
 bool HcalSimParametersFromDD::buildParameters(const HcalSimulationParameters& php) {
-#ifdef EDM_ML_DEBUG
+  //#ifdef EDM_ML_DEBUG
   std::stringstream ss0;
   for (unsigned int it = 0; it < php.hfNames_.size(); it++) {
     if (it / 10 * 10 == it)
       ss0 << "\n";
     ss0 << " [" << it << "] " << php.hfNames_[it];
   }
-  edm::LogVerbatim("HCalGeom") << "HFNames: " << php.hfNames_.size() << ": " << ss0.str();
+  std::cout << "HFNames: " << php.hfNames_.size() << ": " << ss0.str() << std::endl;
 
   std::stringstream ss1;
   for (unsigned int it = 0; it < php.hfLevels_.size(); it++) {
@@ -182,7 +182,7 @@ bool HcalSimParametersFromDD::buildParameters(const HcalSimulationParameters& ph
       ss1 << "\n";
     ss1 << " [" << it << "] " << php.hfLevels_[it];
   }
-  edm::LogVerbatim("HCalGeom") << "HF Volume Levels: " << php.hfLevels_.size() << " hfLevels: " << ss1.str();
+  std::cout << "HF Volume Levels: " << php.hfLevels_.size() << " hfLevels: " << ss1.str() << std::endl;
 
   std::stringstream ss2;
   for (unsigned int it = 0; it < php.attenuationLength_.size(); it++) {
@@ -190,8 +190,8 @@ bool HcalSimParametersFromDD::buildParameters(const HcalSimulationParameters& ph
       ss2 << "\n";
     ss2 << "  " << convertMmToCm(php.attenuationLength_[it]);
   }
-  edm::LogVerbatim("HCalGeom") << "AttenuationLength: " << php.attenuationLength_.size()
-                               << " attL(1/cm): " << ss2.str();
+  std::cout << "AttenuationLength: " << php.attenuationLength_.size()
+                               << " attL(1/cm): " << ss2.str() << std::endl;
 
   std::stringstream ss3;
   for (unsigned int it = 0; it < php.lambdaLimits_.size(); it++) {
@@ -199,7 +199,7 @@ bool HcalSimParametersFromDD::buildParameters(const HcalSimulationParameters& ph
       ss3 << "\n";
     ss3 << "  " << php.lambdaLimits_[it];
   }
-  edm::LogVerbatim("HCalGeom") << php.lambdaLimits_.size() << " Limits on lambda " << ss3.str();
+  std::cout << php.lambdaLimits_.size() << " Limits on lambda " << ss3.str() << std::endl;
 
   std::stringstream ss4;
   for (unsigned int it = 0; it < php.longFiberLength_.size(); it++) {
@@ -207,7 +207,7 @@ bool HcalSimParametersFromDD::buildParameters(const HcalSimulationParameters& ph
       ss4 << "\n";
     ss4 << "  " << convertMmToCm(php.longFiberLength_[it]);
   }
-  edm::LogVerbatim("HCalGeom") << php.longFiberLength_.size() << " Long Fibre Length(cm):" << ss4.str();
+  std::cout << php.longFiberLength_.size() << " Long Fibre Length(cm):" << ss4.str() << std::endl;
 
   std::stringstream ss5;
   for (unsigned int it = 0; it < php.shortFiberLength_.size(); it++) {
@@ -215,36 +215,36 @@ bool HcalSimParametersFromDD::buildParameters(const HcalSimulationParameters& ph
       ss5 << "\n";
     ss5 << "  " << convertMmToCm(php.shortFiberLength_[it]);
   }
-  edm::LogVerbatim("HCalGeom") << php.shortFiberLength_.size() << " Short Fibre Length(cm):" << ss5.str();
+  std::cout << php.shortFiberLength_.size() << " Short Fibre Length(cm):" << ss5.str() << std::endl;
 
-  edm::LogVerbatim("HCalGeom") << "HcalSimParameters: gets the Index matches for " << php.pmtRight_.size() << " PMTs";
+  std::cout << "HcalSimParameters: gets the Index matches for " << php.pmtRight_.size() << " PMTs";
   for (unsigned int ii = 0; ii < php.pmtRight_.size(); ii++)
-    edm::LogVerbatim("HCalGeom") << "rIndexR[" << ii << "] = " << php.pmtRight_[ii] << " fibreR[" << ii
+    std::cout << "rIndexR[" << ii << "] = " << php.pmtRight_[ii] << " fibreR[" << ii
                                  << "] = " << php.pmtFiberRight_[ii] << " rIndexL[" << ii << "] = " << php.pmtLeft_[ii]
-                                 << " fibreL[" << ii << "] = " << php.pmtFiberLeft_[ii];
+                                 << " fibreL[" << ii << "] = " << php.pmtFiberLeft_[ii] << std::endl;
 
-  edm::LogVerbatim("HCalGeom") << "HcalSimParameters: " << php.hfFibreNames_.size() << " names of HFFibre";
+  std::cout << "HcalSimParameters: " << php.hfFibreNames_.size() << " names of HFFibre";
   for (unsigned int k = 0; k < php.hfFibreNames_.size(); ++k)
-    edm::LogVerbatim("HCalGeom") << "[" << k << "] " << php.hfFibreNames_[k];
+    std::cout << "[" << k << "] " << php.hfFibreNames_[k] << std::endl;
 
-  edm::LogVerbatim("HCalGeom") << "HcalSimParameters: " << php.hfPMTNames_.size() << " names of HFPMT";
+  std::cout << "HcalSimParameters: " << php.hfPMTNames_.size() << " names of HFPMT";
   for (unsigned int k = 0; k < php.hfPMTNames_.size(); ++k)
-    edm::LogVerbatim("HCalGeom") << "[" << k << "] " << php.hfPMTNames_[k];
+    std::cout << "[" << k << "] " << php.hfPMTNames_[k] << std::endl;
 
-  edm::LogVerbatim("HCalGeom") << "HcalSimParameters: " << php.hfFibreStraightNames_.size()
+  std::cout << "HcalSimParameters: " << php.hfFibreStraightNames_.size()
                                << " names of HFFibreBundleStraight";
   for (unsigned int k = 0; k < php.hfFibreStraightNames_.size(); ++k)
-    edm::LogVerbatim("HCalGeom") << "[" << k << "] " << php.hfFibreStraightNames_[k];
+    std::cout << "[" << k << "] " << php.hfFibreStraightNames_[k] << std::endl;
 
-  edm::LogVerbatim("HCalGeom") << "HcalSimParameters: " << php.hfFibreConicalNames_.size()
+  std::cout << "HcalSimParameters: " << php.hfFibreConicalNames_.size()
                                << " names of FibreBundleConical";
   for (unsigned int k = 0; k < php.hfFibreConicalNames_.size(); ++k)
-    edm::LogVerbatim("HCalGeom") << "[" << k << "] " << php.hfFibreConicalNames_[k];
+    std::cout << "[" << k << "] " << php.hfFibreConicalNames_[k] << std::endl;
 
-  edm::LogVerbatim("HCalGeom") << "HcalSimParameters: " << php.hcalMaterialNames_.size() << " names of HCAL materials";
+  std::cout << "HcalSimParameters: " << php.hcalMaterialNames_.size() << " names of HCAL materials";
   for (unsigned int k = 0; k < php.hcalMaterialNames_.size(); ++k)
-    edm::LogVerbatim("HCalGeom") << "[" << k << "] " << php.hcalMaterialNames_[k];
-#endif
+    std::cout << "[" << k << "] " << php.hcalMaterialNames_[k] << std::endl;
+  //#endif
 
   return true;
 }

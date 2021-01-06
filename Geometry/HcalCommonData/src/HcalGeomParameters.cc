@@ -250,14 +250,14 @@ void HcalGeomParameters::loadGeometry(const cms::DDCompactView& cpv, HcalParamet
       lay = copy[0] / 10;
     if (nsiz > 1)
       idet = copy[1] / 1000;
-#ifdef EDM_ML_DEBUG
-    edm::LogVerbatim("HCalGeom") << "Name " << fv.name() << " Copy " << copy.size();
+    //#ifdef EDM_ML_DEBUG
+    std::cout << "HcalGeomParameters::loadGeometry Name " << fv.name() << " Copy " << copy.size() << std::endl;
     for (unsigned int n = 0; n < copy.size(); ++n)
-      edm::LogVerbatim("HCalGeom") << "[" << n << "] " << copy[n];
-    edm::LogVerbatim("HCalGeom") << "Detector " << idet << " Layer " << lay << " parameters: " << paras.size();
+      std::cout << "[" << n << "] " << copy[n] << std::endl;
+    std::cout << "Detector " << idet << " Layer " << lay << " parameters: " << paras.size() << std::endl;
     for (unsigned int n = 0; n < paras.size(); ++n)
-      edm::LogVerbatim("HCalGeom") << "[" << n << "] " << paras[n];
-#endif
+      std::cout << "[" << n << "] " << paras[n] << std::endl;
+    //#endif
     double dx = 0, dy = 0, dz = 0, dx1 = 0, dx2 = 0;
     double alp(0);
     if (dd4hep::isA<dd4hep::Box>(fv.solid())) {

@@ -207,11 +207,14 @@ void DDG4ProductionCuts::setProdCuts(const DDLogicalPart lpart, G4Region* region
   prodCuts->SetProductionCut(electroncut, idxG4ElectronCut);
   prodCuts->SetProductionCut(positroncut, idxG4PositronCut);
   prodCuts->SetProductionCut(protoncut, idxG4ProtonCut);
-  if (verbosity_ > 0) {
-    edm::LogVerbatim("Geometry") << "DDG4ProductionCuts : Setting cuts for " << region->GetName()
-                                 << "\n    Electrons: " << electroncut << "\n    Positrons: " << positroncut
-                                 << "\n    Gamma    : " << gammacut << "\n    Proton   : " << protoncut;
-  }
+  //if (verbosity_ > 0) {
+  std::cout << "DDG4ProductionCuts : Setting cuts for " << region->GetName() << std::endl;
+  /*for (auto const &path : lpart.specifics()) {
+    std::cout << path << std::endl;
+    }*/
+  std::cout << "\n    Electrons: " << electroncut << "\n    Positrons: " << positroncut
+	    << "\n    Gamma    : " << gammacut << "\n    Proton   : " << protoncut << std::endl;
+  //}
 }
 
 void DDG4ProductionCuts::setProdCuts(const dd4hep::SpecPar* spec, G4Region* region) {
@@ -239,11 +242,14 @@ void DDG4ProductionCuts::setProdCuts(const dd4hep::SpecPar* spec, G4Region* regi
     prodCuts->SetProductionCut(electroncut, idxG4ElectronCut);
     prodCuts->SetProductionCut(positroncut, idxG4PositronCut);
     prodCuts->SetProductionCut(protoncut, idxG4ProtonCut);
-    if (verbosity_ > 0) {
-      edm::LogVerbatim("Geometry") << "DDG4ProductionCuts : Setting cuts for " << region->GetName()
-                                   << "\n    Electrons: " << electroncut << "\n    Positrons: " << positroncut
-                                   << "\n    Gamma    : " << gammacut << "\n    Proton   : " << protoncut;
+    //if (verbosity_ > 0) {
+    std::cout << "DDG4ProductionCuts : Setting cuts for " << region->GetName() << std::endl;
+    for (auto const &path : spec->paths) {
+      std::cout << path << std::endl;
     }
+    std::cout << "\n    Electrons: " << electroncut << "\n    Positrons: " << positroncut
+	      << "\n    Gamma    : " << gammacut << "\n    Proton   : " << protoncut << std::endl;
+    //}
   } else {
     if (verbosity_ > 0) {
       edm::LogVerbatim("Geometry")

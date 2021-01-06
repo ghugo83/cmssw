@@ -55,6 +55,11 @@ G4VPhysicalVolume *DDG4Builder::BuildGeometry(SensitiveDetectorCatalog &catalog)
     }
   }
 
+  
+
+  std::cout << "Called DDG4Builder::DDG4Builder" << std::endl;
+
+
   // ADD ALL SELECTED G4 LOGICAL VOLUMES TO SENSITIVE DETECTORS CATALOGUE
   for (auto const &it : dd4hepVec) {
     // Sensitive detector info
@@ -64,8 +69,8 @@ G4VPhysicalVolume *DDG4Builder::BuildGeometry(SensitiveDetectorCatalog &catalog)
     // Add to catalogue
     catalog.insert({sClassName.data(), sClassName.size()}, {sROUName.data(), sROUName.size()}, sensitiveDetectorG4Name);
 
-    edm::LogVerbatim("SimG4CoreApplication") << " DDG4SensitiveConverter: Sensitive " << sensitiveDetectorG4Name
-                                             << " Class Name " << sClassName << " ROU Name " << sROUName;
+    std::cout << "volume = " << sensitiveDetectorG4Name
+	      << " (" << sClassName << ", " << sROUName << ")" << std::endl;
 
     // Reflected sensors also need to be added to the senstive detectors catalogue!
     // Similar treatment here with DD4hep, as what was done for old DD.
@@ -87,6 +92,53 @@ G4VPhysicalVolume *DDG4Builder::BuildGeometry(SensitiveDetectorCatalog &catalog)
           << " ROU Name " << sROUName;
     }
   }
+
+
+
+  const dd4hep::SpecParRegistry &specParsSENS = det->specpars();
+  dd4hep::SpecParRefs specsSENS;
+  specParsSENS.filter(specsSENS, "SensitiveDetector");
+  for (auto const &specPar : specsSENS) {
+    std::cout << "SpecPar filtered with SensitiveDetector, name = " << specPar.first << std::endl;
+    for (auto const &path : specPar.second->paths) {
+      std::cout << path << std::endl;
+    }
+  }
+
+  const dd4hep::SpecParRegistry &specParsSIM = det->specpars();
+  dd4hep::SpecParRefs specsSIM;
+  specParsSIM.filter(specsSIM, "OnlyForHcalSimNumbering");
+  for (auto const &specPar : specsSIM) {
+    std::cout << "SpecPar filtered with OnlyForHcalSimNumbering, name = " << specPar.first << std::endl;
+    for (auto const &path : specPar.second->paths) {
+      std::cout << path << std::endl;
+    }
+  }
+
+  const dd4hep::SpecParRegistry &specParsREC = det->specpars();
+  dd4hep::SpecParRefs specsREC;
+  specParsREC.filter(specsREC, "OnlyForHcalRecNumbering");
+  for (auto const &specPar : specsREC) {
+    std::cout << "SpecPar filtered with OnlyForHcalRecNumbering, name = " << specPar.first << std::endl;
+    for (auto const &path : specPar.second->paths) {
+      std::cout << path << std::endl;
+    }
+  }
+
+  const dd4hep::SpecParRegistry &specParsCUT = det->specpars();
+  dd4hep::SpecParRefs specsCUT;
+  specParsCUT.filter(specsCUT, "CMSCutsRegion");
+  for (auto const &specPar : specsCUT) {
+    std::cout << "SpecPar filtered with CMSCutsRegion, name = " << specPar.first << std::endl;
+    for (auto const &path : specPar.second->paths) {
+      std::cout << path << std::endl;
+    }
+  }
+
+
+
+
+
 
   return geometry->world();
 }

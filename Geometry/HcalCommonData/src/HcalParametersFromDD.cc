@@ -220,50 +220,50 @@ bool HcalParametersFromDD::build(HcalParameters& php) {
     php.etaTableHF.emplace_back(-log(tan(0.5 * atan(php.rTable[k] / php.gparHF[4]))));
   }
 
-#ifdef EDM_ML_DEBUG
+  //#ifdef EDM_ML_DEBUG
   int i(0);
   std::stringstream ss0;
   ss0 << "HcalParametersFromDD: MaxDepth[" << php.maxDepth.size() << "]: ";
   for (const auto& it : php.maxDepth)
     ss0 << it << ", ";
-  edm::LogVerbatim("HCalGeom") << ss0.str();
+  std::cout << ss0.str() << std::endl;
   std::stringstream ss1;
   ss1 << "HcalParametersFromDD: ModHB [" << php.modHB.size() << "]: ";
   for (const auto& it : php.modHB)
     ss1 << it << ", ";
-  edm::LogVerbatim("HCalGeom") << ss1.str();
+  std::cout << ss1.str() << std::endl;
   std::stringstream ss2;
   ss2 << "HcalParametersFromDD: ModHE [" << php.modHE.size() << "]: ";
   for (const auto& it : php.modHE)
     ss2 << it << ", ";
-  edm::LogVerbatim("HCalGeom") << ss2.str();
+  std::cout << ss2.str() << std::endl;
   std::stringstream ss3;
   ss3 << "HcalParametersFromDD: " << php.phioff.size() << " phioff values:";
   std::vector<double>::const_iterator it;
   for (it = php.phioff.begin(), i = 0; it != php.phioff.end(); ++it)
     ss3 << " [" << ++i << "] = " << convertRadToDeg(*it);
-  edm::LogVerbatim("HCalGeom") << ss3.str();
+  std::cout << ss3.str() << std::endl;
   std::stringstream ss4;
   ss4 << "HcalParametersFromDD: " << php.etaTable.size() << " entries for etaTable:";
   for (it = php.etaTable.begin(), i = 0; it != php.etaTable.end(); ++it)
     ss4 << " [" << ++i << "] = " << (*it);
-  edm::LogVerbatim("HCalGeom") << ss4.str();
+  std::cout << ss4.str() << std::endl;
   std::stringstream ss5;
   ss5 << "HcalParametersFromDD: " << php.rTable.size() << " entries for rTable:";
   for (it = php.rTable.begin(), i = 0; it != php.rTable.end(); ++it)
     ss5 << " [" << ++i << "] = " << convertMmToCm(*it);
-  edm::LogVerbatim("HCalGeom") << ss5.str();
+  std::cout << ss5.str() << std::endl;
   std::stringstream ss6;
   ss6 << "HcalParametersFromDD: " << php.phibin.size() << " phibin values:";
   for (it = php.phibin.begin(), i = 0; it != php.phibin.end(); ++it)
     ss6 << " [" << ++i << "] = " << convertRadToDeg(*it);
-  edm::LogVerbatim("HCalGeom") << ss6.str();
+  std::cout << ss6.str() << std::endl;
   std::stringstream ss7;
   ss7 << "HcalParametersFromDD: " << php.phitable.size() << " phitable values:";
   for (it = php.phitable.begin(), i = 0; it != php.phitable.end(); ++it)
     ss7 << " [" << ++i << "] = " << convertRadToDeg(*it);
-  edm::LogVerbatim("HCalGeom") << ss7.str();
-  edm::LogVerbatim("HCalGeom") << "HcalParametersFromDD: " << php.layerGroupEtaSim.size() << " layerGroupEtaSim blocks"
+  std::cout << ss7.str() << std::endl;
+  std::cout << "HcalParametersFromDD: " << php.layerGroupEtaSim.size() << " layerGroupEtaSim blocks"
                                << std::endl;
   std::vector<int>::const_iterator kt;
   for (unsigned int k = 0; k < php.layerGroupEtaSim.size(); ++k) {
@@ -271,74 +271,74 @@ bool HcalParametersFromDD::build(HcalParameters& php) {
     ss8 << "layerGroupEtaSim[" << k << "] Layer " << php.layerGroupEtaSim[k].layer;
     for (kt = php.layerGroupEtaSim[k].layerGroup.begin(), i = 0; kt != php.layerGroupEtaSim[k].layerGroup.end(); ++kt)
       ss8 << " " << ++i << ":" << (*kt);
-    edm::LogVerbatim("HCalGeom") << ss8.str();
+    std::cout << ss8.str() << std::endl;
   }
   std::stringstream ss8;
   ss8 << "HcalParametersFromDD: " << php.etaMin.size() << " etaMin values:";
   for (kt = php.etaMin.begin(), i = 0; kt != php.etaMin.end(); ++kt)
     ss8 << " [" << ++i << "] = " << (*kt);
-  edm::LogVerbatim("HCalGeom") << ss8.str();
+  std::cout << ss8.str() << std::endl;
   std::stringstream ss9;
   ss9 << "HcalParametersFromDD: " << php.etaMax.size() << " etaMax values:";
   for (kt = php.etaMax.begin(), i = 0; kt != php.etaMax.end(); ++kt)
     ss9 << " [" << ++i << "] = " << (*kt);
-  edm::LogVerbatim("HCalGeom") << ss9.str();
+  std::cout << ss9.str() << std::endl;
   std::stringstream ss10;
   ss10 << "HcalParametersFromDD: " << php.etaRange.size() << " etaRange values:";
   for (it = php.etaRange.begin(), i = 0; it != php.etaRange.end(); ++it)
     ss10 << " [" << ++i << "] = " << (*it);
-  edm::LogVerbatim("HCalGeom") << ss10.str();
+  std::cout << ss10.str() << std::endl;
   std::stringstream ss11;
   ss11 << "HcalParametersFromDD: " << php.gparHF.size() << " gparHF values:";
   for (it = php.gparHF.begin(), i = 0; it != php.gparHF.end(); ++it)
     ss11 << " [" << ++i << "] = " << convertMmToCm(*it);
-  edm::LogVerbatim("HCalGeom") << ss11.str();
+  std::cout << ss11.str() << std::endl;
   std::stringstream ss12;
   ss12 << "HcalParametersFromDD: " << php.noff.size() << " noff values:";
   for (kt = php.noff.begin(), i = 0; kt != php.noff.end(); ++kt)
     ss12 << " [" << ++i << "] = " << (*kt);
-  edm::LogVerbatim("HCalGeom") << ss12.str();
+  std::cout << ss12.str() << std::endl;
   std::stringstream ss13;
   ss13 << "HcalParametersFromDD: " << php.Layer0Wt.size() << " Layer0Wt values:";
   for (it = php.Layer0Wt.begin(), i = 0; it != php.Layer0Wt.end(); ++it)
     ss13 << " [" << ++i << "] = " << (*it);
-  edm::LogVerbatim("HCalGeom") << ss13.str();
+  std::cout << ss13.str() << std::endl;
   std::stringstream ss14;
   ss14 << "HcalParametersFromDD: " << php.HBGains.size() << " Shift/Gains values for HB:";
   for (unsigned k = 0; k < php.HBGains.size(); ++k)
     ss14 << " [" << k << "] = " << php.HBShift[k] << ":" << php.HBGains[k];
-  edm::LogVerbatim("HCalGeom") << ss14.str();
+  std::cout << ss14.str() << std::endl;
   std::stringstream ss15;
   ss15 << "HcalParametersFromDD: " << php.HEGains.size() << " Shift/Gains values for HE:";
   for (unsigned k = 0; k < php.HEGains.size(); ++k)
     ss15 << " [" << k << "] = " << php.HEShift[k] << ":" << php.HEGains[k];
-  edm::LogVerbatim("HCalGeom") << ss15.str();
+  std::cout << ss15.str() << std::endl;
   std::stringstream ss16;
   ss16 << "HcalParametersFromDD: " << php.HFGains.size() << " Shift/Gains values for HF:";
   for (unsigned k = 0; k < php.HFGains.size(); ++k)
     ss16 << " [" << k << "] = " << php.HFShift[k] << ":" << php.HFGains[k];
-  edm::LogVerbatim("HCalGeom") << ss16.str();
+  std::cout << ss16.str() << std::endl;
   std::stringstream ss17;
   ss17 << "HcalParametersFromDD: " << php.etagroup.size() << " etagroup values:";
   for (kt = php.etagroup.begin(), i = 0; kt != php.etagroup.end(); ++kt)
     ss17 << " [" << ++i << "] = " << (*kt);
-  edm::LogVerbatim("HCalGeom") << ss17.str();
+  std::cout << ss17.str() << std::endl;
   std::stringstream ss18;
   ss18 << "HcalParametersFromDD: " << php.phigroup.size() << " phigroup values:";
   for (kt = php.phigroup.begin(), i = 0; kt != php.phigroup.end(); ++kt)
     ss18 << " [" << ++i << "] = " << (*kt);
-  edm::LogVerbatim("HCalGeom") << ss18.str();
-  edm::LogVerbatim("HCalGeom") << "HcalParametersFromDD: " << php.layerGroupEtaRec.size() << " layerGroupEtaRec blocks";
+  std::cout << ss18.str() << std::endl;
+  std::cout << "HcalParametersFromDD: " << php.layerGroupEtaRec.size() << " layerGroupEtaRec blocks";
   for (unsigned int k = 0; k < php.layerGroupEtaRec.size(); ++k) {
     std::stringstream ss19;
     ss19 << "layerGroupEtaRec[" << k << "] Layer " << php.layerGroupEtaRec[k].layer;
     for (kt = php.layerGroupEtaRec[k].layerGroup.begin(), i = 0; kt != php.layerGroupEtaRec[k].layerGroup.end(); ++kt)
       ss19 << " " << ++i << ":" << (*kt);
-    edm::LogVerbatim("HCalGeom") << ss19.str();
+    std::cout << ss19.str() << std::endl;
   }
-  edm::LogVerbatim("HCalGeom") << "HcalParametersFromDD: (topology|trigger)Mode " << std::hex << php.topologyMode
-                               << std::dec;
-#endif
+  std::cout << "HcalParametersFromDD: (topology|trigger)Mode " << std::hex << php.topologyMode
+                               << std::dec << std::endl;
+  //#endif
 
   return true;
 }
