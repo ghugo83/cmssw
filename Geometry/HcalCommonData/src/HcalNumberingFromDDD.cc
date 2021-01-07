@@ -31,14 +31,16 @@ HcalNumberingFromDDD::HcalID HcalNumberingFromDDD::unitID(int det,
                                                           const math::XYZVectorD& point,
                                                           int depth,
                                                           int lay) const {
-  double hx = point.x();
-  double hy = point.y();
-  double hz = point.z();
-  double hR = sqrt(hx * hx + hy * hy + hz * hz);
-  double htheta = (hR == 0. ? 0. : acos(std::max(std::min(hz / hR, 1.0), -1.0)));
-  double hsintheta = sin(htheta);
-  double hphi = (hR * hsintheta == 0. ? 0. : atan2(hy, hx));
-  double heta = (fabs(hsintheta) == 1. ? 0. : -log(fabs(tan(htheta / 2.))));
+  //double hR = sqrt(hx * hx + hy * hy + hz * hz);
+  //std::cout << "hr = " << hr << ", point.Mag() = " << point.Mag() << std::endl;
+
+  //const double htheta = (hR == 0. ? 0. : acos(std::max(std::min(hz / hR, 1.0), -1.0)));
+  //std::cout << "htheta = " << htheta << ", point.Theta() = " << point.Theta() << std::endl;
+  //const double hsintheta = sin(htheta);
+  //const double hphi = (hR * hsintheta == 0. ? 0. : atan2(hy, hx));
+
+  const double heta = point.Eta();
+  const double hphi = point.Phi();
 
   int hsubdet = 0;
   double etaR;
@@ -46,12 +48,18 @@ HcalNumberingFromDDD::HcalID HcalNumberingFromDDD::unitID(int det,
   //First eta index
   if (det == 5) {  // Forward HCal
     hsubdet = static_cast<int>(HcalForward);
-    hR = sqrt(hx * hx + hy * hy);
+    //hR = sqrt(hx * hx + hy * hy);
+    //const double heta = (fabs(hsintheta) == 1. ? 0. : -log(fabs(tan(htheta / 2.))));
+    const double hR = sqrt(point.Mag2());
     etaR = (heta >= 0. ? hR : -hR);
   } else {  // Barrel or Endcap
     etaR = heta;
     if (det == 3) {
       hsubdet = static_cast<int>(HcalBarrel);
+      //const double heta = (fabs(hsintheta) == 1. ? 0. : -log(fabs(tan(htheta / 2.))));
+      const double hx = point.x();
+      const double hy = point.y();
+      const double hz = point.z();
       etaR = hcalConstants->getEtaHO(heta, hx, hy, hz);
     } else {
       hsubdet = static_cast<int>(HcalEndcap);
@@ -62,7 +70,9 @@ HcalNumberingFromDDD::HcalID HcalNumberingFromDDD::unitID(int det,
   edm::LogVerbatim("HCalGeom") << "HcalNumberingFromDDD: point = " << point << " det " << det << ":" << hsubdet
                                << " eta/R " << etaR << " phi " << hphi << " depth " << depth << " layer " << lay;
 #endif
-  return unitID(hsubdet, etaR, hphi, depth, lay);
+
+  HcalNumberingFromDDD::HcalID detId = unitID(hsubdet, etaR, hphi, depth, lay);
+  return detId;
 }
 
 HcalNumberingFromDDD::HcalID HcalNumberingFromDDD::unitID(double eta, double fi, int depth, int lay) const {

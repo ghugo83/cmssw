@@ -36,6 +36,13 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 
+process.Timing = cms.Service("Timing",
+  summaryOnly = cms.untracked.bool(False),
+  useJobReport = cms.untracked.bool(True)
+)
+
+
+
 # Input source
 process.source = cms.Source("EmptySource")
 
