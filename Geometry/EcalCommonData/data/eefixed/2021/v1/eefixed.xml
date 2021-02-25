@@ -911,7 +911,12 @@
     <rParent name="eefixed:EETankSS"/>
     <rChild name="eefixed:EETankWa"/>
   </PosPart>
+
+
+
+
   <!-- Cooling bars inside cooling box interior -->
+
   <PosPart copyNumber="101">
     <rParent name="eefixed:EECoolIns"/>
     <rChild name="eregalgo:ECVFE"/>
@@ -930,7 +935,11 @@
     <Translation y="15*mm" z="0*mm" x="36*mm"/>
     <rRotation name="eecon:EEfCRotY"/>
   </PosPart>
+
+
   <!-- Extra cooling bars for 4-bar units -->
+
+<!--
   <PosPart copyNumber="104">
     <rParent name="eefixed:EECoolQ"/>
     <rChild name="eregalgo:ECVFE"/>
@@ -949,6 +958,8 @@
     <Translation x="[eecon:EECBX16] - [eecon:EECBWid]/2 -13*mm" y="[eecon:EECBY16]" z="0*mm"/>
     <rRotation name="eecon:EEfCRotY"/>
   </PosPart>
+-->
+
   <!-- Piping to cooling blocks -->
   <PosPart copyNumber="1">
     <rParent name="eefixed:EECBXP1P"/>

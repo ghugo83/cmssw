@@ -44,7 +44,7 @@
 
   <PosPartSection label="CTPPS_Pixel_Assembly_Box_Real_023.xml">
 
-
+<!--
     <PosPart copyNumber="1">
 
       <rParent name="RP_Box_023:RP_box_secondary_vacuum"/>
@@ -53,10 +53,11 @@
       <rRotation name="ModuleROTATIONmirror2"/>
 
     </PosPart>
+-->
 
 
-
-    <PosPart copyNumber="2">
+<!--
+    <PosPart copyNumber="1">
 
       <rParent name="RP_Box_023:RP_box_secondary_vacuum"/>
       <rChild name="CTPPS_Pixel_Module_2x2:Envelop"/>
@@ -65,7 +66,7 @@
 
     </PosPart>
 
-    <PosPart copyNumber="3">
+    <PosPart copyNumber="2">
 
       <rParent name="RP_Box_023:RP_box_secondary_vacuum"/>
       <rChild name="CTPPS_Pixel_Module:Envelop"/>
@@ -74,7 +75,7 @@
 
     </PosPart>
 
-    <PosPart copyNumber="4">
+    <PosPart copyNumber="3">
 
       <rParent name="RP_Box_023:RP_box_secondary_vacuum"/>
       <rChild name="CTPPS_Pixel_Module:Envelop"/>
@@ -83,7 +84,7 @@
 
     </PosPart>
 
-    <PosPart copyNumber="5">
+    <PosPart copyNumber="4">
 
       <rParent name="RP_Box_023:RP_box_secondary_vacuum"/>
       <rChild name="CTPPS_Pixel_Module:Envelop"/>
@@ -92,7 +93,7 @@
 
     </PosPart>
 
-    <PosPart copyNumber="6">
+    <PosPart copyNumber="5">
 
       <rParent name="RP_Box_023:RP_box_secondary_vacuum"/>
       <rChild name="CTPPS_Pixel_Module:Envelop"/>
@@ -100,7 +101,7 @@
       <rRotation name="ModuleROTATIONmirror2"/>
 
     </PosPart>
-
+-->
 
   </PosPartSection>
 </DDDefinition>

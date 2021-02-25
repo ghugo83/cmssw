@@ -2758,26 +2758,27 @@ void DDEcalBarrelNewAlgo::execute(DDCompactView& cpv) {
       DDSolid backCoolBarSolid(DDSolidFactory::box(
           backCoolBarName(), backCoolBarHeight() / 2., backCoolBarWidth() / 2., backCoolBarThick() / 2.));
       const DDLogicalPart backCoolBarLog(backCoolBarName(), backCoolBarMat(), backCoolBarSolid);
+      std::cout << "DDECalBarrelNewAlgo Create volume " << backCoolBarName() << std::endl;
 
       DDSolid backCoolBarSSSolid(DDSolidFactory::box(
           backCoolBarSSName(), backCoolBarHeight() / 2., backCoolBarWidth() / 2., backCoolBarSSThick() / 2.));
       const DDLogicalPart backCoolBarSSLog(backCoolBarSSName(), backCoolBarSSMat(), backCoolBarSSSolid);
       const DDTranslation backCoolBarSSTra(0, 0, 0);
       cpv.position(backCoolBarSSLog, backCoolBarName(), copyOne, backCoolBarSSTra, DDRotation());
-#ifdef EDM_ML_DEBUG
-      edm::LogVerbatim("EcalGeom") << backCoolBarSSLog.name() << ":" << copyOne << " positioned in "
-                                   << backCoolBarName();
-#endif
+
+      std::cout << backCoolBarSSLog.name() << ":" << copyOne << " positioned in "
+                                   << backCoolBarName() << std::endl;
+
 
       DDSolid backCoolBarWaSolid(DDSolidFactory::box(
           backCoolBarWaName(), backCoolBarHeight() / 2., backCoolBarWidth() / 2., backCoolBarWaThick() / 2.));
       const DDLogicalPart backCoolBarWaLog(backCoolBarWaName(), backCoolBarWaMat(), backCoolBarWaSolid);
       const DDTranslation backCoolBarWaTra(0, 0, 0);
       cpv.position(backCoolBarWaLog, backCoolBarSSName(), copyOne, backCoolBarWaTra, DDRotation());
-#ifdef EDM_ML_DEBUG
-      edm::LogVerbatim("EcalGeom") << backCoolBarWaLog.name() << ":" << copyOne << " positioned in "
-                                   << backCoolBarSSName();
-#endif
+
+      std::cout << backCoolBarWaLog.name() << ":" << copyOne << " positioned in "
+                                   << backCoolBarSSName() << std::endl;
+
 
       //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -2830,12 +2831,15 @@ void DDEcalBarrelNewAlgo::execute(DDCompactView& cpv) {
       DDSolid backCoolVFESolid(
           DDSolidFactory::box(backCoolVFEName(), backCoolBarHeight() / 2., backCoolBarWidth() / 2., halfZCoolVFE));
       const DDLogicalPart backCoolVFELog(backCoolVFEName(), backCoolVFEMat(), backCoolVFESolid);
+
+      std::cout << backCoolVFEName() << "created" << std::endl;
+
       if (0 != backCoolBarHere()) {
         cpv.position(backCoolBarLog, backCoolVFEName(), copyOne, DDTranslation(), DDRotation());
-#ifdef EDM_ML_DEBUG
-        edm::LogVerbatim("EcalGeom") << backCoolBarLog.name() << ":" << copyOne << " positioned in "
-                                     << backCoolVFEName();
-#endif
+
+        std::cout << backCoolBarLog.name() << ":" << copyOne << " positioned in "
+		  << backCoolVFEName()  << std::endl;
+
       }
       if (0 != backCoolVFEHere()) {
         cpv.position(backVFELog,
@@ -2843,18 +2847,18 @@ void DDEcalBarrelNewAlgo::execute(DDCompactView& cpv) {
                      copyOne,
                      DDTranslation(0, 0, backCoolBarThick() / 2. + thickVFE / 2.),
                      DDRotation());
-#ifdef EDM_ML_DEBUG
-        edm::LogVerbatim("EcalGeom") << backVFELog.name() << ":" << copyOne << " positioned in " << backCoolVFEName();
-#endif
+
+        std::cout << backVFELog.name() << ":" << copyOne << " positioned in " << backCoolVFEName()  << std::endl;
+
       }
       cpv.position(backVFELog,
                    backCoolVFEName(),
                    copyTwo,
                    DDTranslation(0, 0, -backCoolBarThick() / 2. - thickVFE / 2.),
                    myrot(backVFEName().name() + "Flip", CLHEP::HepRotationX(180 * deg)));
-#ifdef EDM_ML_DEBUG
-      edm::LogVerbatim("EcalGeom") << backVFELog.name() << ":" << copyTwo << " positioned in " << backCoolVFEName();
-#endif
+
+      std::cout << backVFELog.name() << ":" << copyTwo << " positioned in " << backCoolVFEName();
+
       //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       //!!!!!!!!!!!!!!     End Cooling Bar + VFE Setup    !!!!!!!!!!!!!!!!!!!

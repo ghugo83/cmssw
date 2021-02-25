@@ -2087,24 +2087,25 @@ static long algorithm(dd4hep::Detector& /* description */, cms::DDParsingContext
 
       Solid backCoolBarSolid = Box(backCool.barHeight / 2., backCool.barWidth / 2., backCool.barThick / 2.);
       Volume backCoolBarLog = Volume(backCool.barName, backCoolBarSolid, ns.material(backCool.barMat));
+      std::cout << "DDECalBarrelNewAlgo Create volume " << backCool.barName << std::endl;
 
       Solid backCoolBarSSSolid = Box(backCool.barHeight / 2., backCool.barWidth / 2., backCool.barSSThick / 2.);
       Volume backCoolBarSSLog = Volume(backCool.barSSName, backCoolBarSSSolid, ns.material(backCool.barSSMat));
       const Position backCoolBarSSTra(0, 0, 0);
       backCoolBarLog.placeVolume(backCoolBarSSLog, copyOne, Transform3D(backCoolBarSSTra));
-#ifdef EDM_ML_DEBUG
-      edm::LogVerbatim("EcalGeom") << backCoolBarSSLog.name() << ":" << copyOne << " positioned in "
-                                   << backCoolBarLog.name();
-#endif
+      
+      std::cout << backCoolBarSSLog.name() << ":" << copyOne << " positioned in "
+                                    << backCoolBarLog.name() << std::endl;
+
 
       Solid backCoolBarWaSolid = Box(backCool.barHeight / 2., backCool.barWidth / 2., backCool.barWaThick / 2.);
       Volume backCoolBarWaLog = Volume(backCool.barWaName, backCoolBarWaSolid, ns.material(backCool.barWaMat));
       const Position backCoolBarWaTra(0, 0, 0);
       backCoolBarSSLog.placeVolume(backCoolBarWaLog, copyOne, Transform3D(backCoolBarWaTra));
-#ifdef EDM_ML_DEBUG
-      edm::LogVerbatim("EcalGeom") << backCoolBarWaLog.name() << ":" << copyOne << " positioned in "
-                                   << backCoolBarSSLog.name();
-#endif
+
+      std::cout << backCoolBarWaLog.name() << ":" << copyOne << " positioned in "
+                                   << backCoolBarSSLog.name() << std::endl;
+
 
       //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -2155,28 +2156,32 @@ static long algorithm(dd4hep::Detector& /* description */, cms::DDParsingContext
       const double halfZCoolVFE(thickVFE + backCool.barThick / 2.);
       Solid backCoolVFESolid = Box(backCool.barHeight / 2., backCool.barWidth / 2., halfZCoolVFE);
       Volume backCoolVFELog = ns.addVolume(Volume(backCool.vFEName, backCoolVFESolid, ns.material(backCool.vFEMat)));
+      std::cout << backCool.vFEName << "created" << std::endl;
+
       if (0 != backCool.barHere) {
-        backCoolVFELog.placeVolume(backCoolBarLog, copyOne, Transform3D());
-#ifdef EDM_ML_DEBUG
-        edm::LogVerbatim("EcalGeom") << backCoolBarLog.name() << ":" << copyOne << " positioned in "
-                                     << backCoolVFELog.name();
-#endif
+        //backCoolVFELog.placeVolume(backCoolBarLog, copyOne, Transform3D());
+	backCoolVFELog.placeVolume(backCoolBarLog, copyOne, Transform3D(Position(0, 0, 0)));
+	
+
+	std::cout << backCoolBarLog.name() << ":" << copyOne << " positioned in "
+		  << backCoolVFELog.name() << std::endl;
+
       }
       if (0 != backCool.vFEHere) {
         backCoolVFELog.placeVolume(
-            backVFELog, copyOne, Transform3D(Position(0, 0, backCool.barThick / 2. + thickVFE / 2.)));
-#ifdef EDM_ML_DEBUG
-        edm::LogVerbatim("EcalGeom") << backVFELog.name() << ":" << copyOne << " positioned in "
-                                     << backCoolVFELog.name();
-#endif
+				   backVFELog, copyOne, Transform3D(Position(0, 0, backCool.barThick / 2. + thickVFE / 2.)));
+
+        std::cout << backVFELog.name() << ":" << copyOne << " positioned in "
+		  << backCoolVFELog.name() << std::endl;
+
       }
       backCoolVFELog.placeVolume(backVFELog,
                                  copyTwo,
                                  Transform3D(myrot(ns, backCool.vFEName + "Flip", CLHEP::HepRotationX(180_deg)),
                                              Position(0, 0, -backCool.barThick / 2. - thickVFE / 2.)));
-#ifdef EDM_ML_DEBUG
-      edm::LogVerbatim("EcalGeom") << backVFELog.name() << ":" << copyTwo << " positioned in " << backCoolVFELog.name();
-#endif
+
+      std::cout << backVFELog.name() << ":" << copyTwo << " positioned in " << backCoolVFELog.name();
+
 
       //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -2219,9 +2224,9 @@ static long algorithm(dd4hep::Detector& /* description */, cms::DDParsingContext
             grille.vecZOff[2 * iMod] + grille.thick + grille.zSpace + halfZBCool - back.sideLength / 2);
         if (0 != backCool.here) {
           spmLog.placeVolume(backCoolLog, iMod + 1, outtra + backPlateTra + bCoolTra);
-#ifdef EDM_ML_DEBUG
-          edm::LogVerbatim("EcalGeom") << backCoolLog.name() << ":" << (iMod + 1) << " positioned in " << spmLog.name();
-#endif
+
+	  std::cout << backCoolLog.name() << ":" << (iMod + 1) << " positioned in " << spmLog.name();
+
         }
 
         //===
@@ -2426,10 +2431,12 @@ static long algorithm(dd4hep::Detector& /* description */, cms::DDParsingContext
           const unsigned int nMax(static_cast<unsigned int>(backCool.vecBackCoolNPerSec[iNSec++]));
           for (unsigned int iBar(0); iBar != nMax; ++iBar) {
             backCoolLog.placeVolume(backCoolVFELog, iCVFECopy++, cTra);
-#ifdef EDM_ML_DEBUG
-            edm::LogVerbatim("EcalGeom") << backCoolVFELog.name() << ":" << iCVFECopy << " positioned in "
-                                         << backCoolLog.name();
-#endif
+
+	    std::cout << "nMax = " << numSec << std::endl;
+	    std::cout << "nMax = " << nMax << std::endl;
+	    std::cout << backCoolVFELog.name() << ":" << iCVFECopy << " positioned in "
+		      << backCoolLog.name();
+
             cTra += Position(0, 0, backMisc.backCBStdSep);
           }
           cTra -= Position(0, 0, backMisc.backCBStdSep);  // backspace to previous

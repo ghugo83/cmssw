@@ -263,7 +263,7 @@ void PrintGeomInfoAction::dumpInFile() {
           fout << (*pvcite)->GetName() << "\n";
         else
           fout << (*pvcite)->GetName() << "_" << (*pvcite)->GetCopyNo() << "\n";
-      }
+	  }
       fout.close();
     }
   }
@@ -391,35 +391,35 @@ void PrintGeomInfoAction::dumpPV(G4VPhysicalVolume *pv, unsigned int leafDepth, 
     std::string mother = "World";
     if (pv->GetMotherLogical())
       mother = pv->GetMotherLogical()->GetName();
-    out << leafDepth << spaces << "### VOLUME = " << pv->GetName() << " Copy No " << pv->GetCopyNo() << " in " << mother
-        << " at " << pv->GetTranslation();
+    //out << leafDepth << spaces << "### VOLUME = " << pv->GetName() << " Copy No " << pv->GetCopyNo() << " in " << mother
+    //<< " at " << pv->GetTranslation();
   }
   if (!pv->IsReplicated()) {
     if (dumpPV_) {
-      if (pv->GetRotation() == nullptr)
-        out << " with no rotation" << G4endl;
-      else if (!dumpRotation_)
-        out << " with rotation" << G4endl;  //just rotation name
-      else
-        out << " with rotation " << *(pv->GetRotation()) << G4endl;
+      //if (pv->GetRotation() == nullptr)
+        //out << " with no rotation" << G4endl;
+	//else if (!dumpRotation_)
+        //out << " with rotation" << G4endl;  //just rotation name
+      //else
+        //out << " with rotation " << *(pv->GetRotation()) << G4endl;
     }
   } else {
     if (dumpReplica_) {
-      out << spaces << "    It is replica: " << G4endl;
+      //out << spaces << "    It is replica: " << G4endl;
       EAxis axis;
       int nReplicas;
       double width;
       double offset;
       bool consuming;
       pv->GetReplicationData(axis, nReplicas, width, offset, consuming);
-      out << spaces << "     axis " << axis << G4endl << spaces << "     nReplicas " << nReplicas << G4endl;
-      if (pv->GetParameterisation() != nullptr)
-        out << spaces << "    It is parameterisation " << G4endl;
-      else
-        out << spaces << "     width " << width << G4endl << spaces << "     offset " << offset << G4endl << spaces
-            << "     consuming" << consuming << G4endl;
-      if (pv->GetParameterisation() != nullptr)
-        out << spaces << "    It is parameterisation " << G4endl;
+      // out << spaces << "     axis " << axis << G4endl << spaces << "     nReplicas " << nReplicas << G4endl;
+      //if (pv->GetParameterisation() != nullptr)
+        //out << spaces << "    It is parameterisation " << G4endl;
+      //else
+        //out << spaces << "     width " << width << G4endl << spaces << "     offset " << offset << G4endl << spaces
+      //<< "     consuming" << consuming << G4endl;
+      //if (pv->GetParameterisation() != nullptr)
+      //out << spaces << "    It is parameterisation " << G4endl;
     }
   }
 }

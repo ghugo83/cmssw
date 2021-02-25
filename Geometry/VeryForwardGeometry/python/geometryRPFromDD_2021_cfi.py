@@ -10,12 +10,14 @@ totemGeomXMLFiles = cms.vstring(
     'Geometry/CMSCommonData/data/cmsBeam.xml',
     'Geometry/CMSCommonData/data/cmsMother.xml',
     'Geometry/CMSCommonData/data/mgnt.xml',
+    
     'Geometry/ForwardCommonData/data/forward.xml',
     'Geometry/ForwardCommonData/data/totemRotations.xml',
     'Geometry/ForwardCommonData/data/totemMaterials.xml',
     'Geometry/ForwardCommonData/data/totemt1.xml',
     'Geometry/ForwardCommonData/data/totemt2.xml',
     'Geometry/ForwardCommonData/data/ionpump.xml',
+    
     'Geometry/VeryForwardData/data/RP_Box.xml',
     'Geometry/VeryForwardData/data/RP_Box/RP_Box_000.xml',
     'Geometry/VeryForwardData/data/RP_Box/RP_Box_001.xml',

@@ -147,7 +147,14 @@ dd4hep::Volume DDNamespace::addVolumeNS(dd4hep::Volume vol) const {
   dd4hep::Solid s = vol.solid();
   dd4hep::Material m = vol.material();
   vol->SetName(n.c_str());
+
+  if (m_context->volumes.find(n) != m_context->volumes.end()) {
+    std::cout << "ERROR: DDNamespace::addVolumeNS, tried to add dd4hep::Volume while it already exist" 
+	      << n << std::endl;
+  }
+
   m_context->volumes[n] = vol;
+
   const char* solidName = "Invalid solid";
   if (s.isValid())         // Protect against seg fault
     solidName = s.name();  // If Solid is not valid, s.name() will seg fault.
@@ -166,7 +173,16 @@ dd4hep::Volume DDNamespace::addVolume(dd4hep::Volume vol) const {
   string n = prepend(vol.name());
   dd4hep::Solid s = vol.solid();
   dd4hep::Material m = vol.material();
+  
+ 
+ 
+  if (m_context->volumes.find(n) != m_context->volumes.end()) {
+    std::cout << "ERROR: DDNamespace::addVolume, tried to add dd4hep::Volume while it already exist" 
+	      << n << std::endl;
+  }
+
   m_context->volumes[n] = vol;
+ 
   const char* solidName = "Invalid solid";
   if (s.isValid())         // Protect against seg fault
     solidName = s.name();  // If Solid is not valid, s.name() will seg fault.
@@ -183,7 +199,17 @@ dd4hep::Volume DDNamespace::addVolume(dd4hep::Volume vol) const {
 
 dd4hep::Assembly DDNamespace::addAssembly(dd4hep::Assembly assembly) const {
   string n = assembly.name();
+
+  if (m_context->assemblies.find(n) != m_context->assemblies.end()) {
+    std::cout << "ERROR: DDNamespace::addAssembly, tried to add dd4hep::Assembly while it already exist" 
+	      << n << std::endl;
+  }
+
   m_context->assemblies[n] = assembly;
+
+  
+
+  
   dd4hep::printout(
       m_context->debug_volumes ? dd4hep::ALWAYS : dd4hep::DEBUG, "DD4CMS", "+++ Add assembly:%-38s", assembly.name());
   return assembly;
@@ -227,7 +253,15 @@ dd4hep::Solid DDNamespace::addSolidNS(const string& name, dd4hep::Solid solid) c
 
   auto shape = m_context->shapes.emplace(name, solid.setName(name));
   if (!shape.second) {
+
+    if (m_context->shapes.find(name) != m_context->shapes.end()) {
+      std::cout << "ERROR: DDNamespace::addSolidNS, tried to add dd4hep::Solid while it already exist" 
+		<< name << std::endl;
+    }
+
     m_context->shapes[name] = solid.setName(name);
+
+    
   }
 
   return solid;

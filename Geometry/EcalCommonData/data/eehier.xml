@@ -111,19 +111,19 @@
 			<rParent name="eehier:EEFrontDee"/>
 			<rChild name="eehier:EEFrontQuad"/>
 		</PosPart>
-		<PosPart copyNumber="2">
+		<!--<PosPart copyNumber="2">
 			<rParent name="eehier:EEFrontDee"/>
 			<rChild name="eehier:EEFrontQuad"/>
 			<rReflectionRotation name="eecon:ReflectionY"/>
-		</PosPart>
+		</PosPart>-->
 		<PosPart copyNumber="1">
 			<rParent name="eehier:EEBackDee"/>
 			<rChild name="eehier:EEBackQuad"/>
 		</PosPart>
-		<PosPart copyNumber="2">
+		<!--<PosPart copyNumber="2">
 			<rParent name="eehier:EEBackDee"/>
 			<rChild name="eehier:EEBackQuad"/>
 			<rReflectionRotation name="eecon:ReflectionY"/>
-		</PosPart>
+		</PosPart>-->
 	</PosPartSection>
 </DDDefinition>
