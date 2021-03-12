@@ -21,29 +21,21 @@ namespace {
       It's guaranteed to produce the same order in subsequent application runs,
       while pointers usually can't guarantee this
   */
-  bool dd_is_greater(const std::pair<G4LogicalVolume*, DDLogicalPart>& p1,
+bool dd_is_greater(const std::pair<G4LogicalVolume*, DDLogicalPart>& p1,
                      const std::pair<G4LogicalVolume*, DDLogicalPart>& p2) {
-    bool result = false;
-    if (p1.second.name().ns() > p2.second.name().ns()) {
-      result = true;
-    }
-    if (p1.second.name().ns() == p2.second.name().ns()) {
-      if (p1.second.name().name() > p2.second.name().name()) {
-        result = true;
-      }
-      if (p1.second.name().name() == p2.second.name().name()) {
-        if (p1.first->GetName() > p2.first->GetName()) {
-          result = true;
-        }
-      }
-    }
-    return result;
+bool result = false;
+
+if (p1.first->GetName() > p2.first->GetName()) {
+result = true;
+}
+//}
+return result;
   }
 
   bool sortByName(const std::pair<G4LogicalVolume*, const dd4hep::SpecPar*>& p1,
                   const std::pair<G4LogicalVolume*, const dd4hep::SpecPar*>& p2) {
     bool result = false;
-    if (p1.first->GetName() > p2.first->GetName()) {
+if (dd4hep::dd::noNamespace(p1.first->GetName()) > dd4hep::dd::noNamespace(p2.first->GetName())) {
       result = true;
     }
     return result;
@@ -104,8 +96,9 @@ void DDG4ProductionCuts::initialize() {
 
     region->AddRootLogicalVolume(vv.first);
 
-    if (verbosity_ > 0)
-      edm::LogVerbatim("Geometry") << "  added " << vv.first->GetName() << " to region " << region->GetName();
+    //if (verbosity_ > 0)
+    //edm::LogVerbatim("Geometry") << "  added " << vv.first->GetName() << " to region " << region->GetName();
+    std::cout << "Added " << vv.first->GetName() << " to region " << region->GetName() << std::endl;
   }
 }
 
@@ -157,9 +150,12 @@ void DDG4ProductionCuts::dd4hepInitialize() {
     // If G4 Logical volume has a reflected volume, add it to the region as well.
     if (reflectedG4LogicalVolumeIt != allG4LogicalVolumes->end()) {
       region->AddRootLogicalVolume(*reflectedG4LogicalVolumeIt);
-      edm::LogVerbatim("Geometry") << " MakeRegions: added " << (*reflectedG4LogicalVolumeIt)->GetName()
-                                   << " to region " << region->GetName();
+      //edm::LogVerbatim("Geometry") << " MakeRegions: added " << (*reflectedG4LogicalVolumeIt)->GetName()
+      //<< " to region " << region->GetName();
+      std::cout << "Added " << dd4hep::dd::noNamespace((*reflectedG4LogicalVolumeIt)->GetName()) << " to region " << region->GetName() << std::endl;
     }
+
+    std::cout << "Added " << dd4hep::dd::noNamespace(it.first->GetName()) << " to region " << region->GetName() << std::endl;
 
     edm::LogVerbatim("Geometry").log([&](auto& log) {
       for (auto const& sit : it.second->spars) {

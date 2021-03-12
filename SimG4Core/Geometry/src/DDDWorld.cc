@@ -40,7 +40,7 @@ DDDWorld::DDDWorld(const DDCompactView *pDD,
     auto timeSens = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(diffSens).count()) / 1e6;
     std::cout << "Processed Sens catalog in " << std::scientific << timeSens << " seconds." << std::endl;
 
-    //catalog.printMe();
+    catalog.printMe();
 
     LogVerbatim("SimG4CoreApplication") << "DDDWorld: worldLV: " << m_world->GetName();
     if (cuts) {
@@ -67,7 +67,7 @@ DDDWorld::DDDWorld(const DDCompactView *pDD,
     auto timeSens = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(diffSens).count()) / 1e6;
     std::cout << "Processed Sens catalog in " << std::scientific << timeSens << " seconds." << std::endl;
 
-    //catalog.printMe();
+    catalog.printMe();
 
     LogVerbatim("SimG4CoreApplication") << "DDDWorld: worldLV: " << world->GetName();
     m_world = new G4PVPlacement(nullptr, G4ThreeVector(), world, "DDDWorld", nullptr, false, 0);
