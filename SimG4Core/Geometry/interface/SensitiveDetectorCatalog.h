@@ -6,10 +6,12 @@
 #include <string_view>
 #include <vector>
 #include <unordered_set>
+#include <set>
 
 class SensitiveDetectorCatalog {
 public:
-  using MapType = std::map<std::string, std::unordered_set<std::string>>;
+  //using MapType = std::map<std::string, std::unordered_set<std::string>>;
+  using MapType = std::map<std::string, std::set<std::string>>;
   void insert(const std::string &, const std::string &, const std::string &);
   const std::vector<std::string_view> logicalNames(const std::string &readoutName) const;
   const std::vector<std::string_view> readoutNames(const std::string &className) const;

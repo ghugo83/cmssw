@@ -31,24 +31,55 @@ DDDWorld::DDDWorld(const DDCompactView *pDD,
     // DD4Hep
     const cms::DDDetector *det = pDD4hep->detector();
     dd4hep::sim::Geant4GeometryMaps::VolumeMap lvMap;
-
     cms::DDG4Builder theBuilder(pDD4hep, lvMap, false);
+
+    auto startSens = std::chrono::high_resolution_clock::now();
     m_world = theBuilder.BuildGeometry(catalog);
+    auto stopSens = std::chrono::high_resolution_clock::now();
+    auto diffSens = stopSens - startSens;
+    auto timeSens = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(diffSens).count()) / 1e6;
+    std::cout << "Processed Sens catalog in " << std::scientific << timeSens << " seconds." << std::endl;
+
+    //catalog.printMe();
+
     LogVerbatim("SimG4CoreApplication") << "DDDWorld: worldLV: " << m_world->GetName();
     if (cuts) {
+      auto start = std::chrono::high_resolution_clock::now();
+
       DDG4ProductionCuts pcuts(&det->specpars(), &lvMap, verb, pcut);
+
+      auto stop = std::chrono::high_resolution_clock::now();
+      auto diff = stop - start;
+      auto time = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(diff).count()) / 1e6;
+      std::cout << "Processed Production cuts in " << std::scientific << time << " seconds." << std::endl;
     }
-    catalog.printMe();
+
   } else {
     // old DD code
     G4LogicalVolumeToDDLogicalPartMap lvMap;
-
     DDG4Builder theBuilder(pDD, lvMap, false);
+
+    auto startSens = std::chrono::high_resolution_clock::now();
     G4LogicalVolume *world = theBuilder.BuildGeometry(catalog);
+
+    auto stopSens = std::chrono::high_resolution_clock::now();
+    auto diffSens = stopSens - startSens;
+    auto timeSens = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(diffSens).count()) / 1e6;
+    std::cout << "Processed Sens catalog in " << std::scientific << timeSens << " seconds." << std::endl;
+
+    //catalog.printMe();
+
     LogVerbatim("SimG4CoreApplication") << "DDDWorld: worldLV: " << world->GetName();
     m_world = new G4PVPlacement(nullptr, G4ThreeVector(), world, "DDDWorld", nullptr, false, 0);
     if (cuts) {
+      auto start = std::chrono::high_resolution_clock::now();
+
       DDG4ProductionCuts pcuts(&lvMap, verb, pcut);
+
+      auto stop = std::chrono::high_resolution_clock::now();
+      auto diff = stop - start;
+      auto time = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(diff).count()) / 1e6;
+      std::cout << "Processed Production cuts in " << std::scientific << time << " seconds." << std::endl;
     }
   }
   LogVerbatim("SimG4CoreApplication") << "DDDWorld: initialisation of Geant4 geometry is done.";

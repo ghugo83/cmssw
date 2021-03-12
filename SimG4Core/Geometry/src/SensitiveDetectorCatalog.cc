@@ -7,7 +7,9 @@
 
 void SensitiveDetectorCatalog::insert(const std::string &cN, const std::string &rN, const std::string &lvN) {
   theClassNameMap[cN].insert(rN);
-  theROUNameMap[rN].insert(lvN);
+
+  const auto &pos = lvN.find(':');
+  theROUNameMap[rN].insert((pos != std::string::npos ? lvN.substr(pos + 1) : lvN));
 #ifdef DEBUG
   edm::LogVerbatim("SimG4CoreGeometry") << "SenstiveDetectorCatalog: insert (" << cN << "," << rN << "," << lvN << ")\n"
                                         << "                         has     " << readoutNames().size() << " ROUs "
@@ -60,39 +62,30 @@ std::vector<std::string_view> SensitiveDetectorCatalog::classNames() const {
 }
 
 void SensitiveDetectorCatalog::printMe() const {
-  edm::LogVerbatim("SimG4CoreGeometry") << "Class names map size is: " << theClassNameMap.size() << "\n";
-  edm::LogVerbatim("SimG4CoreGeometry").log([&](auto &log) {
-    int i(0);
-    for (const auto &cn : theClassNameMap) {
-      log << "#" << ++i << ": " << cn.first << " has " << cn.second.size() << " class names:\n";
-      for (const auto &cnv : cn.second)
-        log << cnv << ", ";
-      log << "\n";
-    }
-    log << "\n";
-  });
-  edm::LogVerbatim("SimG4CoreGeometry") << "\nROU names map: " << theROUNameMap.size() << "\n";
-  edm::LogVerbatim("SimG4CoreGeometry").log([&](auto &log) {
-    int i(0);
-    for (const auto &rn : theROUNameMap) {
-      log << "#" << ++i << ": " << rn.first << " has " << rn.second.size() << " ROU names:\n";
-      for (const auto &rnv : rn.second)
-        log << rnv << ", ";
-      log << "\n";
-    }
-    log << "\n";
-  });
+  std::cout << "Class names map size is: " << theClassNameMap.size() << "\n";
+  int i(0);
+  for (const auto &cn : theClassNameMap) {
+    std::cout << "#" << ++i << ": " << cn.first << " has " << cn.second.size() << " class names:\n";
+    for (const auto &cnv : cn.second)
+      std::cout << cnv << ", " << std::endl;
+  }
 
-  edm::LogVerbatim("SimG4CoreGeometry") << "\n========== Here are the accessors =================\n";
-  edm::LogVerbatim("SimG4CoreGeometry").log([&](auto &log) {
-    for (auto c : classNames()) {
-      log << "ClassName:" << c << "\n";
-      for (auto r : readoutNames({c.data(), c.size()})) {
-        log << "       RedoutName:" << r << "\n";
-        for (auto l : logicalNames({r.data(), r.size()})) {
-          log << "              LogicalName:" << l << "\n";
-        }
+  std::cout << "\nROU names map: " << theROUNameMap.size() << "\n";
+  i = 0;
+  for (const auto &rn : theROUNameMap) {
+    std::cout << "#" << ++i << ": " << rn.first << " has " << rn.second.size() << " ROU names:\n";
+    for (const auto &rnv : rn.second)
+      std::cout << rnv << ", " << std::endl;
+  }
+
+  std::cout << "\n========== Here are the accessors =================\n";
+  for (auto c : classNames()) {
+    std::cout << "ClassName:" << c << "\n";
+    for (auto r : readoutNames({c.data(), c.size()})) {
+      std::cout << "       RedoutName:" << r << "\n";
+      for (auto l : logicalNames({r.data(), r.size()})) {
+        std::cout << "              LogicalName:" << l << "\n";
       }
     }
-  });
+  }
 }

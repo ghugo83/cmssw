@@ -20,6 +20,13 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('Configuration.Geometry.GeometryDD4hepExtended2021_cff') # there w
 
 
+process.Timing = cms.Service("Timing",
+summaryOnly = cms.untracked.bool(False),
+useJobReport = cms.untracked.bool(True)
+)
+
+
+
 if hasattr(process,'MessageLogger'):
     process.MessageLogger.EcalGeom=dict()
 #    process.MessageLogger.MuonSim=dict()
@@ -31,7 +38,7 @@ if hasattr(process,'MessageLogger'):
 #    process.MessageLogger.TrackerSimInfoNumbering=dict()
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10),
+    input = cms.untracked.int32(1),
     output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
 )
 
