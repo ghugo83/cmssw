@@ -22,12 +22,13 @@ class SensitiveDetectorCatalog;
 namespace cms {
   class DDG4Builder {
   public:
-    DDG4Builder(const cms::DDCompactView *, dd4hep::sim::Geant4GeometryMaps::VolumeMap &, bool check);
+    DDG4Builder(const cms::DDCompactView *, dd4hep::sim::Geant4GeometryMaps::VolumeMap &, std::unordered_map<G4LogicalVolume*, G4LogicalVolume*>& reflectedG4LogicalVolumes, bool check);
     G4VPhysicalVolume *BuildGeometry(SensitiveDetectorCatalog &);
 
   private:
     const cms::DDCompactView *compactView_;
     dd4hep::sim::Geant4GeometryMaps::VolumeMap &map_;
+    std::unordered_map<G4LogicalVolume*, G4LogicalVolume*>& reflectedG4LogicalVolumes_;
     bool check_;
   };
 }  // namespace cms

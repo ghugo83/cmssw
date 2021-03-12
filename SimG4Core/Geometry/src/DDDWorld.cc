@@ -31,12 +31,13 @@ DDDWorld::DDDWorld(const DDCompactView *pDD,
     // DD4Hep
     const cms::DDDetector *det = pDD4hep->detector();
     dd4hep::sim::Geant4GeometryMaps::VolumeMap lvMap;
+    std::unordered_map<G4LogicalVolume*, G4LogicalVolume*> reflectedG4LogicalVolumes;
 
-    cms::DDG4Builder theBuilder(pDD4hep, lvMap, false);
+    cms::DDG4Builder theBuilder(pDD4hep, lvMap, reflectedG4LogicalVolumes, false);
     m_world = theBuilder.BuildGeometry(catalog);
     LogVerbatim("SimG4CoreApplication") << "DDDWorld: worldLV: " << m_world->GetName();
     if (cuts) {
-      DDG4ProductionCuts pcuts(&det->specpars(), &lvMap, verb, pcut);
+      DDG4ProductionCuts pcuts(&det->specpars(), &lvMap, &reflectedG4LogicalVolumes, verb, pcut);
     }
     catalog.printMe();
   } else {

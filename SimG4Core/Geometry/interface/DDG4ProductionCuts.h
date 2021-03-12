@@ -18,6 +18,7 @@ public:
 
   explicit DDG4ProductionCuts(const dd4hep::SpecParRegistry*,
                               const dd4hep::sim::Geant4GeometryMaps::VolumeMap*,
+			      std::unordered_map<G4LogicalVolume*, G4LogicalVolume*>* reflectedG4LogicalVolumes,
                               int,
                               bool);
 
@@ -35,6 +36,7 @@ private:
   void setProdCuts(const dd4hep::SpecPar*, G4Region*);
 
   const dd4hep::sim::Geant4GeometryMaps::VolumeMap* dd4hepMap_ = nullptr;
+  std::unordered_map<G4LogicalVolume*, G4LogicalVolume*>* reflectedG4LogicalVolumes_ = nullptr;
   std::vector<std::pair<G4LogicalVolume*, const dd4hep::SpecPar*>> dd4hepVec_;
   const dd4hep::SpecParRegistry* specPars_;
   // ... end here.

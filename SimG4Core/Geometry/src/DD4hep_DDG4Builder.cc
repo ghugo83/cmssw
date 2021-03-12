@@ -23,8 +23,8 @@ using namespace cms;
 using namespace dd4hep;
 using namespace dd4hep::sim;
 
-DDG4Builder::DDG4Builder(const cms::DDCompactView *cpv, dd4hep::sim::Geant4GeometryMaps::VolumeMap &lvmap, bool check)
-    : compactView_(cpv), map_(lvmap), check_(check) {}
+DDG4Builder::DDG4Builder(const cms::DDCompactView *cpv, dd4hep::sim::Geant4GeometryMaps::VolumeMap &lvmap, std::unordered_map<G4LogicalVolume*, G4LogicalVolume*>& reflectedG4LogicalVolumes, bool check)
+  : compactView_(cpv), map_(lvmap), reflectedG4LogicalVolumes_(reflectedG4LogicalVolumes), check_(check) {}
 
 G4VPhysicalVolume *DDG4Builder::BuildGeometry(SensitiveDetectorCatalog &catalog) {
   G4ReflectionFactory *refFact = G4ReflectionFactory::Instance();
@@ -56,6 +56,25 @@ G4VPhysicalVolume *DDG4Builder::BuildGeometry(SensitiveDetectorCatalog &catalog)
     }
   }
 
+
+  for (auto const &it : map_) {
+    G4LogicalVolume* nonReflectedG4LogicalVolume = it.second;
+    const G4String& G4LogicalVolumeName = nonReflectedG4LogicalVolume->GetName();
+    const G4String& G4LogicalVolumeReflectedName = G4LogicalVolumeName + "_refl";
+
+    G4LogicalVolumeStore* allG4LogicalVolumes = G4LogicalVolumeStore::GetInstance();
+
+    auto reflectedG4LogicalVolumeIt = std::find_if(allG4LogicalVolumes->begin(), allG4LogicalVolumes->end(), [&](G4LogicalVolume* aG4LogicalVolume) {
+	return (aG4LogicalVolume->GetName() == G4LogicalVolumeReflectedName);
+      });
+
+    if (reflectedG4LogicalVolumeIt != allG4LogicalVolumes->end()) {
+      reflectedG4LogicalVolumes_[nonReflectedG4LogicalVolume] = *reflectedG4LogicalVolumeIt;
+    }
+  }
+
+
+
   // ADD ALL SELECTED G4 LOGICAL VOLUMES TO SENSITIVE DETECTORS CATALOGUE
   for (auto const &it : dd4hepVec) {
     // Sensitive detector info
@@ -71,15 +90,19 @@ G4VPhysicalVolume *DDG4Builder::BuildGeometry(SensitiveDetectorCatalog &catalog)
     // Reflected sensors also need to be added to the senstive detectors catalogue!
     // Similar treatment here with DD4hep, as what was done for old DD.
     const G4String &sensitiveDetectorG4ReflectedName = sensitiveDetectorG4Name + "_refl";
+    //const G4LogicalVolumeStore *const allG4LogicalVolumes = G4LogicalVolumeStore::GetInstance();
+    /*G4LogicalVolume* const reflectedG4LogicalVolume = *std::find_if(allG4LogicalVolumes->begin(), allG4LogicalVolumes->end(), [&](G4LogicalVolume *const aG4LogicalVolume) {
+	return (aG4LogicalVolume->GetName() == sensitiveDetectorG4ReflectedName);
+      });
+      const bool hasG4ReflectedVolume = (reflectedG4LogicalVolume != nullptr);*/
 
-    const G4LogicalVolumeStore *const allG4LogicalVolumes = G4LogicalVolumeStore::GetInstance();
-    const bool hasG4ReflectedVolume =
-        std::find_if(
-            allG4LogicalVolumes->begin(), allG4LogicalVolumes->end(), [&](G4LogicalVolume *const aG4LogicalVolume) {
-              return (aG4LogicalVolume->GetName() == sensitiveDetectorG4ReflectedName);
-            }) != allG4LogicalVolumes->end();
-    if (hasG4ReflectedVolume) {
+    const bool hasG4ReflectedVolume2 = (reflectedG4LogicalVolumes_.find(it.first) != reflectedG4LogicalVolumes_.end());
+
+    //std::cout << "(hasG4ReflectedVolume == hasG4ReflectedVolume2) = " << (hasG4ReflectedVolume == hasG4ReflectedVolume2) << std::endl;
+
+    if (hasG4ReflectedVolume2) {
       // Add reflected sensitive detector to catalogue
+      std::cout << sensitiveDetectorG4ReflectedName << std::endl;
       catalog.insert(
           {sClassName.data(), sClassName.size()}, {sROUName.data(), sROUName.size()}, sensitiveDetectorG4ReflectedName);
 

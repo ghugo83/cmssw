@@ -23,26 +23,26 @@ namespace {
   bool dd_is_greater(const std::pair<G4LogicalVolume*, DDLogicalPart>& p1,
                      const std::pair<G4LogicalVolume*, DDLogicalPart>& p2) {
     bool result = false;
-    if (p1.second.name().ns() > p2.second.name().ns()) {
+    /*if (p1.second.name().ns() > p2.second.name().ns()) {
       result = true;
-    }
-    if (p1.second.name().ns() == p2.second.name().ns()) {
+      }*/
+    /*if (p1.second.name().ns() == p2.second.name().ns()) {
       if (p1.second.name().name() > p2.second.name().name()) {
         result = true;
       }
-      if (p1.second.name().name() == p2.second.name().name()) {
+      if (p1.second.name().name() == p2.second.name().name()) {*/
         if (p1.first->GetName() > p2.first->GetName()) {
           result = true;
         }
-      }
-    }
+	//}
+	// }
     return result;
   }
 
   bool sortByName(const std::pair<G4LogicalVolume*, const dd4hep::SpecPar*>& p1,
                   const std::pair<G4LogicalVolume*, const dd4hep::SpecPar*>& p2) {
     bool result = false;
-    if (p1.first->GetName() > p2.first->GetName()) {
+    if (dd4hep::dd::noNamespace(p1.first->GetName()) > dd4hep::dd::noNamespace(p2.first->GetName())) {
       result = true;
     }
     return result;
@@ -56,9 +56,10 @@ DDG4ProductionCuts::DDG4ProductionCuts(const G4LogicalVolumeToDDLogicalPartMap* 
 
 DDG4ProductionCuts::DDG4ProductionCuts(const dd4hep::SpecParRegistry* specPars,
                                        const dd4hep::sim::Geant4GeometryMaps::VolumeMap* map,
+				       std::unordered_map<G4LogicalVolume*, G4LogicalVolume*>* reflectedG4LogicalVolumes,
                                        int verb,
                                        bool pcut)
-    : dd4hepMap_(map), specPars_(specPars), keywordRegion_("CMSCutsRegion"), verbosity_(verb), protonCut_(pcut) {
+  : dd4hepMap_(map), reflectedG4LogicalVolumes_(reflectedG4LogicalVolumes), specPars_(specPars), keywordRegion_("CMSCutsRegion"), verbosity_(verb), protonCut_(pcut) {
   dd4hepInitialize();
 }
 
@@ -103,8 +104,8 @@ void DDG4ProductionCuts::initialize() {
 
     region->AddRootLogicalVolume(vv.first);
 
-    if (verbosity_ > 0)
-      edm::LogVerbatim("Geometry") << "  added " << vv.first->GetName() << " to region " << region->GetName();
+    //if (verbosity_ > 0)
+    std::cout << "Added " << vv.first->GetName() << " to region " << region->GetName() << std::endl;
   }
 }
 
@@ -141,8 +142,17 @@ void DDG4ProductionCuts::dd4hepInitialize() {
     auto regName = it.second->strValue(keywordRegion_);
     G4Region* region = G4RegionStore::GetInstance()->FindOrCreateRegion({regName.data(), regName.size()});
     region->AddRootLogicalVolume(it.first);
+
+    G4LogicalVolume* G4LogicalVolume = it.first;
+    auto reflectedG4LogicalVolumeIt = reflectedG4LogicalVolumes_->find(G4LogicalVolume);
+    if (reflectedG4LogicalVolumeIt != reflectedG4LogicalVolumes_->end()) {
+      region->AddRootLogicalVolume(reflectedG4LogicalVolumeIt->second);
+    }
+
     edm::LogVerbatim("Geometry") << it.first->GetName() << ": " << it.second->strValue(keywordRegion_);
-    edm::LogVerbatim("Geometry") << " MakeRegions: added " << it.first->GetName() << " to region " << region->GetName();
+
+    std::cout << "Added " << dd4hep::dd::noNamespace(it.first->GetName()) << " to region " << region->GetName() << std::endl;
+
     edm::LogVerbatim("Geometry").log([&](auto& log) {
       for (auto const& sit : it.second->spars) {
         log << sit.first << " =  " << sit.second[0] << "\n";
